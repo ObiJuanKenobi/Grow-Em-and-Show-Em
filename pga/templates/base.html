@@ -5,12 +5,15 @@
 
   <!-- Optional theme -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/form-signin.css' %}">
 </head>
 <body>
   <header>
     <h1>Prison Garden Application</h1>
     {% if user.is_authenticated %}
-      Hi {{ user.username }}!
+      Loggen in as: {{ user.username }}!
       <a href="{% url 'logout' %}" class="btn btn-default">logout</a>
     {% else %}
       <a href="{% url 'login' %}" class="btn btn-default">login</a>
@@ -18,8 +21,8 @@
   </header>
   <hr>
   <main>
-	{% block content %}
-	{% endblock %}
+    {% block content %}
+    {% endblock %}
   </main>
 </body>
 </html>
