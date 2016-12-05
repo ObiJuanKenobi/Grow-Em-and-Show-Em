@@ -1,8 +1,10 @@
-{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}See you!{% endblock %}
+{% include "header.html" %}
 
 {% block content %}
   <h2>Logged out</h2>
-  <p>You have been successfully logged out.</p>
+  <p>See you! You have been successfully logged out.</p>
 {% endblock %}
+
+{% include "footer.html" %}

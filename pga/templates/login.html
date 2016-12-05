@@ -1,4 +1,9 @@
-{% extends 'base.html' %}
+{% load static %}
+
+{% include "header.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/form-signin.css' %}">
 
 {% block content %}
   <div class="container">
@@ -16,3 +21,5 @@
     </div>
   </div>
 {% endblock %}
+
+{% include "footer.html" %}
