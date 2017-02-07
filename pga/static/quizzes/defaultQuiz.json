@@ -1,0 +1,92 @@
+[
+	{
+		"question": "Who is a great developer?",
+		"a": "Jacob R. Stimes",
+		"b": "Jacob",
+		"c": "Stimes",
+		"d": "All of the above",
+		"correct": "d"
+	},
+	
+	{
+		"question": "Who wrote this page?",
+		"a": "Jacob R. Stimes",
+		"b": "Jacob",
+		"c": "Stimes",
+		"d": "All of the above",
+		"correct": "d"
+	},
+	
+	{
+		"question": "Who won the super bowl?",
+		"a": "Packers",
+		"b": "Bears",
+		"c": "Falcons",
+		"d": "Unfortunately, the Patriots",
+		"correct": "d"
+	},
+	
+	{
+		"question": "What language drives Jacob insane?",
+		"a": "JavaScript",
+		"b": "English",
+		"c": "Java",
+		"d": "ASL",
+		"correct": "a"
+	},
+	
+	{
+		"question": "Where does Jacob live?",
+		"a": "Lincoln Way",
+		"b": "Welch Ave.",
+		"c": "University Blvd",
+		"d": "In a box",
+		"correct": "a"
+	},
+	
+	{
+		"question": "What class does Jacob hate?",
+		"a": "Com S 363",
+		"b": "SE 492",
+		"c": "Math 314",
+		"d": "ASL 101",
+		"correct": "a"
+	},
+	
+	{
+		"question": "What year was Jacob born?",
+		"a": "1990",
+		"b": "2020",
+		"c": "1995",
+		"d": "1895",
+		"correct": "c"
+	},
+	
+	{
+		"question": "How severe is Jacob's senioritis?",
+		"a": "Max severity",
+		"b": "He doesn't have it (lol)",
+		"c": "Moderate",
+		"d": "Just starting",
+		"correct": "a"
+	},
+	
+	{
+		"question": "What's Jacob's middle name?",
+		"a": "Robert",
+		"b": "Reece",
+		"c": "Reisz",
+		"d": "Ryan",
+		"correct": "c"
+	},
+	
+	{
+		"question": "How do you spell our advisor's name?",
+		"a": "Jacobson",
+		"b": "Jacobsen",
+		"c": "Jakobson",
+		"d": "Jacobsin",
+		"correct": "a"
+	}
+
+]

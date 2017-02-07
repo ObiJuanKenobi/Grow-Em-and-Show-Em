@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
+from django.template import *
 
 def login_view(request):
      return render(request, 'login.html', {})
@@ -58,7 +59,7 @@ def disease(request):
 	
 	
 def pestsQuiz(request):
-	return render(request, 'pestsQuiz.html')
+	return render(request, 'quiz.html')
 	
 def quizResults(request):
 	return render(request, 'quizResults.html')

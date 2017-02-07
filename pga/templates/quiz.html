@@ -1,0 +1,33 @@
+{% load static %}
+
+{% include "header.html" %}
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type='text/javascript' src='static/js/quizParser.js'></script>
+	<script type='text/javascript'>
+		window.onload = function() {
+			var url = document.getElementById('url').innerHTML;
+			initQuiz(url);
+		}
+	</script>
+	<h1 class='unitTitle'>Maintain</h1>
+	<h2 class='unitTitle'>Pests Quiz</h2>
+	
+	<div class='content'>
+	
+		<div id='q1'></div><br>
+		
+		<div id='q2'></div><br>
+		
+		<div id='q3'></div><br>
+		
+		<div id='q4'></div><br>
+		
+		<div id='q5'></div><br>
+		
+		<input type='button' value='Submit Answers'><br><br>
+		<!--input id='url' type='hidden' value=' {{ request.get_full_path }}' -->
+		<span id='url' style='display: none;'> {{ request.get_full_path}} </span>
+	</div>
+
+{% include "footer.html" %}	
