@@ -76,16 +76,16 @@ WSGI_APPLICATION = 'pga.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'may1713_db',
-        'USER': 'may1713',
-        'PASSWORD': 'v4ss9y3k',
-        'HOST': '',
-        'PORT': '',
-    }
-}
+# DATABASES = {
+    # 'default': {
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'may1713_db',
+        # 'USER': 'may1713',
+        # 'PASSWORD': 'v4ss9y3k',
+        # 'HOST': '',
+        # 'PORT': '',
+    # }
+# }
 
 
 # Password validation
