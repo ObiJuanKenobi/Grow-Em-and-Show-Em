@@ -86,6 +86,44 @@ var gradeAnswers = function(answers){
 	return results;
 }
 
+var submitOnClick = function() {
+	//get answers 
+	var answers = [];
+	for(var i=1; i<=NUM_QUESTIONS_PER_QUIZ; i++){
+		answers.push($("input[name=q" + i + "]:checked").val());
+	}
+	
+	var results = gradeAnswers(answers);
+	
+	if(results.length == 0){
+		alert("Answered all questions correctly!");
+		//Redirect?
+	}
+	else {
+		var msg = "You did not pass the quiz! Missed " + results.length + " questions.";
+		alert(msg);
+		
+		for(var i=0; i<results.length; i++){
+			var qNum = results[i].number;
+			var correctOption = results[i].correct;
+			$("#q" + qNum + " ." + correctOption).css("color", "red");
+		}
+		
+		var extraAttempts = 3; //GET from DB
+		
+		if(extraAttempts > 0){
+			$("#submitBtn").val("Try Again");
+			$("#submitBtn").click(function() {
+				$("#submitBtn").val("Submit Answers");
+				initQuiz("filepath");
+			});
+		}
+		else {
+			//Redirect to lessons?
+		}
+	}
+}
+
 /*
  Populates the HTML page with the questions content
 */
@@ -99,11 +137,13 @@ var displayQuestions = function() {
 		var div = document.getElementById('q' + qNum);
 		
 		var innerHtml = "<b>Question " + qNum + ". </b>" + questionObj.question + "<br>" +
-			"<input type='radio' value='a' name='q2'> a. " + questionObj.a + "<br>" + 
-			"<input type='radio' value='b' name='q2'> b. " + questionObj.b + "<br>" + 
-			"<input type='radio' value='c' name='q2'> c. " + questionObj.c + "<br>" + 
-			"<input type='radio' value='d' name='q2'> d. " + questionObj.d + "<br>";
+			"<input type='radio' value='a' name='q" + qNum + "'><span class='a'> a. " + questionObj.a + "</span><br>" + 
+			"<input type='radio' value='b' name='q" + qNum + "'><span class='b'> b. " + questionObj.b + "</span><br>" + 
+			"<input type='radio' value='c' name='q" + qNum + "'><span class='c'> c. " + questionObj.c + "</span><br>" + 
+			"<input type='radio' value='d' name='q" + qNum + "'><span class='d'> d. " + questionObj.d + "</span><br>";
 			
 		div.innerHTML = innerHtml;
 	}
+	
+	$("#submitBtn").click(submitOnClick);
 }
