@@ -63,3 +63,6 @@ def pestsQuiz(request):
 	
 def quizResults(request):
 	return render(request, 'quizResults.html')
+
+def gardenImage(request):
+	return render(request, 'gardenImage.html')

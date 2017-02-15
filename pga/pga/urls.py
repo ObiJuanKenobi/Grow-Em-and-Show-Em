@@ -44,6 +44,7 @@ urlpatterns = [
 	url(r'^postHarvest', views.postHarvest, name='postHarvest'),
 	url(r'^records', views.records, name='records'),
 	url(r'^communication', views.communication, name='communication'),
+	url(r'^gardenImage', views.gardenImage, name='gardenImage'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
