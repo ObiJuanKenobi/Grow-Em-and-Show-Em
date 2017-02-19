@@ -3,8 +3,19 @@
 {% include "header.html" %}
 <h1>Garden's Image</h1>
 
-<canvas id="gardenCanvas" width="800" height="400" style="border:1px solid #000000;"></canvas>
-<img src="{% static "img/gardenPlan.jpg" %}" id="garden"></div>
-
+<div class="gardenLayout">
+    <div class="">
+        <button id="drawBtn" class="btn">Draw</button>
+        <button id="saveImg" class="btn">Save</button>
+        <button id="clrBtn" class="btn">Erase</button>
+        <button id="undoBtn" class="btn">Undo</button>
+        <button id="redoBtn" class="btn">Redo</button>
+        <button id="resetBtn" class="btn">Reset</button>
+    </div>
+    <div class="">
+        <canvas id="gardenCanvas" width="800" height="400" style="border:1px solid #000000;"></canvas>
+    </div>
+    <img src="{% static "img/gardenPlan.jpg" %}" id="garden"></div>
+</div>
 
 {% include "footer.html" %}

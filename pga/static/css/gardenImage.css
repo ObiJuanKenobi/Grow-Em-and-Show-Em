@@ -1,0 +1,7 @@
+.gardenLayout #gardenCanvas{
+    width: 100%;
+}
+
+.gardenLayout #garden{
+    display: none;
+}

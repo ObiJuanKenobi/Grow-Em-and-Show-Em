@@ -45,6 +45,7 @@ urlpatterns = [
 	url(r'^records', views.records, name='records'),
 	url(r'^communication', views.communication, name='communication'),
 	url(r'^gardenImage', views.gardenImage, name='gardenImage'),
+	url(r'^saveImage/$', views.gardenImage, name='saveImage')
 ]
 
 urlpatterns += staticfiles_urlpatterns()

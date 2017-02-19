@@ -1,6 +1,8 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.template import *
+from pga.models import GardenImages
 
 def login_view(request):
      return render(request, 'login.html', {})
@@ -66,3 +68,13 @@ def quizResults(request):
 
 def gardenImage(request):
 	return render(request, 'gardenImage.html')
+
+def saveImage(request):
+	fileName = request.GET['fileName']
+	imageData = request.GET['imageData']
+	image = GardenImages.objects.create(
+		name=fileName,
+		imageData=imageData
+	)
+	image.save()
+	return HttpResponse("Success")
