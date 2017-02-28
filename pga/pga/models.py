@@ -7,3 +7,6 @@ class GardenImages(models.Model):
         imageData = models.TextField()
         createdAt = models.DateField(auto_now_add=True)
         updatedAt = models.DateField(auto_now=True)
+        
+class DataFile(models.Model):
+	data = models.FileField()
