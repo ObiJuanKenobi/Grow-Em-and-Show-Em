@@ -1,2 +1,3 @@
 Select * from Users;
-Delete from Courses;
+
+DELETE  from Quiz_Answers;
