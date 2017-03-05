@@ -27,12 +27,15 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
 	
+	url(r'^quiz/(?P<course>[a-z]+)', views.quiz, name='quiz'),
+	url(r'^quizResults/(?P<course>[a-z]+)', views.quizResults, name='quizResults'),
+	
 	url(r'^glossary', views.glossary, name='glossary'),
 	url(r'^plan', views.plan, name='plan'),
 	url(r'^maintain', views.maintain, name='maintain'),
 		url(r'^pests', views.pests, name='pests'),
-			url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
-			url(r'^quizResults', views.quizResults, name='quizResults'),
+			#url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
+			#url(r'^quizResults', views.quizResults, name='quizResults'),
 		url(r'^fertilizer', views.fertilizer, name='fertilizer'),
 		url(r'^produce', views.produce, name='produce'),
 		url(r'^maturityTimeline', views.maturityTimeline, name='maturityTimeline'),

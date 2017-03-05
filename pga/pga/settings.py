@@ -79,14 +79,14 @@ WSGI_APPLICATION = 'pga.wsgi.application'
 
 DATABASES = {
     'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'NAME': 'may1713_db',
-        # 'USER': 'may1713',
-        # 'PASSWORD': 'v4ss9y3k',
-        # 'HOST': '',
-        # 'PORT': '',
+		#'ENGINE': 'django.db.backends.sqlite3',
+		#'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
+        #'ENGINE': 'django.db.backends.mysql',
+        #'NAME': 'may1713_db',
+        #'USER': 'may1713',
+        #'PASSWORD': '',
+        #'HOST': '',
+        #'PORT': '',
     }
 }
 

@@ -4,6 +4,8 @@ from django.contrib.auth import authenticate
 from django.template import *
 from pga.models import GardenImages
 
+from pga.dataAccess import DataAccess
+
 def login_view(request):
      return render(request, 'login.html', {})
 #    username = request.POST['username']
@@ -58,13 +60,20 @@ def weedRecognition(request):
 def disease(request):
 	return render(request, 'disease.html')
 	
+def quiz(request, course):
+	db = DataAccess();
 	
+	questions = db.getQuizQuestions(course);
+	
+	return render(request, 'quiz.html', { 'questions': questions, 'course': course } );
 	
 def pestsQuiz(request):
 	return render(request, 'quiz.html')
 	
-def quizResults(request):
-	return render(request, 'quizResults.html')
+def quizResults(request, course):
+	db = DataAccess();
+	db.addQuizAttempt(course, 'todo-get username', 1)
+	return render(request, 'quizResults.html', {'course': course})
 
 def gardenImage(request):
 	return render(request, 'gardenImage.html')
