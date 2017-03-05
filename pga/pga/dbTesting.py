@@ -7,4 +7,4 @@ from dataAccess import DataAccess, QuizQuestion, QuizAnswer
 dataAccess = DataAccess()
 
 #dataAccess.addLesson("Planting", "Digging a hole", "F:\Folder\Doc")
-print(dataAccess.getLesson("Planting", "Digging a hole"))
+dataAccess.addCourse("Picking", 2, "FakePath\Picking.html")

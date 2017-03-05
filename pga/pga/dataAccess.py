@@ -17,8 +17,12 @@ class DataAccess:
     def addUser(self, username, password, firstname, lastname):
         self._cursor.execute("INSERT into Users (Username, Password, First_Name, Last_Name) values (%s, PASSWORD(%s), %s, %s)", (username, password, firstname, lastname))
 
-    def addCourse(self, coursename, courseorder):
-        self._cursor.execute("INSERT into Courses (Course_Name, Course_Order) values (%s, %s)", (coursename, courseorder))
+    def addCourse(self, coursename, courseorder, courseHTMLpath):
+        exists = self._cursor.execute("SELECT Course_Name FROM Courses WHERE Course_Name = %s", [coursename])
+        if exists:
+            self._cursor.execute("UPDATE Courses SET Course_Order = %s, Course_HTML_Path = %s WHERE Course_Name = %s", (courseorder, courseHTMLpath, coursename))
+        else:
+            self._cursor.execute("INSERT into Courses (Course_Name, Course_Order, Course_HTML_Path) values (%s, %s, %s)", (coursename, courseorder, courseHTMLpath))
 
     def addLesson(self, coursename, lessonname, lessonfilepath):
         self._cursor.execute("INSERT into Lessons (Course_Name, Lesson_Name, Lesson_File_Path) values (%s, %s, %s)", (coursename, lessonname, lessonfilepath))
