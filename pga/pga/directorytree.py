@@ -97,14 +97,31 @@ class DirectoryTree:
         self.__getDirectoriesAtDepth(depth, self.root, dirs)
         return dirs
 
-## Example usage
-#tree = DirectoryTree('.')
-#print('Max depth:')
-#print(tree.getMaxDepth())
-#
-#print('\nTree structure:')
-#tree.printTree()
-#
-#print('\nDirs at depth 1:')
-#for d in tree.getDirectoriesAtDepth(1):
-#    print(d.name)
+    '''
+    Get sub-tree rooted at a given directory name.
+    '''
+    def getTreeFromRelativeRoot(self, rootName):
+        if self.root.name == rootName:
+            return self.root
+
+        for i in range(0, self.maxDepth):
+            for d in self.getDirectoriesAtDepth(i):
+                if d.name == rootName:
+                    return DirectoryTree(rootName)
+
+        print('Failed to find directory with name: ' + rootName)
+        return None
+
+# Example usage
+tree = DirectoryTree('.')
+print('Max depth:')
+print(tree.getMaxDepth())
+
+print('\nTree structure:')
+tree.printTree()
+
+print('\nSubtrees for all dirs at depth 1:')
+for d in tree.getDirectoriesAtDepth(1):
+    print('\nSubtree starting at: ' + d.name)
+    foo = tree.getTreeFromRelativeRoot(d.name)
+    foo.printTree()
