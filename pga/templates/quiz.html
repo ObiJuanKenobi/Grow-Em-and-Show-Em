@@ -15,7 +15,7 @@
 					quizPassed();
 				}
 				else {
-					quizFailed();
+					quizFailed(results);
 				}
 			});
 		});
@@ -33,13 +33,15 @@
 					results.push({"question": questionId, "correct": correct_answer});
 				}
 			});
+			
+			return results;
 		}
 		
 		function quizPassed() {
 			window.location.href = "/quizResults/" + $(".unitTitle").first().text();
 		}
 		
-		function quizFailed() {
+		function quizFailed(results) {
 			var msg = "You did not pass the quiz! Missed " + results.length + " questions.";
 			alert(msg);
 			
