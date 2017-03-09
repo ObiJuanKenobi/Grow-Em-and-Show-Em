@@ -1,5 +1,6 @@
 import os
 from subprocess import Popen, PIPE
+from dataAccess import DataAccess
 
 '''
 modulemanager.py
@@ -9,23 +10,24 @@ modulemanager.py
 '''
 Helper method for opening the lowriter subprocess for converting docx to HTML.
 '''
-def __docxToHTML(inputFile, outputPath):
+def docxToHTML(inputFile, outputPath):
     process = Popen(['lowriter', '--convert-to', 'html', '--outdir', outputPath, inputFile], stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
 '''
-Convert all docx files found in moduleDir to html files in dataDir.
+Convert all docx files found in contentDir to html files in htmlDir.
 '''
-def convertModulesToHTML(moduleDir, dataDir):
-    # Ensure module path is absolute
-    if moduleDir[0] != '/':
-        print('Module path should be absolute: ' + moduleDir)
+def convertLessonsToHTML(contentDir, htmlDir):
+    # Ensure content path is absolute
+    if contentDir[0] != '/':
+        print('Content path should be absolute: ' + contentDir)
         return
 
-    print('Converting modules from: ' + moduleDir)
+    print('Converting lessons from: ' + contentDir)
+    lessons = []
 
-    # Iterate over modules, converting each to HTML
-    for root, dirs, files in os.walk(moduleDir):
+    # Iterate over lessons, converting each to HTML
+    for root, dirs, files in os.walk(contentDir):
         for file in files:
             path = os.path.join(root, file)
 
@@ -36,12 +38,26 @@ def convertModulesToHTML(moduleDir, dataDir):
 
             # Convert docx files to HTML
             print('Converting:\t' + file)
-            __docxToHTML(path, dataDir + path)
+            docxToHTML(path, htmlDir + path)
+
+            # Keep track of all created lessons
+            lessons.append(htmlDir + path  + '/' + file[:-4] + 'html')
+
+    return lessons
 
 '''
 After converting docx files to HTML, sync them with the Courses table.
 '''
-def syncModulesToDatabase(moduleRoot):
-    pass
+def syncLessonsToDatabase(contentDir):
+    lessons = convertLessonsToHTML(contentDir, '/tmp')
+    if not lessons:
+        return
+    
+    db = DataAccess()
+    for lesson in lessons:
+        name = lesson.split('/')[-1]
+        print('Adding lesson: ' + name)
 
-convertModulesToHTML('dataPath', '/tmp')
+        db.addCourse(name, 0, lesson)
+
+syncLessonsToDatabase('tmp/sd_data')
