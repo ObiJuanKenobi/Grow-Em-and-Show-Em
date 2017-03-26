@@ -52,7 +52,7 @@ class DataAccess:
 
     def getQuizQuestions(self, coursename):
         self._cursor.execute("SELECT q.QuestionID as id, q.Question_Text as question, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.QuestionID = a.QuestionID;", [coursename])
-        
+
         results = self._cursor.fetchall()
         questions = {};
         for row in results:
@@ -60,24 +60,40 @@ class DataAccess:
             question = row[1];
             answer = row[2];
             correct = row[3];
-            
+
             if id in questions:
                 questions[id]["answers"].append({"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
             else:
                 questions[id] = {"question": question, "id": id};
                 questions[id]["answers"] = [{"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
-        
+
         questionsArr = [];
         for id in questions:
             questionsArr.append(questions[id])
         return questionsArr;
-        
+
     def addQuizAttempt(self, coursename, username, passed):
         exists = self._cursor.execute("SELECT Attempts FROM Quiz_Attempts WHERE Course_Name = %s AND Username = %s", (coursename, username))
         if exists:
             self._cursor.execute("UPDATE Quiz_Attempts SET Attempts = Attempts + 1, Passed = %s WHERE Course_Name = %s AND Username = %s", (passed, coursename, username))
         else:
             self._cursor.execute("INSERT into Quiz_Attempts (Course_Name, Username, Attempts, Passed) values (%s, %s, %s, %s)", (coursename, username, 1, passed))
+
+    #Currently, this will get every chapter completed by every user.
+    def getAllUserProgress(self):
+        self._cursor.execute("SELECT QA.Username as user, QA.Course_Name as course, C.Course_Order as chapter FROM Quiz_Attempts QA, Courses C WHERE C.Course_Name = QA.Course_Name AND QA.Passed = 1 ORDER BY QA.Username, C.Course_Order;")
+        results = self._cursor.fetchall();
+
+        userProgress = {}
+        for row in results:
+            username = row[0];
+            course = row[1];
+            chapter = row[2];
+
+            if username in userProgress:
+                userProgress[username].append({"course": course, "chapter": chapter});
+            else:
+                userProgress[username] = [{"course": course, "chapter": chapter}];
 
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
