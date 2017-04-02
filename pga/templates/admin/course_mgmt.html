@@ -1,0 +1,49 @@
+<html>
+
+<head>
+	<style>
+		#unitsDiv {
+			float: left;
+			margin-left: 25px;
+		}
+		
+		#suppDiv {
+			float: right;
+			margin-right: 25px;
+		}
+		
+		.removeUnit {
+			display: none;
+		}
+		
+		.unitLink {
+			
+		}
+	
+	</style>
+</head>
+
+<body>
+	<h1>Course Management</h1>
+
+	<div id='unitsDiv'>
+		<h3>Units</h3>
+		<button id='editUnits'>Edit</button>&nbsp;<button id='addUnit' >Add Unit</button>
+		
+		<!--use ul instead? -->
+		
+		<table>
+			<!-- for each unit: -->
+			<tr>
+				<td><a href='unit/pests' class='unitLink'><span class='unitTitle'>pests</span></a></td>
+				<td><button class='removeUnit'>Delete Unit</button></td>
+			</tr>
+		</table>
+		
+	</div>
+	
+	<div id='suppDiv'>
+		<a href='supplementaryMaterials'><button id='suppBtn'>Supplementary Materials</button></a>
+	</div>
+</body>
+</html>

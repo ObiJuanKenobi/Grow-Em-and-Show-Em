@@ -1,0 +1,41 @@
+<html>
+
+<style>
+	.correct {
+		color: green;
+	}
+</style>
+
+<body>
+
+	<h1>{{ unit }} Quiz</h1>
+
+	<div class='content'>
+		<button id='editBtn'>Edit</button>&nbsp;
+		<button id='addBtn'>Add Question</button>&nbsp;
+		<button id='uploadListBtn'>Upload New Question List</button><br><br>
+		{% for q in questions %}
+			
+			<div class='questionDiv' id='{{ q.id }}'>
+			<b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span> <br>
+			
+			<ul class='q{{q.id}}'>
+			{% for a in q.answers %}
+				
+				
+				{% if a.correct %}
+					<li><span class='{{ forloop.counter }} correct'> {{ forloop.counter }}. {{a.answer}}</span><br>
+				{% else %}
+					<li><span class='{{ forloop.counter }}'> {{ forloop.counter }}. {{a.answer}}</span><br>
+				{% endif %}
+				
+			{% endfor %}
+			</ul>
+			</div>
+			<br><br>
+		{% endfor %}
+		
+	</div>
+
+</body>
+</html>

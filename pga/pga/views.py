@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate
 from django.template import *
+from django.contrib.admin.views.decorators import staff_member_required
 from pga.models import GardenImages
 
 from pga.dataAccess import DataAccess
@@ -87,3 +88,46 @@ def saveImage(request):
 	)
 	image.save()
 	return HttpResponse("Success")
+	
+@staff_member_required
+def adminHome(request):
+	return render(request, 'admin/home.html');
+	
+@staff_member_required
+def adminCourseInfo(request):
+	return render(request, 'admin/course_info.html');
+	
+@staff_member_required
+def adminCourseMgmt(request):
+    return render(request, 'admin/course_mgmt.html');
+	
+@staff_member_required
+def adminUserProgress(request):
+	return render(request, 'admin/user_progress.html');
+	
+@staff_member_required
+def adminQuizStatistics(request):
+    return render(request, 'admin/quiz_statistics.html');
+	
+@staff_member_required
+def adminSupplementaryMaterials(request):
+    return render(request, 'admin/supplementary_materials.html');
+	
+@staff_member_required
+def adminUnit(request, unit):
+    #TODO Get lessons for unit
+    lessons = ['gardening', 'watering', 'planting'];
+    return render(request, 'admin/unit.html', {'lessons': lessons, 'unit': unit});
+	
+@staff_member_required
+def adminLesson(request, lesson):
+    return render(request, 'admin/lesson.html', {'lesson': lesson});
+	
+@staff_member_required
+def adminQuiz(request, unit):
+    #questions = getAllQuestionsForLesson(lesson)
+	
+    db = DataAccess();
+    questions = db.getQuizQuestions(unit);
+	
+    return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
