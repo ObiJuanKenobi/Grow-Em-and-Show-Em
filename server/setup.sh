@@ -15,21 +15,35 @@ fi
 apt update
 apt upgrade
 
-# General utities
-apt install vim tree git htop ssh
+# General utilities
+apt install vim tree git htop ssh libmysqlclient-dev python-virtualenv
 
-# Django-specific utilities
-apt install django
-
-# Open ports for SSH and HTTPS
+# Open ports for SSH and HTTP
 ufw enable
 ufw allow 22
-ufw allow 443
+ufw allow 8000
 ufw reload
 
 # Set SSH to only allow auth via keys
 sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
 sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 service ssh restart
+
+# Setup django project
+git clone https://github.com/ObiJuanKenobi/Prison-Garden-Application.git
+# cd Prison-Garden-Application
+# virtualenv venv
+# . venv/bin/activate
+# pip install django mysql-python
+# deactivate
+
+# Run the django project
+#
+# cd Prison-Garden-Application
+# git pull
+# . venv/bin/activate
+# python manage.py runserver
+# <Ctrl-c to stop>
+# deactivate
 
 echo 'Please restart in order to complete the changes.'
