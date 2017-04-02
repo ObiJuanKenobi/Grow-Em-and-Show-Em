@@ -16,7 +16,7 @@ apt update
 apt upgrade
 
 # General utilities
-apt install vim tree git htop ssh python-virtualenv
+apt install vim tree git htop ssh libmysqlclient-dev python-virtualenv
 
 # Open ports for SSH and HTTP
 ufw enable
