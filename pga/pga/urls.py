@@ -19,6 +19,8 @@ from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
+from .PGAAdminSite import admin_site
+
 from . import views
 
 urlpatterns = [
@@ -27,6 +29,17 @@ urlpatterns = [
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
+	
+	url(r'^pgaadmin/unit/(?P<unit>[a-z]+)', views.adminUnit),
+	url(r'^pgaadmin/lesson/(?P<lesson>[a-z]+)', views.adminLesson),
+	url(r'^pgaadmin/quiz/(?P<unit>[a-z]+)', views.adminQuiz),
+	url(r'^pgaadmin/supplementaryMaterials', views.adminSupplementaryMaterials),
+	url(r'^pgaadmin/quizStatistics', views.adminQuizStatistics),
+	url(r'^pgaadmin/userProgress', views.adminUserProgress),
+	url(r'^pgaadmin/courseMgmt', views.adminCourseMgmt),
+	url(r'^pgaadmin/courseInfo', views.adminCourseInfo),
+	url(r'^pgaadmin/', views.adminHome),
+	
 	
 	url(r'^quiz/(?P<course>[a-z]+)', views.quiz, name='quiz'),
 	url(r'^quizResults/(?P<course>[a-z]+)', views.quizResults, name='quizResults'),

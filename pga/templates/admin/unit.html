@@ -1,0 +1,22 @@
+<html>
+
+<style>
+
+</style>
+
+<body>
+
+	<h1>{{ unit }}</h1>
+	
+	<a href='/pgaadmin/quiz/{{unit}}'><button id='download'>Unit Quiz</button></a><br><br>
+	
+	<span> Lessons: </span><br>
+	<button id='editLessons'>Edit</button>&nbsp;<button id='uploadLesson'>Upload Lesson</button><br>
+	<ul>
+	{% for l in lessons %}
+		<li><a href='/pgaadmin/lesson/{{ l }}' class='lessonLink'>{{ l }}</a></li>
+	{% endfor %}
+	</ul>
+
+</body>
+</html>
