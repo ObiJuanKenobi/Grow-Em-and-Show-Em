@@ -15,7 +15,7 @@ class DataAccess:
         self._connection.close()
 
     def addUser(self, username, password, firstname, lastname):
-        exists = cursor.execute("SELECT Username FROM Users WHERE Username = %s", [username])
+        exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s", [username])
         if not exists:
             self._cursor.execute("INSERT into Users (Username, Password, First_Name, Last_Name) values (%s, PASSWORD(%s), %s, %s)", (username, password, firstname, lastname))
             return True
