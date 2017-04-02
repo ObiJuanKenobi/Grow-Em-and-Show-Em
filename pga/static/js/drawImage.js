@@ -47,7 +47,7 @@ var saveImage = function (canvas) {
         url: "/saveImage",
         type: "GET",
         data: {fileName: "gardenPlan.jpg", imageData: imageData}
-    }).done(function(data){
+    }).done(function (data) {
         console.log("Success");
     });
 };
@@ -61,7 +61,7 @@ var eraseObj = function (canvas) {
 
 var removeLastObj = function (canvas) {
     var obj = canvas.getObjects();
-    if(obj.length > 1){
+    if (obj.length > 1) {
         var lastObj = obj[obj.length - 1];
         imgCache.push(lastObj);
         canvas.remove(lastObj);
@@ -69,8 +69,41 @@ var removeLastObj = function (canvas) {
 };
 
 var restoreLastObj = function (canvas) {
-    if(imgCache.length > 0)
+    if (imgCache.length > 0)
         canvas.add(imgCache.pop());
+};
+
+var initGardenItems = function () {
+    var elements = $(".gardenItems");
+
+    for (var i = 0; i < elements.length; i++) {
+        interact(elements[i]).draggable({
+            snap: {
+                targets: [
+                    interact.createSnapGrid({x: 50, y: 50})
+                ],
+                range: Infinity,
+                relativePoints: [{x: 0, y: 0}]
+            },
+            inertia: true,
+            restrict: {
+                restriction: elements[i].parentNode,
+                elementRect: {top: 0, left: 0, bottom: 1, right: 1},
+                endOnly: true
+            }
+        }).on('dragmove', function (event) {
+            var target = event.target,
+                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+            event.target.style.webkitTransform =
+                event.target.style.transform =
+                    'translate(' + x + 'px, ' + y + 'px)';
+            // update the posiion attributes
+            target.setAttribute('data-x', x);
+            target.setAttribute('data-y', y);
+        });
+    }
 };
 
 $(document).ready(function () {
@@ -114,10 +147,13 @@ $(document).ready(function () {
     undoBtn.onclick = function () {
         removeLastObj(canvas);
     };
-    
+
     redoBtn.onclick = function () {
         restoreLastObj(canvas);
     };
+
+    // Initialize the garden items
+    initGardenItems();
 });
 
 
