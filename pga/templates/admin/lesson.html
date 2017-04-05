@@ -1,15 +1,8 @@
-<html>
+{% include "admin/header.html" %}
 
-<style>
+<span class='adminPageTitle'>{{ lesson }}</span>&nbsp; &nbsp;<a class='backLink' href='/pgaadmin/unit/{{ unit }}'>Back</a><br><br>
 
-</style>
+<button id='download'>Download Lesson</button><br><br>
+<button id='download'>Upload Replacement Lesson</button>
 
-<body>
-
-	<h1>{{ lesson }}</h1>
-
-	<button id='download'>Download Lesson</button><br><br>
-	<button id='download'>Upload Replacement Lesson</button><br><br>
-
-</body>
-</html>
+{% include "admin/footer.html" %}

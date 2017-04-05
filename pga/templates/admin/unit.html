@@ -1,22 +1,37 @@
-<html>
+{% include "admin/header.html" %}
 
-<style>
-
-</style>
-
-<body>
-
-	<h1>{{ unit }}</h1>
+<script type='text/javascript'>
+	$(function() {
 	
-	<a href='/pgaadmin/quiz/{{unit}}'><button id='download'>Unit Quiz</button></a><br><br>
-	
-	<span> Lessons: </span><br>
-	<button id='editLessons'>Edit</button>&nbsp;<button id='uploadLesson'>Upload Lesson</button><br>
-	<ul>
-	{% for l in lessons %}
-		<li><a href='/pgaadmin/lesson/{{ l }}' class='lessonLink'>{{ l }}</a></li>
-	{% endfor %}
-	</ul>
+		$("#editBtn").click(function() {
+			$(".removeBtn").toggle();
+		});
+		
+		$(".removeBtn").click(function() {
+			var lesson = $(this).val();
+			alert("You sure you want to delete " + lesson + "?");
+		});
+	});
 
-</body>
-</html>
+</script>
+
+
+<span class='adminPageTitle'>{{ unit }}</span>&nbsp; &nbsp;<a href='/pgaadmin/courseMgmt' class='backLink'>Back</a>
+
+<br><br>
+
+<a href='/pgaadmin/quiz/{{unit}}'><button id='download'>Unit Quiz</button></a><br><br>
+
+<span> Lessons: </span><br>
+
+<ol>
+{% for l in lessons %}
+	<li>
+		<a href='/pgaadmin/unit/{{ unit}}/{{ l.name }}' class='lessonLink'>{{ l.name }}</a>&nbsp;&nbsp;
+		<button class='removeBtn' value='{{l.name}}'>Delete Lesson</button>
+	</li>
+{% endfor %}
+</ol><br><br>
+<button id='editBtn'>Edit</button>&nbsp;<button id='uploadLesson'>Upload Lesson</button><br>
+
+{% include "admin/footer.html" %}

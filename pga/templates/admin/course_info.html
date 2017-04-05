@@ -1,13 +1,7 @@
-<h1>Course Information</h1>
+{% include "admin/header.html" %}
 
-<style>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>
+<span class='adminPageTitle'>Course Information</span>&nbsp; &nbsp;<a class='backLink' href='/pgaadmin'>Back</a>
+
 
 <div class="container">
   <div class="button-wrapper">
@@ -15,3 +9,5 @@
     <a href='quizStatistics'><button>Quiz Statistics</button></a>
   </div>
 </div>
+
+{% include "admin/footer.html" %}

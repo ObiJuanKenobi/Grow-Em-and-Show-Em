@@ -1,13 +1,7 @@
-<h1>Class Administration</h1>
+{% include "admin/header.html" %}
 
-<style>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
-</style>
+<span class='adminPageTitle'>Class Administration</span>
+
 
 <div class="container">
   <div class="button-wrapper">
@@ -15,3 +9,5 @@
     <a href='courseMgmt'><button>Course Management</button></a>
   </div>
 </div>
+
+{% include "admin/footer.html" %}
