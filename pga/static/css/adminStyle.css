@@ -1,0 +1,18 @@
+.adminPageTitle {
+	font-size: 24px;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.removeBtn {
+	display: none;
+}
+
+li {
+	margin-top: 15px;
+}

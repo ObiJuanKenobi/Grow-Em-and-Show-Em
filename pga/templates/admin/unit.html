@@ -1,0 +1,37 @@
+{% include "admin/header.html" %}
+
+<script type='text/javascript'>
+	$(function() {
+	
+		$("#editBtn").click(function() {
+			$(".removeBtn").toggle();
+		});
+		
+		$(".removeBtn").click(function() {
+			var lesson = $(this).val();
+			alert("You sure you want to delete " + lesson + "?");
+		});
+	});
+
+</script>
+
+
+<span class='adminPageTitle'>{{ unit }}</span>&nbsp; &nbsp;<a href='/pgaadmin/courseMgmt' class='backLink'>Back</a>
+
+<br><br>
+
+<a href='/pgaadmin/quiz/{{unit}}'><button id='download'>Unit Quiz</button></a><br><br>
+
+<span> Lessons: </span><br>
+
+<ol>
+{% for l in lessons %}
+	<li>
+		<a href='/pgaadmin/unit/{{ unit}}/{{ l.name }}' class='lessonLink'>{{ l.name }}</a>&nbsp;&nbsp;
+		<button class='removeBtn' value='{{l.name}}'>Delete Lesson</button>
+	</li>
+{% endfor %}
+</ol><br><br>
+<button id='editBtn'>Edit</button>&nbsp;<button id='uploadLesson'>Upload Lesson</button><br>
+
+{% include "admin/footer.html" %}

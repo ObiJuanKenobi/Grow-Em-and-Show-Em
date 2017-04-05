@@ -1,0 +1,60 @@
+{% include "admin/header.html" %}
+
+<style>
+	
+	#unitsDiv {
+		float: left;
+		margin-left: 25px;
+	}
+	
+	#suppDiv {
+		float: right;
+		margin-right: 25px;
+		margin-top: 15px;
+	}
+	
+	.unitLink {
+		
+	}
+
+</style>
+
+<script type='text/javascript'>
+	$(function() {
+	
+		$("#editBtn").click(function() {
+			$(".removeBtn").toggle();
+		});
+		
+		$(".removeBtn").click(function() {
+			var course = $(this).val();
+			alert("You sure you want to delete " + course + "?");
+		});
+	});
+
+</script>
+
+<span class='adminPageTitle'>Course Management</span>&nbsp; &nbsp;<a href='/pgaadmin' class='backLink'>Back</a>
+<br>
+<div id='unitsDiv'>
+	<h3>Units</h3>
+	
+	<ol>
+		{% for c in courses %}
+			<li>
+				<div><a href='unit/{{ c.Course_Name }}' class='unitLink'><span class='unitTitle'>{{ c.Course_Name }}</span></a>
+				&nbsp; <button class='removeBtn' value='{{ c.Course_Name}}'>Delete Unit</button></div>
+			</li>
+		{% endfor %}
+	</ol>
+	
+	<br>
+	<button id='editBtn'>Edit</button>&nbsp;<button id='addUnit' >Add Unit</button>
+	
+</div>
+
+<div id='suppDiv'>
+	<a href='supplementaryMaterials'><button id='suppBtn'>Supplementary Materials</button></a>
+</div>
+
+{% include "admin/footer.html" %}
