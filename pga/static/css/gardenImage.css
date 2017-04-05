@@ -4,6 +4,10 @@
     border: 1px solid #000000;
 }
 
+.gardenLayout #itemsCanvas {
+    border: 1px solid #000000;
+}
+
 .gardenLayout #garden {
     display: none;
 }
@@ -16,4 +20,9 @@
 .gardenLayout .itemsLayout {
     background-color: lightgrey;
     height: 200px;
+}
+
+.gardenLayout .drop-active {
+    width: 70px;
+    height: 70px;
 }

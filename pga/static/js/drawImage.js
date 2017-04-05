@@ -2,9 +2,14 @@
  * Created by chiajun on 2/8/17.
  */
 
-var imgCache = [];
 
-var fixCanvasBound = function (canvas) {
+var imgCache = [],
+    canvas,
+    gardenInstance,
+    itemsCanvas,
+    draggedInstance;
+
+var fixCanvasBound = function () {
     // Limit the border of the canvas
     canvas.on('object:moving', function (e) {
         var obj = e.target;
@@ -26,7 +31,7 @@ var fixCanvasBound = function (canvas) {
     });
 };
 
-var draw = function (canvas) {
+var draw = function () {
     canvas.isDrawingMode = !canvas.isDrawingMode;
     if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.color = "red";
@@ -40,7 +45,7 @@ var draw = function (canvas) {
 
 };
 
-var saveImage = function (canvas) {
+var saveImage = function () {
     var dataUrl = canvas.toDataURL('gardenImage.png');
     var imageData = canvas.toDatalessJSON();
     $.ajax({
@@ -52,14 +57,14 @@ var saveImage = function (canvas) {
     });
 };
 
-var eraseObj = function (canvas) {
+var eraseObj = function () {
     if (canvas.getActiveObject() != null) {
         imgCache.push(canvas.getActiveObject());
         canvas.getActiveObject().remove();
     }
 };
 
-var removeLastObj = function (canvas) {
+var removeLastObj = function () {
     var obj = canvas.getObjects();
     if (obj.length > 1) {
         var lastObj = obj[obj.length - 1];
@@ -68,88 +73,131 @@ var removeLastObj = function (canvas) {
     }
 };
 
-var restoreLastObj = function (canvas) {
+var restoreLastObj = function () {
     if (imgCache.length > 0)
         canvas.add(imgCache.pop());
 };
 
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("src", ev.target.src);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("src");
+    fabric.Image.fromURL(data, function (img) {
+        img.scaleToWidth(Math.round(canvas.getWidth() * 0.2));
+        img.scaleToHeight(Math.round(canvas.getHeight() * 0.2));
+        canvas.add(img);
+    });
+}
+
 var initGardenItems = function () {
     var elements = $(".gardenItems");
 
-    for (var i = 0; i < elements.length; i++) {
-        interact(elements[i]).draggable({
-            snap: {
-                targets: [
-                    interact.createSnapGrid({x: 50, y: 50})
-                ],
-                range: Infinity,
-                relativePoints: [{x: 0, y: 0}]
-            },
-            inertia: true,
-            restrict: {
-                restriction: elements[i].parentNode,
-                elementRect: {top: 0, left: 0, bottom: 1, right: 1},
-                endOnly: true
-            }
-        }).on('dragmove', function (event) {
-            var target = event.target,
-                x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
-                y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+    interact(".gardenLayout").dropzone({
+        accept: ".gardenItems",
+        overlap: 0.75,
+        ondropactivate: function (event) {
+            // add active dropzone feedback
+            event.target.classList.add('drop-active');
+        },
+        ondragenter: function (event) {
+            var draggableElement = event.relatedTarget,
+                dropzoneElement = event.target;
 
-            event.target.style.webkitTransform =
-                event.target.style.transform =
-                    'translate(' + x + 'px, ' + y + 'px)';
-            // update the posiion attributes
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-        });
-    }
+            // feedback the possibility of a drop
+            dropzoneElement.classList.add('drop-target');
+        },
+        ondragleave: function (event) {
+            // remove the drop feedback style
+            event.target.classList.remove('drop-target');
+        },
+        ondrop: function (event) {
+            canvas.add(draggedInstance);
+        },
+        ondropdeactivate: function (event) {
+            // remove active dropzone feedback
+            event.target.classList.remove('drop-active');
+            event.target.classList.remove('drop-target');
+        }
+    });
+
+    // for (var i = 0; i < elements.length; i++) {
+    //     interact(elements[i]).draggable({
+    //         snap: {
+    //             targets: [
+    //                 interact.createSnapGrid({x: 10, y: 10})
+    //             ],
+    //             range: Infinity,
+    //             relativePoints: [{x: 0, y: 0}]
+    //         },
+    //         inertia: true,
+    //         restrict: {
+    //             restriction: document.getElementById("gardenCanvas"),
+    //             elementRect: {top: 0, left: 0, bottom: 1, right: 1},
+    //             endOnly: true
+    //         }
+    //     }).on('dragmove', function (event) {
+    //         var target = event.target,
+    //             x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+    //             y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+    //         event.target.style.webkitTransform =
+    //             event.target.style.transform =
+    //                 'translate(' + x + 'px, ' + y + 'px)';
+    //         // update the posiion attributes
+    //         target.setAttribute('data-x', x);
+    //         target.setAttribute('data-y', y);
+    //     });
+    // }
 };
 
 $(document).ready(function () {
     var clearBtn = document.getElementById("clrBtn");
-    var gardenImg = document.getElementById("garden");
     var resetBtn = document.getElementById("resetBtn");
     var undoBtn = document.getElementById("undoBtn");
     var redoBtn = document.getElementById("redoBtn");
-    var gardenInstance = new fabric.Image(gardenImg);
-    var canvas = new fabric.Canvas('gardenCanvas');
+    gardenInstance = new fabric.Image.fromURL("/static/img/gardenPlan.jpg", function (img) {
+        img.scaleToWidth(canvas.getWidth());
+        img.scaleToHeight(canvas.getHeight());
+        img.selectable = false;
+        canvas.add(img);
+        gardenInstance = img;
+    });
+    canvas = new fabric.Canvas('gardenCanvas');
     var drawImage = $('#drawBtn')[0];
     var saveImageBtn = $('#saveImg')[0];
-
-    gardenInstance.scaleToWidth(canvas.getWidth());
-    gardenInstance.scaleToHeight(canvas.getHeight());
-    gardenInstance.selectable = false;
-    canvas.add(gardenInstance);
-    gardenInstance.center();
-    fixCanvasBound(canvas);
+    fixCanvasBound();
 
     // Attach drawing event
     drawImage.onclick = function () {
-        draw(canvas);
+        draw();
     };
 
     // Attach save image event
     saveImageBtn.onclick = function () {
-        saveImage(canvas);
+        saveImage();
     };
 
     clearBtn.onclick = function () {
-        eraseObj(canvas);
+        eraseObj();
     };
 
     resetBtn.onclick = function () {
         canvas.clear();
         canvas.add(gardenInstance);
-        gardenInstance.center();
     };
 
     undoBtn.onclick = function () {
-        removeLastObj(canvas);
+        removeLastObj();
     };
 
     redoBtn.onclick = function () {
-        restoreLastObj(canvas);
+        restoreLastObj();
     };
 
     // Initialize the garden items

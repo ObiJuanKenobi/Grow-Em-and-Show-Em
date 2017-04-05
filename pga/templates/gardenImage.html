@@ -18,20 +18,28 @@
         <button id="resetBtn" class="btn">Reset</button>
     </div>
     <div class="row">
-        <div class="col-md-10">
+        <div class="col-md-10 col-sm-10 canvas snapZone" ondrop="drop(event)" ondragover="allowDrop(event)">
             <canvas id="gardenCanvas" height="300px" width="600px"></canvas>
         </div>
-        <div class="col-md-2 itemsLayout">
+        <div class="col-md-2 col-sm-2 itemsLayout">
             <div class="gardenItems">
-                <img src="{% static "img/carrot.png" %}">
+                <img src="{% static "img/carrot.png" %}" draggable="true" ondragstart="drag(event)">
             </div>
-
             <div class="gardenItems">
-                <img src="{% static "img/tomato.png" %}">
-            </div>`
+                <img src="{% static "img/tomato.png" %}" draggable="true" ondragstart="drag(event)">
+            </div>
         </div>
+        <div id="div2" class="col-md-2 col-sm-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        </div>
+{#        <div class="col-md-2 col-sm-2 itemsLayout snapZone">#}
+{#            <div class="gardenItems">#}
+{#                <img src="{% static "img/carrot.png" %}">#}
+{#            </div>#}
+{#            <div class="gardenItems">#}
+{#                <img src="{% static "img/tomato.png" %}">#}
+{#            </div>`#}
+{#        </div>#}
     </div>
-    <img src="{% static "img/gardenPlan.jpg" %}" id="garden"></div>
 </div>
 
 

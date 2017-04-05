@@ -2,6 +2,7 @@
 
 {% include "header.html" %}
 	
+	<!--script type='text/javascript' src='static/js/quizParser.js'></script-->
 	<h1 class='unitTitle'>{{ course }}</h1>
 	<h2 class='unitTitle'>{{ course }} Quiz</h2>
 	
@@ -53,13 +54,10 @@
 			var extraAttempts = 3; //GET from DB
 			
 			if(extraAttempts > 0) {
-				var submitBtn = $("#submitBtn");
-				submitBtn.off('click'); //Removes previous click listeners
-				submitBtn.val("Try Again");
-				submitBtn.click(function() {
-					//alert("TODO - load new quiz questions, add failed attempt to DB for user");
-					//submitBtn.val("Submit Answers");
-					location.href=location.href;
+				$("#submitBtn").val("Try Again");
+				$("#submitBtn").click(function() {
+					alert("TODO - load new quiz questions, add failed attempt to DB for user");
+					$("#submitBtn").val("Submit Answers");
 				});
 			}
 			else {
@@ -72,7 +70,8 @@
 	<div class='content'>
 	
 		{% if questions %}
-			
+			{{ questions }}
+			<br><br>
 			{% for q in questions %}
 				
 				<div class='questionDiv' id='{{ q.id }}'>
@@ -92,6 +91,19 @@
 		{% else %}
 			<div>No errors occurred but no questions were retrieved. The URL should be /quiz/<course_name></div>
 		{% endif %}
+	
+	<!--
+		<div id='q1'></div><br>
+		
+		<div id='q2'></div><br>
+		
+		<div id='q3'></div><br>
+		
+		<div id='q4'></div><br>
+		
+		<div id='q5'></div><br>
+		
+		-->
 		
 		<input id='submitBtn' type='button' value='Submit Answers'><br><br>
 		<!--input id='url' type='hidden' value=' {{ request.get_full_path }}' -->
