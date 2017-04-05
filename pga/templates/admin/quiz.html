@@ -5,12 +5,15 @@
 		color: green;
 	}
 	
-	.questionTextEdit, .answerEdit {
+	.questionTextEdit, .answerEdit, .correctOption {
 		display:none;
 	}
 </style>
 
 <script type='text/javascript'>
+
+	var editing = false;
+	
 	$(function() {
 		
 		$("#editBtn").click(function() {
@@ -19,6 +22,38 @@
 			$(".questionTextEdit").toggle();
 			$(".answerEdit").toggle();
 			$(".answer").toggle();
+			$(".correctOption").toggle();
+			
+			editing = !editing;
+			
+			if(editing){
+				$("#editBtn").text('Save');
+			}
+			else {
+				$("#editBtn").text('Edit');
+				
+				//Save was pressed, find text that changed and update DB
+				$("#questionsDiv div").each(function() {
+					var id = $(this).attr('id');
+					var originalText = $(this).find(".questionText").text().trim();
+					var editedText = String($(this).find(".questionTextEdit").val()).trim();
+					
+					if(originalText !== editedText){
+						alert("New question: " + editedText + ", " + originalText + ", " + id);
+					}
+					
+					$(this).find("ol li").each(function() {
+						var originalAnswer = $(this).find(".answer").text().trim();
+						var editedAnswer = String($(this).find(".answerEdit").val()).trim();
+						
+						if(originalAnswer !== editedAnswer){
+							alert("New answer: " + editedAnswer);
+						}
+						
+						
+					});
+				});
+			}
 		});
 		
 	});
@@ -44,12 +79,14 @@
 			
 			{% if a.correct %}
 				<li>
-					<span class='option{{ forloop.counter }} answer correct'> {{ forloop.counter }}. {{a.answer}}	</span>
-					<input class='option{{ forloop.counter }} answerEdit correct' type='text' value='{{a.answer}}'>  
+					<span class='option{{ forloop.counter }} answer correct'>{{a.answer}}</span>
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'> 
+					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}' checked>Correct Answer</label>
 				</li>
 			{% else %}
-				<li><span class='option{{ forloop.counter }} answer'> {{ forloop.counter }}. {{a.answer}}</span>
-					<input class='option{{ forloop.counter }} answerEdit correct' type='text' value='{{a.answer}}'>  
+				<li><span class='option{{ forloop.counter }} answer'>{{a.answer}}</span>
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'>  
+					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}'>Correct Answer</label>
 				</li>
 			{% endif %}
 			
