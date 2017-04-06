@@ -18,10 +18,7 @@ class DataAccess:
         self._connection.close()
 
     def isUser(self, username, password):
-<<<<<<< HEAD
         self._cursor = self._connection.cursor()
-=======
->>>>>>> 1b96584ecea69f46b89b09a0fa3fe9d15e4c7bc4
         exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s and PASSWORD(%s) = password", (username, password))
         if not exists:
             return True
@@ -29,6 +26,7 @@ class DataAccess:
             return False
 
     def addUser(self, username, password, firstname, lastname):
+        self._cursor = self._connection.cursor()
         exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s", [username])
         if not exists:
             self._cursor.execute("INSERT into Users (Username, Password, First_Name, Last_Name) values (%s, PASSWORD(%s), %s, %s)", (username, password, firstname, lastname))
@@ -37,6 +35,7 @@ class DataAccess:
             return False
 
     def addCourse(self, coursename, courseorder, courseHTMLpath):
+        self._cursor = self._connection.cursor()
         exists = self._cursor.execute("SELECT Course_Name FROM Courses WHERE Course_Name = %s", [coursename])
         if exists:
             self._cursor.execute("UPDATE Courses SET Course_Order = %s, Course_HTML_Path = %s WHERE Course_Name = %s", (courseorder, courseHTMLpath, coursename))
@@ -54,6 +53,7 @@ class DataAccess:
         return courses
 
     def addLesson(self, coursename, lessonname, lessonfilepath):
+        self._cursor = self._connection.cursor()
         exists = self._cursor.execute("SELECT Lesson_Name FROM Lessons WHERE Lesson_Name = %s", [lessonname])
         if exists:
             self._cursor.execute("UPDATE Lessons SET Lesson_File_Path = %s WHERE Lesson_Name = %s", (lessonfilepath, lessonname))
@@ -66,7 +66,7 @@ class DataAccess:
         for(Lesson_File_Path) in self._cursor:
             lesson = Lesson_File_Path
         return lesson[0]
-        
+
     def getCourses(self):
         self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
         courses = []
@@ -85,6 +85,7 @@ class DataAccess:
 
 
     def addQuiz(self, coursename, questions):
+        self._cursor = self._connection.cursor()
         for question in questions:
             self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, coursename))
             questionID = self._cursor.lastrowid
@@ -92,6 +93,7 @@ class DataAccess:
                 self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, IsCorrect) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
 
     def getQuizQuestions(self, coursename):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
 
         results = self._cursor.fetchall()
@@ -114,10 +116,12 @@ class DataAccess:
         return questionsArr;
 
     def addQuizAttempt(self, coursename, username, passed, questions):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("INSERT into Quiz_Attempts (Course_Name, Username, Passed, Question1_ID, Answer1_ID, Question2_ID, Answer2_ID, Question3_ID, Answer3_ID, Question4_ID, Answer4_ID, Question5_ID, Answer5_ID, Question6_ID, Answer6_ID, Question7_ID, Answer7_ID, Question8_ID, Answer8_ID, Question9_ID, Answer9_ID, Question10_ID, Answer10_ID) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (coursename, username, passed, questions[0]["questionID"], questions[0]["answerID"], questions[1]["questionID"], questions[1]["answerID"], questions[2]["questionID"], questions[2]["answerID"], questions[3]["questionID"], questions[3]["answerID"], questions[4]["questionID"], questions[4]["answerID"], questions[5]["questionID"], questions[5]["answerID"], questions[6]["questionID"], questions[6]["answerID"], questions[7]["questionID"], questions[7]["answerID"], questions[8]["questionID"], questions[8]["answerID"], questions[9]["questionID"], questions[9]["answerID"]))
 
     #Currently, this will get every chapter completed by every user.
     def getAllUserProgress(self):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT QA.ID, QA.Username as user, QA.Course_Name as course, C.Course_Order as chapter, QA.Passed FROM Quiz_Attempts QA, Courses C WHERE C.Course_Name = QA.Course_Name AND QA.ID in (SELECT MAX(ID) FROM Quiz_Attempts where Username = QA.Username and Course_Name = QA.Course_Name) ORDER BY QA.Username, C.Course_Order;")
         results = self._cursor.fetchall();
 
@@ -136,15 +140,10 @@ class DataAccess:
         return userProgress;
 
     def getQuizAttempt(self, attemptID):
-<<<<<<< HEAD
-        self._cursor.execute("SELECT QQ.Question_Text, QAn.Answer_Text from Quiz_Questions QQ, Quiz_Attempts QA, Quiz_Answers QAn where QA.ID = %s and (QQ.QuestionID = QA.Question1_ID and QAn.AnswerID = QA.Answer1_ID or QQ.QuestionID = QA.Question2_ID and QAn.AnswerID = QA.Answer2_ID	or QQ.QuestionID = QA.Question3_ID and QAn.AnswerID = QA.Answer3_ID	or QQ.QuestionID = QA.Question4_ID and QAn.AnswerID = QA.Answer4_ID	or QQ.QuestionID = QA.Question5_ID and QAn.AnswerID = QA.Answer5_ID	or QQ.QuestionID = QA.Question6_ID and QAn.AnswerID = QA.Answer6_ID or QQ.QuestionID = QA.Question7_ID and QAn.AnswerID = QA.Answer7_ID or QQ.QuestionID = QA.Question8_ID and QAn.AnswerID = QA.Answer8_ID or QQ.QuestionID = QA.Question9_ID and QAn.AnswerID = QA.Answer9_ID or QQ.QuestionID = QA.Question10_ID and QAn.AnswerID = QA.Answer10_ID);", [attemptID])
-=======
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT QQ.Question_Text, QAn.Answer_Text from Quiz_Questions QQ, Quiz_Attempts QA, Quiz_Answers QAn where QA.ID = %s and (QQ.QuestionID = QA.Question1_ID and QAn.AnswerID = QA.Answer1_ID or QQ.QuestionID = QA.Question2_ID and QAn.AnswerID = QA.Answer2_ID or QQ.QuestionID = QA.Question3_ID and QAn.AnswerID = QA.Answer3_ID    or QQ.QuestionID = QA.Question4_ID and QAn.AnswerID = QA.Answer4_ID    or QQ.QuestionID = QA.Question5_ID and QAn.AnswerID = QA.Answer5_ID    or QQ.QuestionID = QA.Question6_ID and QAn.AnswerID = QA.Answer6_ID    or QQ.QuestionID = QA.Question7_ID and QAn.AnswerID = QA.Answer7_ID    or QQ.QuestionID = QA.Question8_ID and QAn.AnswerID = QA.Answer8_ID    or QQ.QuestionID = QA.Question9_ID and QAn.AnswerID = QA.Answer9_ID    or QQ.QuestionID = QA.Question10_ID and QAn.AnswerID = QA.Answer10_ID);", [attemptID])
->>>>>>> 1b96584ecea69f46b89b09a0fa3fe9d15e4c7bc4
         results = self._cursor.fetchall()
-
         return results
-<<<<<<< HEAD
 
     def sendAlertEmail(self):
         self._cursor = self._connection.cursor()
@@ -164,9 +163,6 @@ class DataAccess:
         server.close()
         print 'Email sent!'
 
-=======
-        
->>>>>>> 1b96584ecea69f46b89b09a0fa3fe9d15e4c7bc4
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
     _Text = None
