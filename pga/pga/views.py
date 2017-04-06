@@ -9,18 +9,19 @@ from django.contrib.admin.views.decorators import staff_member_required
 from pga.models import GardenImages
 from pga.dataAccess import DataAccess
 from django.views.generic import View
-#from .forms import UserForm
+from .forms import UserForm, LoginForm
 
 
 def login_view(request):
-     return render(request, 'login.html', {})
-#    username = request.POST['username']
-#    password = request.POST['password']
-#    user = authenticate(username=username, password=password)
-#    if user is not None:
-#        return redirect('home')
-#    else:
-#        return render(request, 'login.html', {})
+  #   return render(request, 'login.html', {})
+    username = request.POST.get('username')
+    password = request.POST.get('password')
+    user = authenticate(username=username, password=password)
+    if user is not None:
+	  login(request,user)
+	  return redirect('home')
+    else:
+        return render(request, 'login.html', {})
 
 def glossary(request):
 	return render(request, 'glossary.html')
@@ -132,30 +133,48 @@ def adminQuiz(request, unit):
 	
     return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
 
-# class UserFormView(View):
-    # form_class = UserForm
-    # template_name = 'registration_form.html'
+class UserFormView(View):
+    form_class = UserForm
+    template_name = 'registration_form.html'
 
-    # def get(self, request):
-        # form = self.form_class(None)
-        # return render(request, self.template_name, {'form':form})
-    # def post(self, request):
-        # form = self.form_class(request.POST)
-        # if form.is_valid():
-            # db = DataAccess()
-            # user = form.save(commit=False)
-            # username = form.cleaned_data['username']
-            # password = form.cleaned_data['password']
-            # first_name = form.cleaned_data['first_name']
-            # last_name = form.cleaned_data['last_name']
-            # user.set_password(password)
-            # user.save()
-            # db.addUser(username, password, first_name, last_name)
-            # user = authenticate(username = username, password = password)
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form':form})
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            #db = DataAccess()
+            user = form.save(commit=False)
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            user.set_password(password)
+            user.save()
+           # db.addUser(username, password, first_name, last_name)
+            user = authenticate(username = username, password = password)
 
-            # if user is not None:
-                # if user.is_active:
-                    # login(request,user)
-                    # return redirect('home')
+            if user is not None:
+                if user.is_active:
+                    login(request,user)
+                    return redirect('home')
 
-        # return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form})
+
+class LoginFormView(View):
+	form_class = LoginForm
+	template_name = 'login_template.html'
+	def get(self, request):
+		form = self.form_class
+		return render(request, self.template_name, {'form':form})
+	def post(self, request):
+		form = self.form_class(request.POST)
+		if form.is_valid():
+			username=form.cleaned_data['username']
+			password = form.cleaned_data['password']
+			user = authenticate(username=username,password=password)
+			if user is not None:
+				if user.is_active:
+					login(request, user)
+					return redirect('home')
+		return render(request,self.template_name, {'form' :form})

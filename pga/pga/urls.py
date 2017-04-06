@@ -24,7 +24,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
-	#url(r'^register/$', views.UserFormView.as_view(), name='register'),
+	url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
