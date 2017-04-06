@@ -1,6 +1,3 @@
-{% comment %} 
-{% extends 'base.html' %}
-{% endcomment %}
 
 {% load static %}
 
@@ -9,9 +6,7 @@
 	{% block content %}
 		{% if user.is_authenticated %}
 		
-			{% comment %} 
-				Loggen in as: {{ user.username }}!
-			{% endcomment %} 
+
 			
 			<h2>Welcome back, Jacob Stimes!</h2>
 			<br>

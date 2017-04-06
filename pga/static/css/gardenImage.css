@@ -1,7 +1,28 @@
-.gardenLayout #gardenCanvas{
+.gardenLayout #gardenCanvas {
     width: 100%;
+    height: auto;
+    border: 1px solid #000000;
 }
 
-.gardenLayout #garden{
+.gardenLayout #itemsCanvas {
+    border: 1px solid #000000;
+}
+
+.gardenLayout #garden {
     display: none;
+}
+
+.gardenLayout .gardenItems, .gardenLayout .gardenItems img {
+    width: 50px;
+    height: 50px;
+}
+
+.gardenLayout .itemsLayout {
+    background-color: lightgrey;
+    height: 200px;
+}
+
+.gardenLayout .drop-active {
+    width: 70px;
+    height: 70px;
 }

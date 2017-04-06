@@ -19,16 +19,30 @@ from django.contrib.auth import views as auth_views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
+
 from . import views
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
+	url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
 	
-	url(r'^quiz/(?P<course>[a-z]+)', views.quiz, name='quiz'),
-	url(r'^quizResults/(?P<course>[a-z]+)', views.quizResults, name='quizResults'),
+	# the '.' character in a regex matches any char besides newline
+	url(r'^pgaadmin/unit/(?P<unit>.+)/(?P<lesson>.+)', views.adminLesson),
+	url(r'^pgaadmin/unit/(?P<unit>.+)', views.adminUnit),
+	url(r'^pgaadmin/quiz/(?P<unit>.+)', views.adminQuiz),
+	url(r'^pgaadmin/supplementaryMaterials', views.adminSupplementaryMaterials),
+	url(r'^pgaadmin/quizStatistics', views.adminQuizStatistics),
+	url(r'^pgaadmin/userProgress', views.adminUserProgress),
+	url(r'^pgaadmin/courseMgmt', views.adminCourseMgmt),
+	url(r'^pgaadmin/courseInfo', views.adminCourseInfo),
+	url(r'^pgaadmin/', views.adminHome),
+	
+	
+	url(r'^quiz/(?P<course>[A-Za-z\s]+)', views.quiz, name='quiz'),
+	url(r'^quizResults/(?P<course>[A-Za-z\s]+)', views.quizResults, name='quizResults'),
 	
 	url(r'^glossary', views.glossary, name='glossary'),
 	url(r'^plan', views.plan, name='plan'),

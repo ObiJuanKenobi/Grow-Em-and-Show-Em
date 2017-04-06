@@ -1,14 +1,15 @@
 {% load static %}
 {% include "header.html" %}
 <script src="{% static 'js/fabric.min.js' %}"></script>
+<script src="{% static 'js/interact.min.js' %}"></script>
 <script src="{% static 'js/drawImage.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/gardenImage.css' %}"/>
 
 <h1>Garden's Image</h1>
 
-<div class="gardenLayout">
-    <div class="">
+<div class="container-fluid gardenLayout">
+    <div class="row">
         <button id="drawBtn" class="btn">Draw</button>
         <button id="saveImg" class="btn">Save</button>
         <button id="clrBtn" class="btn">Erase</button>
@@ -16,10 +17,30 @@
         <button id="redoBtn" class="btn">Redo</button>
         <button id="resetBtn" class="btn">Reset</button>
     </div>
-    <div class="">
-        <canvas id="gardenCanvas" width="800" height="400" style="border:1px solid #000000;"></canvas>
+    <div class="row">
+        <div class="col-md-10 col-sm-10 canvas snapZone" ondrop="drop(event)" ondragover="allowDrop(event)">
+            <canvas id="gardenCanvas" height="300px" width="600px"></canvas>
+        </div>
+        <div class="col-md-2 col-sm-2 itemsLayout">
+            <div class="gardenItems">
+                <img src="{% static "img/carrot.png" %}" draggable="true" ondragstart="drag(event)">
+            </div>
+            <div class="gardenItems">
+                <img src="{% static "img/tomato.png" %}" draggable="true" ondragstart="drag(event)">
+            </div>
+        </div>
+        <div id="div2" class="col-md-2 col-sm-2" ondrop="drop(event)" ondragover="allowDrop(event)">
+        </div>
+{#        <div class="col-md-2 col-sm-2 itemsLayout snapZone">#}
+{#            <div class="gardenItems">#}
+{#                <img src="{% static "img/carrot.png" %}">#}
+{#            </div>#}
+{#            <div class="gardenItems">#}
+{#                <img src="{% static "img/tomato.png" %}">#}
+{#            </div>`#}
+{#        </div>#}
     </div>
-    <img src="{% static "img/gardenPlan.jpg" %}" id="garden"></div>
 </div>
+
 
 {% include "footer.html" %}
