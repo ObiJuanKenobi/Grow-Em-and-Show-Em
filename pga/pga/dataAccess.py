@@ -14,13 +14,6 @@ class DataAccess:
         self._cursor.execute("COMMIT")
         self._connection.close()
 
-    def isUser(self, username, password):
-        exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s and PASSWORD(%s) = password", (username, password))
-        if not exists:
-            return True
-        else:
-            return False
-
     def addUser(self, username, password, firstname, lastname):
         exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s", [username])
         if not exists:
