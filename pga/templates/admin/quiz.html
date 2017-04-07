@@ -13,8 +13,55 @@
 <script type='text/javascript'>
 
 	var editing = false;
+	var uploadDialog;
+	
+	var uploadNewQuizFile = function() {
+		var file = document.getElementById("uploadFile").files[0];
+		//alert(file.name);
+		
+		var uploadType = $('input[name=uploadType]:checked').val();
+		//alert(uploadType);
+		
+		uploadDialog.dialog("close");
+	}
+	
+	var handleFiles = function() {
+		var disabled = document.getElementById("uploadFile").files.length == 0;
+		$("#uploadBtn").button("option", "disabled", disabled);
+	}
 	
 	$(function() {
+	
+		var inputElement = document.getElementById("uploadFile");
+		inputElement.addEventListener("change", handleFiles, false);
+		
+	
+		uploadDialog = $("#uploadNewQuestionList").dialog({
+			  autoOpen: false,
+			  height: 400,
+			  width: 450,
+			  modal: true,
+			  buttons: [
+				{
+					id: "uploadBtn",
+					text: "Upload",
+					disabled: 'true',
+					click: uploadNewQuizFile
+				},
+				{
+					id: "cancel",
+					text: "Cancel",
+					click: function() { uploadDialog.dialog("close"); }
+				}
+			  ],
+			  Close: function() {
+				
+			  }
+			});
+			
+		$("#uploadListBtn").click(function(){
+			uploadDialog.dialog("open");
+		});
 		
 		$("#editBtn").click(function() {
 		
@@ -95,6 +142,15 @@
 		</div>
 		<br><br>
 	{% endfor %}
+	</div>
+	
+	<div id='uploadNewQuestionList'>
+		<span>Choose a file to upload, and whether you are adding questions to the existing set or would like to replace all existing questions.</span>
+		<br><br>
+		<label><input type='radio' name='uploadType' value='add' checked>Add questions</label><br>
+		<label><input type='radio' name='uploadType' value='replace'>Replace questions</label><br><br>
+		
+		<input type='file' id='uploadFile'>
 	</div>
 	
 </div>

@@ -18,8 +18,8 @@ def login_view(request):
     password = request.POST.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
-	  login(request,user)
-	  return redirect('home')
+        login(request,user)
+        return redirect('home')
     else:
         return render(request, 'login.html', {})
 
