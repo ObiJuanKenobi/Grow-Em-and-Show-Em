@@ -4,139 +4,183 @@ from django.contrib.auth import authenticate, login
 from django.views.generic.edit import CreateView, UpdateView
 from django.template import loader
 from django.template import *
-
+from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from pga.models import GardenImages
 from pga.dataAccess import DataAccess
 from django.views.generic import View
-from .forms import UserForm, LoginForm
+from .forms import UserForm
 
 
 def login_view(request):
-  #   return render(request, 'login.html', {})
     username = request.POST.get('username')
     password = request.POST.get('password')
     user = authenticate(username=username, password=password)
     if user is not None:
-        login(request,user)
+        login(request, user)
         return redirect('home')
     else:
         return render(request, 'login.html', {})
 
+
+@login_required(login_url='login/')
 def glossary(request):
-	return render(request, 'glossary.html')
+    return render(request, 'glossary.html')
 
+
+@login_required(login_url='login/')
 def plan(request):
-	return render(request, 'plan.html')
+    return render(request, 'plan.html')
 
+
+@login_required(login_url='login/')
 def maintain(request):
-	return render(request, 'maintain.html')
+    return render(request, 'maintain.html')
 
+
+@login_required(login_url='login/')
 def harvest(request):
-	return render(request, 'harvest.html')
+    return render(request, 'harvest.html')
 
+
+@login_required(login_url='login/')
 def postHarvest(request):
-	return render(request, 'postHarvest.html')
+    return render(request, 'postHarvest.html')
 
+
+@login_required(login_url='login/')
 def records(request):
-	return render(request, 'records.html')
+    return render(request, 'records.html')
 
+
+@login_required(login_url='login/')
 def communication(request):
-	return render(request, 'communication.html')
+    return render(request, 'communication.html')
 
-#Maintenance lessons:
+
+# Maintenance lessons:
+@login_required(login_url='login/')
 def pests(request):
-	return render(request, 'pests.html')
+    return render(request, 'pests.html')
 
+
+@login_required(login_url='login/')
 def fertilizer(request):
-	return render(request, 'fertilizer.html')
+    return render(request, 'fertilizer.html')
 
+
+@login_required(login_url='login/')
 def produce(request):
-	return render(request, 'produce.html')
+    return render(request, 'produce.html')
 
+
+@login_required(login_url='login/')
 def maturityTimeline(request):
-	return render(request, 'maturityTimeline.html')
+    return render(request, 'maturityTimeline.html')
 
+
+@login_required(login_url='login/')
 def watering(request):
-	return render(request, 'watering.html')
+    return render(request, 'watering.html')
 
+
+@login_required(login_url='login/')
 def weedRecognition(request):
-	return render(request, 'weedRecognition.html')
+    return render(request, 'weedRecognition.html')
 
+
+@login_required(login_url='login/')
 def disease(request):
-	return render(request, 'disease.html')
+    return render(request, 'disease.html')
 
+
+@login_required(login_url='login/')
 def quiz(request, course):
-	db = DataAccess();
-	questions = db.getQuizQuestions(course);
-	return render(request, 'quiz.html', { 'questions': questions, 'course': course } );
+    db = DataAccess();
+    questions = db.getQuizQuestions(course);
+    return render(request, 'quiz.html', {'questions': questions, 'course': course});
 
+
+@login_required(login_url='login/')
 def pestsQuiz(request):
-	return render(request, 'quiz.html')
+    return render(request, 'quiz.html')
+
 
 def quizResults(request, course):
-	db = DataAccess()
-	db.addQuizAttempt(course, 'todo-get username', 1)
-	return render(request, 'quizResults.html', {'course': course})
+    db = DataAccess()
+    db.addQuizAttempt(course, 'todo-get username', 1)
+    return render(request, 'quizResults.html', {'course': course})
+
 
 def gardenImage(request):
-	row = [1] * 6
-	col = [1] * 6
-	return render(request, 'gardenImage.html', {'row': row, 'col': col})
+    row = [1] * 6
+    col = [1] * 6
+    return render(request, 'gardenImage.html', {'row': row, 'col': col})
+
 
 def gridSquare(request):
-	return render(request, 'gridSquare.html')
+    return render(request, 'gridSquare.html')
+
 
 def saveImage(request):
-	fileName = request.GET['fileName']
-	imageData = request.GET['imageData']
-	image = GardenImages.objects.create(
-		name=fileName,
-		imageData=imageData
-	)
-	image.save()
-	return HttpResponse("Success")
+    fileName = request.GET['fileName']
+    imageData = request.GET['imageData']
+    image = GardenImages.objects.create(
+        name=fileName,
+        imageData=imageData
+    )
+    image.save()
+    return HttpResponse("Success")
+
 
 @staff_member_required
 def adminHome(request):
-	return render(request, 'admin/home.html');
+    return render(request, 'admin/home.html');
+
 
 @staff_member_required
 def adminCourseInfo(request):
-	return render(request, 'admin/course_info.html');
+    return render(request, 'admin/course_info.html');
+
 
 @staff_member_required
 def adminCourseMgmt(request):
     courses = DataAccess().getCourses()
     return render(request, 'admin/course_mgmt.html', {'courses': courses});
 
+
 @staff_member_required
 def adminUserProgress(request):
-	return render(request, 'admin/user_progress.html');
+    return render(request, 'admin/user_progress.html');
+
 
 @staff_member_required
 def adminQuizStatistics(request):
     return render(request, 'admin/quiz_statistics.html');
 
+
 @staff_member_required
 def adminSupplementaryMaterials(request):
     return render(request, 'admin/supplementary_materials.html');
+
 
 @staff_member_required
 def adminUnit(request, unit):
     lessons = DataAccess().getCourseLessons(unit)
     return render(request, 'admin/unit.html', {'lessons': lessons, 'unit': unit});
 
+
 @staff_member_required
 def adminLesson(request, lesson, unit):
     return render(request, 'admin/lesson.html', {'lesson': lesson, 'unit': unit});
 
+
 @staff_member_required
 def adminQuiz(request, unit):
-
     questions = DataAccess().getQuizQuestions(unit);
 
     return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
+
 
 class UserFormView(View):
     form_class = UserForm
@@ -144,11 +188,12 @@ class UserFormView(View):
 
     def get(self, request):
         form = self.form_class(None)
-        return render(request, self.template_name, {'form':form})
+        return render(request, self.template_name, {'form': form})
+
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
-            #db = DataAccess()
+            db = DataAccess()
             user = form.save(commit=False)
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -156,30 +201,12 @@ class UserFormView(View):
             last_name = form.cleaned_data['last_name']
             user.set_password(password)
             user.save()
-           # db.addUser(username, password, first_name, last_name)
-            user = authenticate(username = username, password = password)
+            db.addUser(username, password, first_name, last_name)
+            user = authenticate(username=username, password=password)
 
             if user is not None:
                 if user.is_active:
-                    login(request,user)
+                    login(request, user)
                     return redirect('home')
 
         return render(request, self.template_name, {'form': form})
-
-class LoginFormView(View):
-	form_class = LoginForm
-	template_name = 'login_template.html'
-	def get(self, request):
-		form = self.form_class
-		return render(request, self.template_name, {'form':form})
-	def post(self, request):
-		form = self.form_class(request.POST)
-		if form.is_valid():
-			username=form.cleaned_data['username']
-			password = form.cleaned_data['password']
-			user = authenticate(username=username,password=password)
-			if user is not None:
-				if user.is_active:
-					login(request, user)
-					return redirect('home')
-		return render(request,self.template_name, {'form' :form})
