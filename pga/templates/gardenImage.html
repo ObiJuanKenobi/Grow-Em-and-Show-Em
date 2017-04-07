@@ -1,11 +1,16 @@
 {% load static %}
 {% include "header.html" %}
-<script src="{% static 'js/fabric.min.js' %}"></script>
-<script src="{% static 'js/interact.min.js' %}"></script>
+<script src="{% static 'js/libraries/fabric.min.js' %}"></script>
+<script src="{% static 'js/libraries/interact.min.js' %}"></script>
 <script src="{% static 'js/drawImage.js' %}"></script>
+<script src="http://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.mobile-1.4.5.min.js' %}"></script>
+
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/gardenImage.css' %}"/>
-
+<meta name="viewport" content="width=device-width,user-scalable=no">
 <h1>Garden's Image</h1>
 
 <div class="container-fluid gardenLayout">
@@ -18,27 +23,15 @@
         <button id="resetBtn" class="btn">Reset</button>
     </div>
     <div class="row">
-        <div class="col-md-10 col-sm-10 canvas snapZone" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="itemsLayout" id="itemsBoard">
+            <img src="{% static "img/carrot.png" %}" class="gardenItems" >
+            <img src="{% static "img/pineapple.png" %}" class="gardenItems">
+        </div>
+    </div>
+    <div class="row">
+        <div class="bedContainer snapZone">
             <canvas id="gardenCanvas" height="300px" width="600px"></canvas>
         </div>
-        <div class="col-md-2 col-sm-2 itemsLayout">
-            <div class="gardenItems">
-                <img src="{% static "img/carrot.png" %}" draggable="true" ondragstart="drag(event)">
-            </div>
-            <div class="gardenItems">
-                <img src="{% static "img/tomato.png" %}" draggable="true" ondragstart="drag(event)">
-            </div>
-        </div>
-        <div id="div2" class="col-md-2 col-sm-2" ondrop="drop(event)" ondragover="allowDrop(event)">
-        </div>
-{#        <div class="col-md-2 col-sm-2 itemsLayout snapZone">#}
-{#            <div class="gardenItems">#}
-{#                <img src="{% static "img/carrot.png" %}">#}
-{#            </div>#}
-{#            <div class="gardenItems">#}
-{#                <img src="{% static "img/tomato.png" %}">#}
-{#            </div>`#}
-{#        </div>#}
     </div>
 </div>
 
