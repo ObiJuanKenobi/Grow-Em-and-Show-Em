@@ -161,7 +161,7 @@ class DataAccess:
         server.login('prisongardenapp@gmail.com', 'prisongardenapp2017')
         server.sendmail(fromaddr, toaddr, msg.as_string())
         server.close()
-        print 'Email sent!'
+        print ('Email sent!')
 
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
