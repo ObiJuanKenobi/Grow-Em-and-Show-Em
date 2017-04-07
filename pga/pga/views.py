@@ -30,7 +30,7 @@ def plan(request):
 
 def maintain(request):
 	return render(request, 'maintain.html')
-	
+
 def harvest(request):
 	return render(request, 'harvest.html')
 
@@ -46,40 +46,45 @@ def communication(request):
 #Maintenance lessons:
 def pests(request):
 	return render(request, 'pests.html')
-	
+
 def fertilizer(request):
 	return render(request, 'fertilizer.html')
-	
+
 def produce(request):
 	return render(request, 'produce.html')
-	
+
 def maturityTimeline(request):
 	return render(request, 'maturityTimeline.html')
-	
+
 def watering(request):
 	return render(request, 'watering.html')
-	
+
 def weedRecognition(request):
 	return render(request, 'weedRecognition.html')
-	
+
 def disease(request):
 	return render(request, 'disease.html')
-	
+
 def quiz(request, course):
 	db = DataAccess();
 	questions = db.getQuizQuestions(course);
 	return render(request, 'quiz.html', { 'questions': questions, 'course': course } );
-	
+
 def pestsQuiz(request):
 	return render(request, 'quiz.html')
-	
+
 def quizResults(request, course):
 	db = DataAccess()
 	db.addQuizAttempt(course, 'todo-get username', 1)
 	return render(request, 'quizResults.html', {'course': course})
 
 def gardenImage(request):
-	return render(request, 'gardenImage.html')
+	row = [1] * 6
+	col = [1] * 6
+	return render(request, 'gardenImage.html', {'row': row, 'col': col})
+
+def gridSquare(request):
+	return render(request, 'gridSquare.html')
 
 def saveImage(request):
 	fileName = request.GET['fileName']
@@ -90,46 +95,46 @@ def saveImage(request):
 	)
 	image.save()
 	return HttpResponse("Success")
-	
+
 @staff_member_required
 def adminHome(request):
 	return render(request, 'admin/home.html');
-	
+
 @staff_member_required
 def adminCourseInfo(request):
 	return render(request, 'admin/course_info.html');
-	
+
 @staff_member_required
 def adminCourseMgmt(request):
     courses = DataAccess().getCourses()
     return render(request, 'admin/course_mgmt.html', {'courses': courses});
-	
+
 @staff_member_required
 def adminUserProgress(request):
 	return render(request, 'admin/user_progress.html');
-	
+
 @staff_member_required
 def adminQuizStatistics(request):
     return render(request, 'admin/quiz_statistics.html');
-	
+
 @staff_member_required
 def adminSupplementaryMaterials(request):
     return render(request, 'admin/supplementary_materials.html');
-	
+
 @staff_member_required
 def adminUnit(request, unit):
     lessons = DataAccess().getCourseLessons(unit)
     return render(request, 'admin/unit.html', {'lessons': lessons, 'unit': unit});
-	
+
 @staff_member_required
 def adminLesson(request, lesson, unit):
     return render(request, 'admin/lesson.html', {'lesson': lesson, 'unit': unit});
-	
+
 @staff_member_required
 def adminQuiz(request, unit):
 
     questions = DataAccess().getQuizQuestions(unit);
-	
+
     return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
 
 # class UserFormView(View):
