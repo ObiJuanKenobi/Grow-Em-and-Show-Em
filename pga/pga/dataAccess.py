@@ -30,6 +30,7 @@ class DataAccess:
         exists = self._cursor.execute("SELECT Username FROM Users WHERE Username = %s", [username])
         if not exists:
             self._cursor.execute("INSERT into Users (Username, Password, First_Name, Last_Name) values (%s, PASSWORD(%s), %s, %s)", (username, password, firstname, lastname))
+            self._cursor.execute("COMMIT")
             return True
         else:
             return False
@@ -41,6 +42,7 @@ class DataAccess:
             self._cursor.execute("UPDATE Courses SET Course_Order = %s, Course_HTML_Path = %s WHERE Course_Name = %s", (courseorder, courseHTMLpath, coursename))
         else:
             self._cursor.execute("INSERT into Courses (Course_Name, Course_Order, Course_HTML_Path) values (%s, %s, %s)", (coursename, courseorder, courseHTMLpath))
+        self._cursor.execute("COMMIT")
 
     def getAllUnits(self):
         self._cursor = self._connection.cursor()
@@ -59,6 +61,7 @@ class DataAccess:
             self._cursor.execute("UPDATE Lessons SET Lesson_File_Path = %s WHERE Lesson_Name = %s", (lessonfilepath, lessonname))
         else:
             self._cursor.execute("INSERT into Lessons (Course_Name, Lesson_Name, Lesson_File_Path) values (%s, %s, %s)", (coursename, lessonname, lessonfilepath))
+        self._cursor.execute("COMMIT")
 
     def getLesson(self, coursename, lessonname):
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
@@ -92,6 +95,9 @@ class DataAccess:
             for answer in question._Answers:
                 self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, IsCorrect) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
 
+        self._cursor.execute("COMMIT")
+
+
     def getQuizQuestions(self, coursename):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
@@ -118,6 +124,7 @@ class DataAccess:
     def addQuizAttempt(self, coursename, username, passed, questions):
         self._cursor = self._connection.cursor()
         self._cursor.execute("INSERT into Quiz_Attempts (Course_Name, Username, Passed, Question1_ID, Answer1_ID, Question2_ID, Answer2_ID, Question3_ID, Answer3_ID, Question4_ID, Answer4_ID, Question5_ID, Answer5_ID, Question6_ID, Answer6_ID, Question7_ID, Answer7_ID, Question8_ID, Answer8_ID, Question9_ID, Answer9_ID, Question10_ID, Answer10_ID) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (coursename, username, passed, questions[0]["questionID"], questions[0]["answerID"], questions[1]["questionID"], questions[1]["answerID"], questions[2]["questionID"], questions[2]["answerID"], questions[3]["questionID"], questions[3]["answerID"], questions[4]["questionID"], questions[4]["answerID"], questions[5]["questionID"], questions[5]["answerID"], questions[6]["questionID"], questions[6]["answerID"], questions[7]["questionID"], questions[7]["answerID"], questions[8]["questionID"], questions[8]["answerID"], questions[9]["questionID"], questions[9]["answerID"]))
+        self._cursor.execute("COMMIT")
 
     #Currently, this will get every chapter completed by every user.
     def getAllUserProgress(self):
@@ -175,6 +182,7 @@ class DataAccess:
     def saveBedPlan(self, bedName, canvasData):
         self._cursor = self._connection.cursor()
         self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan) values (%s, %s)", (bedName, canvasData))
+        self._cursor.execute("COMMIT")
 
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
