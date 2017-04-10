@@ -163,6 +163,10 @@ class DataAccess:
         server.close()
         print ('Email sent!')
 
+    def saveBedPlan(self, bedName, canvasData):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan) values (%s, %s)", (bedName, canvasData))
+
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
     _Text = None

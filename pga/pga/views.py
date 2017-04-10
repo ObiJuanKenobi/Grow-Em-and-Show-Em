@@ -6,7 +6,6 @@ from django.template import loader
 from django.template import *
 
 from django.contrib.admin.views.decorators import staff_member_required
-from pga.models import GardenImages
 from pga.dataAccess import DataAccess
 from django.views.generic import View
 from .forms import UserForm, LoginForm
@@ -79,23 +78,15 @@ def quizResults(request, course):
 	db.addQuizAttempt(course, 'todo-get username', 1)
 	return render(request, 'quizResults.html', {'course': course})
 
-def gardenImage(request):
-	row = [1] * 6
-	col = [1] * 6
-	return render(request, 'gardenImage.html', {'row': row, 'col': col})
-
-def gridSquare(request):
-	return render(request, 'gridSquare.html')
+def garden(request):
+	return render(request, 'garden.html')
 
 def saveImage(request):
-	fileName = request.GET['fileName']
-	imageData = request.GET['imageData']
-	image = GardenImages.objects.create(
-		name=fileName,
-		imageData=imageData
-	)
-	image.save()
-	return HttpResponse("Success")
+	bedName = request.POST.get('bedName')
+	canvasData = request.POST.get('canvasData')
+	db = DataAccess()
+	db.saveBedPlan(bedName, canvasData)
+	return HttpResponse("The bed name is %s." % bedName)
 
 @staff_member_required
 def adminHome(request):

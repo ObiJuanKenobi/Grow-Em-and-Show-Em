@@ -6,8 +6,42 @@
 var imgCache = [],
     canvas,
     gardenInstance,
-    draggedInstance,
     gridSize = 100;
+
+function setupCSRF(){
+    // CSRF code
+    function getCookie(name) {
+        var cookieValue = null;
+        var i = 0;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (i; i < cookies.length; i++) {
+                var cookie = jQuery.trim(cookies[i]);
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
+
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        crossDomain: false, // obviates need for sameOrigin test
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+}
 
 function fixCanvasBound() {
     // Limit the border of the canvas
@@ -52,14 +86,22 @@ function draw() {
 }
 
 function saveImage() {
-    var dataUrl = canvas.toDataURL('gardenImage.png');
-    var imageData = canvas.toDatalessJSON();
+    var canvasData = JSON.stringify(canvas);
+    console.log(canvasData.length);
     $.ajax({
-        url: "/saveImage",
-        type: "GET",
-        data: {fileName: "gardenPlan.jpg", imageData: imageData}
+        url: "/saveImage/",
+        type: "POST",
+        data: {
+            bedName: "Venus",
+            canvasData: canvasData
+        },
+        success: function(data){
+            console.log("Success");
+        },
+        error: function(xhr,errmsg,err){
+            console.log("Error: " + errmsg);
+        }
     }).done(function (data) {
-        console.log("Success");
     });
 }
 
@@ -130,10 +172,13 @@ function initGardenItems() {
 }
 
 $(document).ready(function () {
-    var clearBtn = document.getElementById("clrBtn");
-    var resetBtn = document.getElementById("resetBtn");
-    var undoBtn = document.getElementById("undoBtn");
-    var redoBtn = document.getElementById("redoBtn");
+    var clearBtn = document.getElementById("clrBtn"),
+        resetBtn = document.getElementById("resetBtn"),
+        undoBtn = document.getElementById("undoBtn"),
+        redoBtn = document.getElementById("redoBtn"),
+        drawImage = document.getElementById("drawBtn"),
+        saveImageBtn = document.getElementById("saveImg");
+
     gardenInstance = new fabric.Image.fromURL("/static/img/gardenPlan.jpg", function (img) {
         img.scaleToWidth(canvas.getWidth());
         img.scaleToHeight(canvas.getHeight());
@@ -142,10 +187,9 @@ $(document).ready(function () {
         gardenInstance = img;
     });
     canvas = new fabric.Canvas('gardenCanvas');
-    var drawImage = $('#drawBtn')[0];
-    var saveImageBtn = $('#saveImg')[0];
     fixCanvasBound();
     drawGrid();
+    setupCSRF();
 
     // Attach drawing event
     drawImage.onclick = function () {
@@ -176,6 +220,8 @@ $(document).ready(function () {
 
     // Initialize the garden items
     initGardenItems();
+
+
 });
 
 
