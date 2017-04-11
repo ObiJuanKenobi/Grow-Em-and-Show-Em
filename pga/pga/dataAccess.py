@@ -1,6 +1,7 @@
 import MySQLdb
 import smtplib
 from email.mime.text import MIMEText
+from decimal import Decimal
 
 class DataAccess:
     _connection = None
@@ -160,6 +161,12 @@ class DataAccess:
             row["attempt"].append({"question": results[0][i], "answer": results[0][i+1]})
         print course
         return results
+
+    def getPercentPassed(self, unit):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT (SELECT COUNT(QA1.Passed) FROM Quiz_Attempts QA1 WHERE QA1.Passed = 1 AND QA1.Course_Name = %s) / COUNT(QA2.Passed) FROM Quiz_Attempts QA2 WHERE QA2.Course_Name = %s;", (unit, unit))
+        results = self._cursor.fetchall()
+        return round(Decimal(results[0][0]) * 100, 2)
 
     def sendAlertEmail(self):
         self._cursor = self._connection.cursor()
