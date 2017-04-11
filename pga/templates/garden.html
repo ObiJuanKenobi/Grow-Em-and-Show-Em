@@ -1,12 +1,15 @@
 {% load static %}
 {% include "header.html" %}
-<script src="{% static 'js/libraries/fabric.min.js' %}"></script>
-<script src="{% static 'js/libraries/interact.min.js' %}"></script>
-<script src="{% static 'js/gardenPlan.js' %}"></script>
-<script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
-<script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
-<script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
-<script src="{% static 'js/libraries/jquery.mobile-1.4.5.min.js' %}"></script>
+
+{% block javascript %}
+    <script src="{% static 'js/libraries/fabric.min.js' %}"></script>
+    <script src="{% static 'js/libraries/interact.min.js' %}"></script>
+    <script src="{% static 'js/gardenPlan.js' %}"></script>
+    <script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
+    <script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
+    <script src="{% static 'js/libraries/jquery.mobile-1.4.5.min.js' %}"></script>
+{% endblock %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/gardenImage.css' %}"/>
@@ -17,6 +20,7 @@
     <div class="row">
         <button id="drawBtn" class="btn">Draw</button>
         <button id="saveImg" class="btn">Save</button>
+        <button id="loadImg" class="btn">Load</button>
         <button id="clrBtn" class="btn">Erase</button>
         <button id="undoBtn" class="btn">Undo</button>
         <button id="redoBtn" class="btn">Redo</button>
@@ -24,7 +28,7 @@
     </div>
     <div class="row">
         <div class="itemsLayout" id="itemsBoard">
-            <img src="{% static "img/carrot.png" %}" class="gardenItems" >
+            <img src="{% static "img/carrot.png" %}" class="gardenItems">
             <img src="{% static "img/pineapple.png" %}" class="gardenItems">
         </div>
     </div>

@@ -8,7 +8,10 @@ var imgCache = [],
     gardenInstance,
     gridSize = 100;
 
-function setupCSRF(){
+/**
+ * Setup csrftoken for ajax queries.
+ */
+function setupCSRF() {
     // CSRF code
     function getCookie(name) {
         var cookieValue = null;
@@ -26,15 +29,17 @@ function setupCSRF(){
         }
         return cookieValue;
     }
+
     var csrftoken = getCookie('csrftoken');
 
     function csrfSafeMethod(method) {
         // these HTTP methods do not require CSRF protection
         return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
     }
+
     $.ajaxSetup({
         crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
+        beforeSend: function (xhr, settings) {
             if (!csrfSafeMethod(settings.type)) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
@@ -43,6 +48,9 @@ function setupCSRF(){
 
 }
 
+/**
+ * Make sure objects on the canvas move within the bound of the canvas.
+ */
 function fixCanvasBound() {
     // Limit the border of the canvas
     canvas.on('object:moving', function (e) {
@@ -71,6 +79,10 @@ function fixCanvasBound() {
     );
 }
 
+/**
+ * Toggle the draw button and allow users to draw on canvas
+ * (Doesn't work on touch screen)
+ */
 function draw() {
     canvas.isDrawingMode = !canvas.isDrawingMode;
     if (canvas.freeDrawingBrush) {
@@ -85,9 +97,11 @@ function draw() {
 
 }
 
+/**
+ * Save the changes bed plan into the database according to the bed name
+ */
 function saveImage() {
     var canvasData = JSON.stringify(canvas);
-    console.log(canvasData.length);
     $.ajax({
         url: "/saveImage/",
         type: "POST",
@@ -95,16 +109,39 @@ function saveImage() {
             bedName: "Venus",
             canvasData: canvasData
         },
-        success: function(data){
-            console.log("Success");
+        success: function (data) {
+            console.log(data);
         },
-        error: function(xhr,errmsg,err){
+        error: function (xhr, errmsg, err) {
             console.log("Error: " + errmsg);
         }
     }).done(function (data) {
+        alert("Save successfully.")
     });
 }
 
+/**
+ * Load the bed plan based on the bed's name
+ */
+function loadImage() {
+    $.ajax({
+        url: "/loadImage",
+        type: "GET",
+        data: {
+            bedName: "Venus"
+        },
+        success: function (data) {
+            canvas.loadFromJSON(data, canvas.renderAll.bind(canvas));
+        },
+        error: function (xhr, errmsg, err) {
+            console.log("Error: " + errmsg);
+        }
+    });
+}
+
+/**
+ * Remove the selected object from the canvas
+ */
 function eraseObj() {
     if (canvas.getActiveObject() != null) {
         imgCache.push(canvas.getActiveObject());
@@ -112,6 +149,9 @@ function eraseObj() {
     }
 }
 
+/**
+ * Remove last added object from the canvas
+ */
 function removeLastObj() {
     var obj = canvas.getObjects();
     if (obj.length > 1) {
@@ -121,11 +161,17 @@ function removeLastObj() {
     }
 }
 
+/**
+ * Restore the last removed object and load it on the canvas.
+ */
 function restoreLastObj() {
     if (imgCache.length > 0)
         canvas.add(imgCache.pop());
 }
 
+/**
+ * Draw the griz based on the given grid size.
+ */
 function drawGrid() {
     for (var x = 1; x < (canvas.getWidth() / gridSize); x++) {
         canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getWidth()], {
@@ -143,10 +189,18 @@ function drawGrid() {
     }
 }
 
+/**
+ *  Calculate the snapping offset by the given position of x or y.
+ * @param pos
+ * @returns {number}
+ */
 function calSnapOffset(pos) {
     return Math.round(pos / gridSize) * gridSize;
 }
 
+/**
+ * Initialize all garden canvas and make them to be draggable
+ */
 function initGardenItems() {
     // target elements with the "draggable" class
     $('.gardenItems').draggable({
@@ -177,7 +231,8 @@ $(document).ready(function () {
         undoBtn = document.getElementById("undoBtn"),
         redoBtn = document.getElementById("redoBtn"),
         drawImage = document.getElementById("drawBtn"),
-        saveImageBtn = document.getElementById("saveImg");
+        saveImageBtn = document.getElementById("saveImg"),
+        loadImageBtn = document.getElementById("loadImg");
 
     gardenInstance = new fabric.Image.fromURL("/static/img/gardenPlan.jpg", function (img) {
         img.scaleToWidth(canvas.getWidth());
@@ -201,6 +256,10 @@ $(document).ready(function () {
         saveImage();
     };
 
+    loadImageBtn.onclick = function () {
+        loadImage();
+    };
+
     clearBtn.onclick = function () {
         eraseObj();
     };
@@ -220,8 +279,6 @@ $(document).ready(function () {
 
     // Initialize the garden items
     initGardenItems();
-
-
 });
 
 

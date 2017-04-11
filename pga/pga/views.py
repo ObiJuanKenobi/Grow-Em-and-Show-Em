@@ -1,4 +1,5 @@
-from django.http import HttpResponse
+from django.core.serializers import json
+from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.views.generic.edit import CreateView, UpdateView
@@ -9,6 +10,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from pga.dataAccess import DataAccess
 from django.views.generic import View
 from .forms import UserForm
+import json
 
 
 def login_view(request):
@@ -115,12 +117,27 @@ def garden(request):
 
 
 def saveImage(request):
-	bedName = request.POST.get('bedName')
-	canvasData = request.POST.get('canvasData')
-	db = DataAccess()
-	db.saveBedPlan(bedName, canvasData)
-	return HttpResponse("The bed name is %s." % bedName)
+    if request.is_ajax() and request.POST:
+        bedName = request.POST.get('bedName')
+        canvasData = request.POST.get('canvasData')
+        db = DataAccess()
+        db.saveBedPlan(bedName, canvasData)
+        response = {
+            'status': 200,
+            'message': 'Successfully saved changes on canvas'
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Unable to save canvas as an image'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
+def loadImage(request):
+    bedName = request.GET['bedName']
+    db = DataAccess()
+    plan = db.getBedPlan(bedName)
+    return HttpResponse(plan,content_type='application/json')
 
 @staff_member_required
 def adminHome(request):
