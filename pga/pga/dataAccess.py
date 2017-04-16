@@ -65,13 +65,26 @@ class DataAccess:
         self._cursor.execute("COMMIT")
 
     def getLesson(self, coursename, lessonname):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
         lesson = ""
         for(Lesson_File_Path) in self._cursor:
             lesson = Lesson_File_Path
         return lesson[0]
 
+    def deleteLesson(self, lessonname):
+        #This will get rid of the lesson from the table, but don't have supplemental content set up so not sure how to handle just yet
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Lessons WHERE Lesson_Name = %s", [lessonname])
+        self._cursor.execute("COMMIT")
+
+    def deleteUnit(self, unitName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Courses WHERE Course_Name = %s", [unitName])
+        self._cursor.execute("COMMIT")
+
     def getCourses(self):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
         courses = []
         results = self._cursor.fetchall()
@@ -88,14 +101,13 @@ class DataAccess:
             lessons.append({"name": row[0], "path": row[1]})
         return lessons
 
-
     def addQuiz(self, coursename, questions):
         self._cursor = self._connection.cursor()
         for question in questions:
             self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, coursename))
             questionID = self._cursor.lastrowid
             for answer in question._Answers:
-                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, IsCorrect) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
+                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, Is_Correct) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
 
         self._cursor.execute("COMMIT")
 
@@ -170,7 +182,6 @@ class DataAccess:
         row = {"unit": course, "attempt":[{"question": results[0][i], "answer": results[0][i+1]}]}
         for i in range(1, len(results)):
             row["attempt"].append({"question": results[0][i], "answer": results[0][i+1]})
-        print (course)
         return results
 
     def getPercentPassed(self, unit):
@@ -195,7 +206,6 @@ class DataAccess:
         server.login('prisongardenapp@gmail.com', 'prisongardenapp2017')
         server.sendmail(fromaddr, toaddr, msg.as_string())
         server.close()
-        print ('Email sent!')
 
     def saveBedPlan(self, bedName, canvasData):
         self._cursor = self._connection.cursor()
@@ -218,7 +228,7 @@ class QuizQuestion:
 
     def __init__(self):
         _Text = ""
-        _Answers = ["", "", "", ""]
+        _Answers = []
 
 #Class for passing quiz answers to the DB in a convenient object
 class QuizAnswer:
