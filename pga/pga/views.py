@@ -23,7 +23,6 @@ def login_view(request):
     else:
         return render(request, 'login.html', {})
 
-
 @login_required(login_url='login/')
 def glossary(request):
     return render(request, 'glossary.html')
