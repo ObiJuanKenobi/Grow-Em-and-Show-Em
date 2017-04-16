@@ -31,6 +31,9 @@ urlpatterns = [
 	url(r'^quiz/(?P<course>[a-z]+)', views.quiz, name='quiz'),
 	url(r'^quizResults/(?P<course>[a-z]+)', views.quizResults, name='quizResults'),
 	
+    #----TODO----
+    url(r'^courseNav/(?P<course>[a-z-]+)/(?P<color>[a-z0-9]+)/', views.courseNav, name='courseNav'),
+    
 	url(r'^glossary', views.glossary, name='glossary'),
 	url(r'^plan', views.plan, name='plan'),
 	url(r'^maintain', views.maintain, name='maintain'),

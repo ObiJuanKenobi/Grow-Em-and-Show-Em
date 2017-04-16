@@ -4,10 +4,10 @@ from django.contrib.auth import authenticate, login
 from django.views.generic.edit import CreateView, UpdateView
 from django.template import loader
 from django.template import *
-from models import GardenImages
+from pga.models import GardenImages
 from django.views.generic import View
 from .forms import UserForm
-from dataAccess import DataAccess
+from pga.dataAccess import DataAccess
 
 def login_view(request):
      return render(request, 'login.html', {})
@@ -63,9 +63,9 @@ def disease(request):
 	return render(request, 'disease.html')
 	
 def quiz(request, course):
-	db = DataAccess();
-	questions = db.getQuizQuestions(course);
-	return render(request, 'quiz.html', { 'questions': questions, 'course': course } );
+	db = DataAccess()
+	questions = db.getQuizQuestions(course)
+	return render(request, 'quiz.html', { 'questions': questions, 'course': course } )
 	
 def pestsQuiz(request):
 	return render(request, 'quiz.html')
@@ -87,6 +87,13 @@ def saveImage(request):
 	)
 	image.save()
 	return HttpResponse("Success")
+
+def courseNav(request, course, color):
+    db = DataAccess()
+    courses = db.getCourseLessons(course)
+    for c in courses:
+        c['link'] = c['name'].lower().replace(' ', '_')
+    return render(request, 'courseNav.html', { 'courses': courses, 'course': course.replace('-', ' '), 'color': color })
 
 class UserFormView(View):
     form_class = UserForm
