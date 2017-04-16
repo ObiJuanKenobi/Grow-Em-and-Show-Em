@@ -1,0 +1,35 @@
+{% include "admin/header.html" %}
+
+	<span class='adminPageTitle'>Supplementary Materials</span>&nbsp;&nbsp;<a href='/pgaadmin/courseMgmt' class='backLink'>Back</a><br><br>
+	
+	<div id='videos'>
+		<h3>Videos</h3>
+		<button id='videoUploadBtn'>Upload</button><button id='videoEditBtn'>Edit</button><br>
+		
+		<ul id='videosList'>
+			<li><a href='videoLink'>Video Name</a><button class='removeBtn'>Remove</button></li>
+			<li><a href='videoLink'>Video Name2</a><button class='removeBtn'>Remove</button></li>
+		</ul>
+	
+	</div>
+	
+	<div id='videos'>
+		<h3>PDF's</h3>
+		<button id='pdfUploadBtn'>Upload</button><button id='pdfEditBtn'>Edit</button><br>
+		
+		<ul id='pdfsList'>
+			<li><a href='pdfLink'>PDF Name</a><button class='removeBtn'>Remove</button></li>
+			<li><a href='pdfLink'>PDF Name2</a><button class='removeBtn'>Remove</button></li>
+		</ul>
+	</div>
+		
+	<div id='images'>
+		<h3>Images</h3>
+		<button id='imageUploadBtn'>Upload</button><button id='imageEditBtn'>Edit</button><br>
+		<ul id='imagesList'>
+			<li><a href='pdfLink'>Image Name</a><button class='removeBtn'>Remove</button></li>
+			<li><a href='pdfLink'>Image Name2</a><button class='removeBtn'>Remove</button></li>
+		</ul>
+	</div>
+	
+{% include "admin/footer.html" %}

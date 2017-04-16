@@ -1,27 +1,28 @@
-{% comment %} 
+{% comment %}
 {% extends 'base.html' %}
 {% endcomment %}
 
 {% load static %}
 
 {% include "header.html" %}
-	
-	{% block content %}
-		{% if user.is_authenticated %}
-		
-			{% comment %} 
-				Loggen in as: {{ user.username }}!
-			{% endcomment %} 
-			
-			<h2>Welcome back, Jacob Stimes!</h2>
-			<br>
-			<h4>Pick up where you left off in the <a href="/pests">Identifying Pests</a> lesson.</h4>
-			<br><br>
-			<a href="{% url 'logout' %}" class="btn btn-default">Logout</a>
-		{% else %}
-			<h1>Prison Garden Application</h1>
-			<a href="{% url 'login' %}" class="btn btn-default">Login</a>
-		{% endif %}
-	{% endblock %}
-	
+
+{% block content %}
+{% if user.is_authenticated %}
+
+{% comment %}
+Loggen in as: {{ user.username }}!
+{% endcomment %}
+
+
+<h3> Welcome back, {{ user.username}} !</h3>
+<br>
+<h4>Pick up where you left off in the <a href="/pests">Identifying Pests</a> lesson.</h4>
+<br><br>
+<a href="{% url 'logout' %}" class="btn btn-default">Logout</a>
+{% else %}
+<h1>Prison Garden Application</h1>
+<a href="{% url 'login' %}" class="btn btn-default">Login</a>
+{% endif %}
+{% endblock %}
+
 {% include "footer.html" %}

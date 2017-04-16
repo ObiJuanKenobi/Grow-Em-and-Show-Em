@@ -1,0 +1,158 @@
+{% include "admin/header.html" %}
+
+<style>
+	.correct {
+		color: green;
+	}
+	
+	.questionTextEdit, .answerEdit, .correctOption {
+		display:none;
+	}
+</style>
+
+<script type='text/javascript'>
+
+	var editing = false;
+	var uploadDialog;
+	
+	var uploadNewQuizFile = function() {
+		var file = document.getElementById("uploadFile").files[0];
+		//alert(file.name);
+		
+		var uploadType = $('input[name=uploadType]:checked').val();
+		//alert(uploadType);
+		
+		uploadDialog.dialog("close");
+	}
+	
+	var handleFiles = function() {
+		var disabled = document.getElementById("uploadFile").files.length == 0;
+		$("#uploadBtn").button("option", "disabled", disabled);
+	}
+	
+	$(function() {
+	
+		var inputElement = document.getElementById("uploadFile");
+		inputElement.addEventListener("change", handleFiles, false);
+		
+	
+		uploadDialog = $("#uploadNewQuestionList").dialog({
+			  autoOpen: false,
+			  height: 400,
+			  width: 450,
+			  modal: true,
+			  buttons: [
+				{
+					id: "uploadBtn",
+					text: "Upload",
+					disabled: 'true',
+					click: uploadNewQuizFile
+				},
+				{
+					id: "cancel",
+					text: "Cancel",
+					click: function() { uploadDialog.dialog("close"); }
+				}
+			  ],
+			  Close: function() {
+				
+			  }
+			});
+			
+		$("#uploadListBtn").click(function(){
+			uploadDialog.dialog("open");
+		});
+		
+		$("#editBtn").click(function() {
+		
+			$(".questionText").toggle();
+			$(".questionTextEdit").toggle();
+			$(".answerEdit").toggle();
+			$(".answer").toggle();
+			$(".correctOption").toggle();
+			
+			editing = !editing;
+			
+			if(editing){
+				$("#editBtn").text('Save');
+			}
+			else {
+				$("#editBtn").text('Edit');
+				
+				//Save was pressed, find text that changed and update DB
+				$("#questionsDiv div").each(function() {
+					var id = $(this).attr('id');
+					var originalText = $(this).find(".questionText").text().trim();
+					var editedText = String($(this).find(".questionTextEdit").val()).trim();
+					
+					if(originalText !== editedText){
+						alert("New question: " + editedText + ", " + originalText + ", " + id);
+					}
+					
+					$(this).find("ol li").each(function() {
+						var originalAnswer = $(this).find(".answer").text().trim();
+						var editedAnswer = String($(this).find(".answerEdit").val()).trim();
+						
+						if(originalAnswer !== editedAnswer){
+							alert("New answer: " + editedAnswer);
+						}
+						
+						
+					});
+				});
+			}
+		});
+		
+	});
+</script>
+
+<span class='adminPageTitle'>{{ unit }} Quiz</span>&nbsp; &nbsp;<a class='backLink' href='/pgaadmin/unit/{{unit}}'>Back</a><br><br>
+
+<div class='content'>
+	<button id='editBtn'>Edit</button>&nbsp;
+	<button id='addBtn'>Add Question</button>&nbsp;
+	<button id='uploadListBtn'>Upload New Question List</button><br><br>
+	
+	<div id='questionsDiv'>
+	{% for q in questions %}
+		
+		<div class='questionDiv' id='{{ q.id }}'>
+		<b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span>
+			<input type='text' class='questionTextEdit' value='{{ q.question }}'><br>
+		
+		<ol type='a' class='q{{q.id}}'>
+		{% for a in q.answers %}
+			
+			
+			{% if a.correct %}
+				<li>
+					<span class='option{{ forloop.counter }} answer correct'>{{a.answer}}</span>
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'> 
+					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}' checked>Correct Answer</label>
+				</li>
+			{% else %}
+				<li><span class='option{{ forloop.counter }} answer'>{{a.answer}}</span>
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'>  
+					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}'>Correct Answer</label>
+				</li>
+			{% endif %}
+			
+		{% endfor %}
+		</ol>
+		</div>
+		<br><br>
+	{% endfor %}
+	</div>
+	
+	<div id='uploadNewQuestionList'>
+		<span>Choose a file to upload, and whether you are adding questions to the existing set or would like to replace all existing questions.</span>
+		<br><br>
+		<label><input type='radio' name='uploadType' value='add' checked>Add questions</label><br>
+		<label><input type='radio' name='uploadType' value='replace'>Replace questions</label><br><br>
+		
+		<input type='file' id='uploadFile'>
+	</div>
+	
+</div>
+
+{% include "admin/footer.html" %}

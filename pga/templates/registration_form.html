@@ -1,34 +1,28 @@
+{% load static %}
+{% include "header.html" %}
 
-{% block title %}Register{% endblock %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/register-form.css' %}">
 
-{% block body %}
-    <div class="container-fluid">
+{% block content %}
+<div class="container">
+    <div class="wrapper">
+        {% if error_message %}
+        <p><strong>{{error_message}}</strong></p>
+        {% endif %}
+        <form class="form-register" name="Register-form" role="form" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3 class="form-register-heading">Create New Account</h3>
+            <hr class="colorgraph">
+            <br>
 
-        <div class="row">
-
-            <div class="col-sm-12 col-md-7">
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <h3> Create New Account</h3>
-                        {% if error_message %}
-                            <p><strong>{{error_message}}</strong></p>
-                        {% endif %}
-                        <form class="form-horizontal" role = "form" action="" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-
-                            {% include 'form-template.html' %}
-                            <div class="form-group">
-                                <div class="col-sm-offset-2 col-sm-10">
-                                    <button type="submit" class="btn btn-success">Submit</button>
-                                </div>
-                            </div>
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
+            {% include 'form-template.html' %}
+                <button type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">Submit</button>
+                <br>
+                <a href="/login">Already have an account? Login!</a>
+        </form>
     </div>
+
+</div>
 {% endblock %}
+{% include "footer.html" %}
