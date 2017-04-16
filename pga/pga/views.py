@@ -23,8 +23,8 @@ def login_view(request):
     else:
         return render(request, 'login.html', {})
 
-
-def createRecord_Table(request):
+@login_required(login_url='login/')
+def createRecordTable_Form(request):
     if request.method == 'POST':
         form = RecordTableForm(request.POST)
         if form.is_valid():

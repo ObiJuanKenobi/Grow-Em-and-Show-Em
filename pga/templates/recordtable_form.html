@@ -1,0 +1,27 @@
+{% load static %}
+{% include "header.html" %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/register-form.css' %}">
+
+{% block content %}
+<div class="container">
+    <div class="wrapper">
+        {% if error_message %}
+        <p><strong>{{error_message}}</strong></p>
+        {% endif %}
+        <form class="form-recordtable" name="recordTable-form" role="form" action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h3 class="form-recordTable-heading">Create A Record for the Taale</h3>
+            <hr class="colorgraph">
+            <br>
+
+            {% include 'form-template.html' %}
+                <button type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">Submit</button>
+                <br>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+{% include "footer.html" %}
