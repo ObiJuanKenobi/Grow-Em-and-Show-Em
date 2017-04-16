@@ -44,22 +44,10 @@ urlpatterns = [
     url(r'^courseNav/(?P<course>[a-z-]+)/(?P<color>[a-z0-9]+)/', views.courseNav, name='courseNav'),
 
     url(r'^glossary', views.glossary, name='glossary'),
-    url(r'^plan', views.plan, name='plan'),
-    url(r'^maintain', views.maintain, name='maintain'),
     url(r'^pests', views.pests, name='pests'),
     # url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
     # url(r'^quizResults', views.quizResults, name='quizResults'),
-    url(r'^fertilizer', views.fertilizer, name='fertilizer'),
-    url(r'^produce', views.produce, name='produce'),
-    url(r'^maturityTimeline', views.maturityTimeline, name='maturityTimeline'),
-    url(r'^watering', views.watering, name='watering'),
-    url(r'^weedRecognition', views.weedRecognition, name='weedRecognition'),
-    url(r'^disease', views.disease, name='disease'),
 
-    url(r'^harvest', views.harvest, name='harvest'),
-    url(r'^postHarvest', views.postHarvest, name='postHarvest'),
-    url(r'^records', views.records, name='records'),
-    url(r'^communication', views.communication, name='communication'),
     url(r'^gardenImage', views.garden, name='gardenImage'),
     url(r'^saveImage/$', views.saveImage, name='saveImage'),
     url(r'^loadImage/$', views.loadImage, name='loadImage')
