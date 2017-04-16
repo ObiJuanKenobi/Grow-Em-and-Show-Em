@@ -71,6 +71,17 @@ class DataAccess:
             lesson = Lesson_File_Path
         return lesson[0]
 
+    def deleteLesson(self, lessonname):
+        #This will get rid of the lesson from the table, but don't have supplemental content set up so not sure how to handle just yet
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Lessons WHERE Lesson_Name = %s", [lessonname])
+        self._cursor.execute("COMMIT")
+
+    def deleteUnit(self, unitName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Courses WHERE Course_Name = %s", [unitName])
+        self._cursor.execute("COMMIT")
+
     def getCourses(self):
         self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
         courses = []
@@ -94,7 +105,7 @@ class DataAccess:
             self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, coursename))
             questionID = self._cursor.lastrowid
             for answer in question._Answers:
-                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, IsCorrect) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
+                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, Is_Correct) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
 
         self._cursor.execute("COMMIT")
 
@@ -217,7 +228,7 @@ class QuizQuestion:
 
     def __init__(self):
         _Text = ""
-        _Answers = ["", "", "", ""]
+        _Answers = []
 
 #Class for passing quiz answers to the DB in a convenient object
 class QuizAnswer:
