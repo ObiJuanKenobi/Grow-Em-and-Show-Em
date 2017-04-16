@@ -64,6 +64,10 @@ class DataAccess:
             self._cursor.execute("INSERT into Lessons (Course_Name, Lesson_Name, Lesson_File_Path) values (%s, %s, %s)", (coursename, lessonname, lessonfilepath))
         self._cursor.execute("COMMIT")
 
+    def editLessonName(self, oldName, newName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Lessons SET Lesson_Name = %s WHERE Lesson_Name = %s", (newName, oldName))
+
     def getLesson(self, coursename, lessonname):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
@@ -81,6 +85,11 @@ class DataAccess:
     def deleteUnit(self, unitName):
         self._cursor = self._connection.cursor()
         self._cursor.execute("DELETE FROM Courses WHERE Course_Name = %s", [unitName])
+        self._cursor.execute("COMMIT")
+
+    def editUnitName(self, oldName, newName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Courses SET Course_Name = %s WHERE Course_Name = %s", (newName, oldName))
         self._cursor.execute("COMMIT")
 
     def getCourses(self):
