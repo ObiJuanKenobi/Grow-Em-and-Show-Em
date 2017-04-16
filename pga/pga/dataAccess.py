@@ -98,29 +98,39 @@ class DataAccess:
 
         self._cursor.execute("COMMIT")
 
-
     def getQuizQuestions(self, coursename):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
+        self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.AnswerID as answerID, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
 
         results = self._cursor.fetchall()
         questions = {};
         for row in results:
             id = row[0];
             question = row[1];
-            answer = row[2];
-            correct = row[3];
+            answerID = row[2];
+            answer = row[3];
+            correct = row[4];
 
             if id in questions:
-                questions[id]["answers"].append({"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
+                questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
             else:
                 questions[id] = {"question": question, "id": id};
-                questions[id]["answers"] = [{"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
+                questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
 
         questionsArr = [];
         for id in questions:
             questionsArr.append(questions[id])
         return questionsArr;
+
+    def editQuestionTitle(self, questionID, questionText):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Quiz_Questions SET Question_Text = %s WHERE QuestionID = %s", (questionText, questionID))
+        self._cursor.execute("COMMIT")
+
+    def editAnswer(self, answerID, answerText, isCorrect):
+        self._cursor = self._conneciton.cursor()
+        self._cursor.execute("UPDATE Quiz_Answers SET Answer_Text = %s, Is_Correct = %s WHERE AnswerID = %s", (answerText, isCorrect, answerID))
+        self._cursor.execute("COMMIT")
 
     def addQuizAttempt(self, coursename, username, passed, questions):
         self._cursor = self._connection.cursor()
