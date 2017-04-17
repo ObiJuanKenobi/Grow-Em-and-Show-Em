@@ -50,6 +50,7 @@ urlpatterns = [
     # url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
     # url(r'^quizResults', views.quizResults, name='quizResults'),
 
+    #Urls for records
     url(r'^harvest', views.harvest, name='harvest'),
     url(r'^postHarvest', views.postHarvest, name='postHarvest'),
     url(r'^records', views.records, name='records'),
