@@ -273,12 +273,13 @@ function initGardenItems() {
             fabric.Image.fromURL(imgSrc, function (img) {
                 img.scaleToWidth(gridSize);
                 img.scaleToHeight(gridSize);
-                if ($(window).width()) {
+                if ($(window).width() < 768) {
                     img.left = calSnapOffset(ui.position.left - offLeft);
                     img.top = calSnapOffset(ui.position.top - offTop);
                 } else {
-                    img.left = calSnapOffset(ui.position.left);
-                    img.top = calSnapOffset(ui.position.top);
+                    var pointer = canvas.getPointer(event);
+                    img.left = calSnapOffset(pointer.x);
+                    img.top = calSnapOffset(pointer.y);
                 }
                 canvas.add(img);
                 canvas.sendToBack(img);
