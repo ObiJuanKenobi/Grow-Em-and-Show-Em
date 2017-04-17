@@ -3,7 +3,7 @@ import glob
 import shutil
 import zipfile
 from subprocess import Popen, PIPE
-from dataAccess import DataAccess
+from .dataAccess import DataAccess
 
 # Directory in which to store course / lesson data.
 # Should probably somewhere in /etc, /var, or /opt.
