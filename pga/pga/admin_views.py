@@ -1,5 +1,6 @@
 from pga.abstract_upload_view import *
 from pga.dataAccess import DataAccess
+from pga.coursemanager import *
 
 #Displays all units, allowing users to delete them, upload another,
 # go to a unit's lessons, or go to supplementary materials
@@ -15,7 +16,8 @@ class CourseMgmtView(AbstractFileUploadView):
         return { 'courses': courses }
         
     def page_specific_handle_file(self, file):
-        return FileHandlingResult(True, 'TODO - not implemented')
+        status, message = processCourseZip(file)
+        return FileHandlingResult(status, message)
         
 #Displays all lessons in a given unit, allowing users to delete them, upload more,
 # or go to the unit quiz
