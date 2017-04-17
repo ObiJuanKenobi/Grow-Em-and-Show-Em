@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from pga.dataAccess import DataAccess
 from django.views.generic import View
-from .forms import UserForm
+from .forms import UserForm, RecordTableForm
 import json
 
 
@@ -22,6 +22,16 @@ def login_view(request):
         return redirect('home')
     else:
         return render(request, 'login.html', {})
+
+@login_required(login_url='login/')
+def createRecordTable_Form(request):
+    if request.method == 'POST':
+        form = RecordTableForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = RecordTableForm()
+    return render(request, '', {'form': form})
 
 
 @login_required(login_url='login/')
@@ -112,8 +122,9 @@ def quizResults(request, course):
     db.addQuizAttempt(course, 'todo-get username', 1)
     return render(request, 'quizResults.html', {'course': course})
 
+
 def garden(request):
-	return render(request, 'garden.html')
+    return render(request, 'garden.html')
 
 
 def saveImage(request):
@@ -133,11 +144,13 @@ def saveImage(request):
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+
 def loadImage(request):
     bedName = request.GET['bedName']
     db = DataAccess()
     plan = db.getBedPlan(bedName)
-    return HttpResponse(plan,content_type='application/json')
+    return HttpResponse(plan, content_type='application/json')
+
 
 @staff_member_required
 def adminHome(request):
@@ -163,6 +176,14 @@ def adminQuiz(request, unit):
     questions = DataAccess().getQuizQuestions(unit);
 
     return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
+
+
+def courseNav(request, course, color):
+    db = DataAccess()
+    courses = db.getCourseLessons(course)
+    for c in courses:
+        c['link'] = c['name'].lower().replace(' ', '_')
+    return render(request, 'courseNav.html', {'courses': courses, 'course': course.replace('-', ' '), 'color': color})
 
 
 class UserFormView(View):

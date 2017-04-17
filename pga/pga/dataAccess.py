@@ -64,6 +64,10 @@ class DataAccess:
             self._cursor.execute("INSERT into Lessons (Course_Name, Lesson_Name, Lesson_File_Path) values (%s, %s, %s)", (coursename, lessonname, lessonfilepath))
         self._cursor.execute("COMMIT")
 
+    def editLessonName(self, oldName, newName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Lessons SET Lesson_Name = %s WHERE Lesson_Name = %s", (newName, oldName))
+
     def getLesson(self, coursename, lessonname):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
@@ -71,6 +75,22 @@ class DataAccess:
         for(Lesson_File_Path) in self._cursor:
             lesson = Lesson_File_Path
         return lesson[0]
+
+    def deleteLesson(self, lessonname):
+        #This will get rid of the lesson from the table, but don't have supplemental content set up so not sure how to handle just yet
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Lessons WHERE Lesson_Name = %s", [lessonname])
+        self._cursor.execute("COMMIT")
+
+    def deleteUnit(self, unitName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Courses WHERE Course_Name = %s", [unitName])
+        self._cursor.execute("COMMIT")
+
+    def editUnitName(self, oldName, newName):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Courses SET Course_Name = %s WHERE Course_Name = %s", (newName, oldName))
+        self._cursor.execute("COMMIT")
 
     def getCourses(self):
         self._cursor = self._connection.cursor()
@@ -90,40 +110,49 @@ class DataAccess:
             lessons.append({"name": row[0], "path": row[1]})
         return lessons
 
-
     def addQuiz(self, coursename, questions):
         self._cursor = self._connection.cursor()
         for question in questions:
             self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, coursename))
             questionID = self._cursor.lastrowid
             for answer in question._Answers:
-                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, IsCorrect) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
+                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, Is_Correct) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
 
         self._cursor.execute("COMMIT")
 
-
     def getQuizQuestions(self, coursename):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
+        self._cursor.execute("SELECT q.questionID as id, q.Question_Text as question, a.AnswerID as answerID, a.Answer_Text as answer, a.Is_Correct as correct FROM Quiz_Questions q, Quiz_Answers a WHERE q.Course_Name = %s AND q.questionID = a.questionID;", [coursename])
 
         results = self._cursor.fetchall()
         questions = {};
         for row in results:
             id = row[0];
             question = row[1];
-            answer = row[2];
-            correct = row[3];
+            answerID = row[2];
+            answer = row[3];
+            correct = row[4];
 
             if id in questions:
-                questions[id]["answers"].append({"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
+                questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
             else:
                 questions[id] = {"question": question, "id": id};
-                questions[id]["answers"] = [{"answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
+                questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
 
         questionsArr = [];
         for id in questions:
             questionsArr.append(questions[id])
         return questionsArr;
+
+    def editQuestionTitle(self, questionID, questionText):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Quiz_Questions SET Question_Text = %s WHERE QuestionID = %s", (questionText, questionID))
+        self._cursor.execute("COMMIT")
+
+    def editAnswer(self, answerID, answerText, isCorrect):
+        self._cursor = self._conneciton.cursor()
+        self._cursor.execute("UPDATE Quiz_Answers SET Answer_Text = %s, Is_Correct = %s WHERE AnswerID = %s", (answerText, isCorrect, answerID))
+        self._cursor.execute("COMMIT")
 
     def addQuizAttempt(self, coursename, username, passed, questions):
         self._cursor = self._connection.cursor()
@@ -162,7 +191,6 @@ class DataAccess:
         row = {"unit": course, "attempt":[{"question": results[0][i], "answer": results[0][i+1]}]}
         for i in range(1, len(results)):
             row["attempt"].append({"question": results[0][i], "answer": results[0][i+1]})
-        #print course
         return results
 
     def getPercentPassed(self, unit):
@@ -187,7 +215,6 @@ class DataAccess:
         server.login('prisongardenapp@gmail.com', 'prisongardenapp2017')
         server.sendmail(fromaddr, toaddr, msg.as_string())
         server.close()
-        print ('Email sent!')
 
     def saveBedPlan(self, bedName, canvasData):
         self._cursor = self._connection.cursor()
@@ -210,7 +237,7 @@ class QuizQuestion:
 
     def __init__(self):
         _Text = ""
-        _Answers = ["", "", "", ""]
+        _Answers = []
 
 #Class for passing quiz answers to the DB in a convenient object
 class QuizAnswer:

@@ -1,0 +1,60 @@
+/*!
+ * Start Bootstrap - Thumbnail Gallery (http://startbootstrap.com/)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+
+body {
+    padding-top: 70px; /* Required padding for .navbar-fixed-top. Change if height of navigation changes. */
+}
+
+#title{
+    position: absolute;
+    top: 64%;
+    transform: translateY(-50%);
+    color: white;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+    font-size: 60pt;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+#titleBar{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+}
+
+#subMenus{
+    position: fixed;
+    transform:translateX(-15%);
+}
+
+.subMenuIcons {
+    height: 100%;
+    border-style: solid;
+    background-color: #b9bebd;
+    border-width: 9px;
+    border-radius: 5px;
+}
+
+.subMenuText{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    color: white;
+    font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
+    font-size: 24pt;
+    font-weight: 500;
+    text-align: center;
+}
+
+.thumb {
+    margin-bottom: 30px;
+}
+
+footer {
+    margin: 50px 0;
+}

@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
-
+    
     # the '.' character in a regex matches any char besides newline
     url(r'^pgaadmin/unit/(?P<unit>.+)/(?P<lesson>.+)', AdminLessonView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>.+)', AdminUnitView.as_view()),
@@ -43,27 +43,18 @@ urlpatterns = [
 
     url(r'^quiz/(?P<course>[A-Za-z\s]+)', views.quiz, name='quiz'),
     url(r'^quizResults/(?P<course>[A-Za-z\s]+)', views.quizResults, name='quizResults'),
+    url(r'^courseNav/(?P<course>[a-z-]+)/(?P<color>[a-z0-9]+)/', views.courseNav, name='courseNav'),
 
     url(r'^glossary', views.glossary, name='glossary'),
-    url(r'^plan', views.plan, name='plan'),
-    url(r'^maintain', views.maintain, name='maintain'),
     url(r'^pests', views.pests, name='pests'),
     # url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
     # url(r'^quizResults', views.quizResults, name='quizResults'),
-    url(r'^fertilizer', views.fertilizer, name='fertilizer'),
-    url(r'^produce', views.produce, name='produce'),
-    url(r'^maturityTimeline', views.maturityTimeline, name='maturityTimeline'),
-    url(r'^watering', views.watering, name='watering'),
-    url(r'^weedRecognition', views.weedRecognition, name='weedRecognition'),
-    url(r'^disease', views.disease, name='disease'),
 
-    url(r'^harvest', views.harvest, name='harvest'),
-    url(r'^postHarvest', views.postHarvest, name='postHarvest'),
-    url(r'^records', views.records, name='records'),
-    url(r'^communication', views.communication, name='communication'),
     url(r'^gardenImage', views.garden, name='gardenImage'),
     url(r'^saveImage/$', views.saveImage, name='saveImage'),
-    url(r'^loadImage/$', views.loadImage, name='loadImage')
+    url(r'^loadImage/$', views.loadImage, name='loadImage'),
+
+    #Urls for records
 ]
 
 urlpatterns += staticfiles_urlpatterns()
