@@ -186,19 +186,25 @@ class DataAccess:
         server.close()
         print ('Email sent!')
 
-    def saveBedPlan(self, bedName, canvasData):
+    def saveBedPlan(self, bedName, bedPlan, canvasData):
         self._cursor = self._connection.cursor()
-        exist = self._cursor.execute("SELECT PlanID FROM Bed_Plans WHERE Bed_Name = %s", [bedName])
-        if exist:
-            self._cursor.execute("UPDATE Bed_Plans SET Bed_Name = %s, Bed_Plan = %s", (bedName, canvasData))
-        else:
-            self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan) values (%s, %s)", (bedName, canvasData))
+        self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan, Bed_Canvas) values (%s, %s, %s)", (bedName, bedPlan, canvasData))
         self._cursor.execute("COMMIT")
 
-    def getBedPlan(self, bedName):
+    def getBedPlans(self, bedName):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT Bed_Plan FROM Bed_Plans WHERE Bed_Name = %s", [bedName])
+        self._cursor.execute("SELECT PlanID, Bed_Plan, Updated_At, Created_At FROM Bed_Plans WHERE Bed_Name = %s", [bedName])
+        return self._cursor.fetchall()
+
+    def getBedCanvas(self, planID):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Bed_Canvas FROM Bed_Plans WHERE PlanID = %s",[planID])
         return self._cursor.fetchone()
+
+    def deleteBedPlan(self, planID):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Bed_Plans WHERE PlanID = %s", [planID])
+        self._cursor.execute("COMMIT")
 
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:

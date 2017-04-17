@@ -113,15 +113,15 @@ def quizResults(request, course):
     return render(request, 'quizResults.html', {'course': course})
 
 def garden(request):
-	return render(request, 'garden.html')
+    return render(request, 'garden.html', {'gardenName': "Venus"})
 
-
-def saveImage(request):
+def savePlan(request):
     if request.is_ajax() and request.POST:
         bedName = request.POST.get('bedName')
-        canvasData = request.POST.get('canvasData')
+        bedPlan = request.POST.get('bedPlan')
+        bedCanvas = request.POST.get('bedCanvas')
         db = DataAccess()
-        db.saveBedPlan(bedName, canvasData)
+        db.saveBedPlan(bedName, bedPlan, bedCanvas)
         response = {
             'status': 200,
             'message': 'Successfully saved changes on canvas'
@@ -133,11 +133,46 @@ def saveImage(request):
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
 
-def loadImage(request):
+def showPlans(request):
     bedName = request.GET['bedName']
     db = DataAccess()
-    plan = db.getBedPlan(bedName)
-    return HttpResponse(plan,content_type='application/json')
+    plans = db.getBedPlans(bedName)
+    response = {
+        'status': 200,
+        'context': []
+    }
+    for plan in plans:
+        p = {
+            'planID': plan[0],
+            'bedPlan': plan[1],
+            'updatedAt': str(plan[2].now()),
+            'createdAt': str(plan[3].now())
+        }
+        response["context"].append(p)
+
+    return HttpResponse(json.dumps(response),content_type='application/json')
+
+def getBedCanvas(request):
+    planID = request.GET['planID']
+    db = DataAccess()
+    canvas = db.getBedCanvas(planID)
+    return HttpResponse(canvas, content_type='application/json')
+
+def deletePlan(request):
+    if request.POST:
+        planID = request.POST.get('planID')
+        db = DataAccess()
+        db.deleteBedPlan(planID)
+        response = {
+            'status': 200,
+            'message': 'Successfully remove the selected plan'
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Invalid request'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
 @staff_member_required
 def adminHome(request):

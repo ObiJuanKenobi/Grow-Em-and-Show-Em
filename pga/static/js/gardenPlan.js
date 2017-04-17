@@ -13,12 +13,12 @@ var imgCache = [],
  */
 function setupCSRF() {
     // CSRF code
+    // using jQuery
     function getCookie(name) {
         var cookieValue = null;
-        var i = 0;
         if (document.cookie && document.cookie !== '') {
             var cookies = document.cookie.split(';');
-            for (i; i < cookies.length; i++) {
+            for (var i = 0; i < cookies.length; i++) {
                 var cookie = jQuery.trim(cookies[i]);
                 // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
@@ -38,14 +38,12 @@ function setupCSRF() {
     }
 
     $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
         beforeSend: function (xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
                 xhr.setRequestHeader("X-CSRFToken", csrftoken);
             }
         }
     });
-
 }
 
 /**
@@ -100,41 +98,99 @@ function draw() {
 /**
  * Save the changes bed plan into the database according to the bed name
  */
-function saveImage() {
-    var canvasData = JSON.stringify(canvas);
+function savePlan() {
+    var bedCanvas = JSON.stringify(canvas),
+        bedPlan = $('#bedPlanName').val();
     $.ajax({
-        url: "/saveImage/",
+        url: "/savePlan/",
         type: "POST",
         data: {
             bedName: "Venus",
-            canvasData: canvasData
+            bedPlan: bedPlan,
+            bedCanvas: bedCanvas
         },
         success: function (data) {
-            console.log(data);
+            alert("Save successfully.");
         },
         error: function (xhr, errmsg, err) {
             console.log("Error: " + errmsg);
         }
-    }).done(function (data) {
-        alert("Save successfully.")
     });
 }
 
 /**
- * Load the bed plan based on the bed's name
+ * Remove the selected bed plan
+ * @param planID
  */
-function loadImage() {
+function deletePlan(planID) {
     $.ajax({
-        url: "/loadImage",
+        url: "/deletePlan/",
+        type: "POST",
+        data: {
+            planID: planID
+        },
+        success: function (data) {
+            document.getElementById(planID).remove();
+        },
+        error: function (xhr, errmsg, err) {
+            console.log("Error: " + errmsg);
+        }
+    });
+}
+
+/**
+ * Change the selected plan into be active class
+ * @param el
+ */
+function setSelectedPlan(el) {
+    $(el).parent().find('a').removeClass('active');
+    $(el).addClass('active');
+}
+
+/**
+ * Display all bed plans for the current garden
+ */
+function showPlans() {
+    $.ajax({
+        url: "/showPlans",
         type: "GET",
         data: {
             bedName: "Venus"
         },
-        success: function (data) {
-            canvas.loadFromJSON(data, canvas.renderAll.bind(canvas));
+        success: function (resp) {
+            var plans = resp.context;
+            $("#plansList a").remove();
+            for (var i = 0; i < plans.length; i++) {
+                var bedPlan = plans[i].bedPlan,
+                    planID = plans[i].planID;
+                $("#plansList").append('<a href="#" id= ' + planID + ' class="list-group-item" onclick="setSelectedPlan(this)">' + bedPlan + '<button type="button" class="close float-right deletePlanX" aria-label="Close" onclick="deletePlan(' + planID + ')"> <span aria-hidden="true">&times;</span> </button></a>');
+            }
         },
         error: function (xhr, errmsg, err) {
-            console.log("Error: " + errmsg);
+            alert("Error: " + errmsg);
+        }
+    });
+}
+
+/**
+ * Load the selected bed plan into canvas.
+ */
+function loadPlan() {
+    var selectedPlan = document.getElementsByClassName("list-group-item active")[0],
+        selectedPlanID = selectedPlan.id;
+
+    $.ajax({
+        url: "/getBedCanvas",
+        type: "GET",
+        data: {
+            planID: selectedPlanID
+        },
+        success: function (resp) {
+            canvas.loadFromJSON(resp, canvas.renderAll.bind(canvas));
+            $("#loadPlanModal").close();
+        },
+        error: function (xhr, errmsg, err) {
+            alert("Error: " + errmsg);
         }
     });
 }
@@ -217,22 +273,52 @@ function initGardenItems() {
             fabric.Image.fromURL(imgSrc, function (img) {
                 img.scaleToWidth(gridSize);
                 img.scaleToHeight(gridSize);
-                img.left = calSnapOffset(ui.position.left - offLeft);
-                img.top = calSnapOffset(ui.position.top - offTop);
+                if ($(window).width()) {
+                    img.left = calSnapOffset(ui.position.left - offLeft);
+                    img.top = calSnapOffset(ui.position.top - offTop);
+                } else {
+                    img.left = calSnapOffset(ui.position.left);
+                    img.top = calSnapOffset(ui.position.top);
+                }
                 canvas.add(img);
+                canvas.sendToBack(img);
             });
         }
     });
 }
 
+function timeStamp() {
+    // Create a date object with the current time
+    var now = new Date();
+    // Create an array with the current month, day and time
+    var date = [now.getMonth() + 1, now.getDate(), now.getFullYear()];
+    // Create an array with the current hour, minute and second
+    var time = [now.getHours(), now.getMinutes(), now.getSeconds()];
+    // Determine AM or PM suffix based on the hour
+    var suffix = ( time[0] < 12 ) ? "AM" : "PM";
+    // Convert hour from military time
+    time[0] = ( time[0] < 12 ) ? time[0] : time[0] - 12;
+    // If hour is 0, set it to 12
+    time[0] = time[0] || 12;
+
+    // If seconds and minutes are less than 10, add a zero
+    for (var i = 1; i < 3; i++) {
+        if (time[i] < 10) {
+            time[i] = "0" + time[i];
+        }
+    }
+    // Return the formatted string
+    return date.join("/") + " " + time.join(":") + " " + suffix;
+}
+
+function resetCanvas() {
+    canvas.clear();
+    drawGrid();
+}
+
 $(document).ready(function () {
-    var clearBtn = document.getElementById("clrBtn"),
-        resetBtn = document.getElementById("resetBtn"),
-        undoBtn = document.getElementById("undoBtn"),
-        redoBtn = document.getElementById("redoBtn"),
-        drawImage = document.getElementById("drawBtn"),
-        saveImageBtn = document.getElementById("saveImg"),
-        loadImageBtn = document.getElementById("loadImg");
+    var resetBtn = document.getElementById("resetBtn"),
+        savePlan = document.getElementById("savePlan");
 
     gardenInstance = new fabric.Image.fromURL("/static/img/gardenPlan.jpg", function (img) {
         img.scaleToWidth(canvas.getWidth());
@@ -246,35 +332,8 @@ $(document).ready(function () {
     drawGrid();
     setupCSRF();
 
-    // Attach drawing event
-    drawImage.onclick = function () {
-        draw();
-    };
-
-    // Attach save image event
-    saveImageBtn.onclick = function () {
-        saveImage();
-    };
-
-    loadImageBtn.onclick = function () {
-        loadImage();
-    };
-
-    clearBtn.onclick = function () {
-        eraseObj();
-    };
-
-    resetBtn.onclick = function () {
-        canvas.clear();
-        canvas.add(gardenInstance);
-    };
-
-    undoBtn.onclick = function () {
-        removeLastObj();
-    };
-
-    redoBtn.onclick = function () {
-        restoreLastObj();
+    savePlan.onclick = function () {
+        $('#bedPlanName').val(timeStamp());
     };
 
     // Initialize the garden items
