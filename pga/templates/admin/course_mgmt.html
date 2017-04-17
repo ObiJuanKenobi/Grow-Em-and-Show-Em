@@ -9,7 +9,7 @@
 	
 	#suppDiv {
 		float: right;
-		margin-right: 25px;
+		margin-right: 155px;
 		margin-top: 15px;
 	}
 	
@@ -20,28 +20,77 @@
 </style>
 
 <script type='text/javascript'>
+
+    var editing = false;
+    var courseToDelete = '';
+    var confirmDeleteDialog;
+    var uploadDialog;
+    var fileUploadId;
+    
+    function confirmDeleteUnit() {
+        //TODO delete on server
+        $("#" + courseToDelete + "Li").remove();
+        confirmDeleteDialog.dialog("close");
+    }
+    
+    var uploadUnit = function() {
+        $("#uploadForm").submit();
+    }
+    
 	$(function() {
-	
-		$("#editBtn").click(function() {
-			$(".removeBtn").toggle();
-		});
+    
+        fileUploadId = $("#fileUploadId").val();
+        uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js	
+        
+        $("#addUnit").click(function() {
+            uploadDialog.dialog('open');
+        });
+        
+		initEditButton();
 		
 		$(".removeBtn").click(function() {
-			var course = $(this).val();
-			alert("You sure you want to delete " + course + "?");
+			courseToDelete = $(this).val();
+            $("#confirmDeleteText").text("Are you sure you want to delete " + courseToDelete + "?");
+			confirmDeleteDialog.dialog('open');
 		});
+        
+        confirmDeleteDialog = $("#confirmDeleteDialog").dialog({
+			  autoOpen: false,
+			  height: 400,
+			  width: 450,
+			  modal: true,
+			  buttons: [
+				{
+					id: "deleteBtn",
+					text: "Delete Unit",
+					click: confirmDeleteUnit
+				},
+				{
+					id: "cancel",
+					text: "Cancel",
+					click: function() { confirmDeleteDialog.dialog("close"); }
+				}
+			  ],
+			  Close: function() {
+				
+			  }
+			});
 	});
 
 </script>
 
 <span class='adminPageTitle'>Course Management</span>&nbsp; &nbsp;<a href='/pgaadmin' class='backLink'>Back</a>
+
 <br>
+
 <div id='unitsDiv'>
 	<h3>Units</h3>
+    
+    {% include "admin/upload_status.html" %}
 	
 	<ol>
 		{% for c in courses %}
-			<li>
+			<li id='{{ c.Course_Name }}Li'>
 				<div><a href='unit/{{ c.Course_Name }}' class='unitLink'><span class='unitTitle'>{{ c.Course_Name }}</span></a>
 				&nbsp; <button class='removeBtn' value='{{ c.Course_Name}}'>Delete Unit</button></div>
 			</li>
@@ -56,5 +105,11 @@
 <div id='suppDiv'>
 	<a href='supplementaryMaterials'><button id='suppBtn'>Supplementary Materials</button></a>
 </div>
+
+<div id='confirmDeleteDialog'>
+    <span id='confirmDeleteText'></span>
+</div>
+
+{% include "admin/upload_dialog.html" %}
 
 {% include "admin/footer.html" %}

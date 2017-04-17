@@ -1,16 +1,27 @@
 {% include "admin/header.html" %}
 
 <script type='text/javascript'>
+
+    var editing = false;
+    var lessonToDelete = '';
+    var confirmDeleteDialog;
+    var uploadDialog;
+    var fileUploadId;
+
 	$(function() {
 	
-		$("#editBtn").click(function() {
-			$(".removeBtn").toggle();
-		});
+		initEditButton();
 		
 		$(".removeBtn").click(function() {
 			var lesson = $(this).val();
 			alert("You sure you want to delete " + lesson + "?");
 		});
+        
+        fileUploadId = $("#fileUploadId").val();
+        uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js	
+        $('#uploadLesson').click(function() {
+            uploadDialog.dialog("open");
+        });
 	});
 
 </script>
@@ -22,7 +33,9 @@
 
 <a href='/pgaadmin/quiz/{{unit}}'><button id='download'>Unit Quiz</button></a><br><br>
 
-<span> Lessons: </span><br>
+<h3> Lessons: </h3>
+
+{% include "admin/upload_status.html" %}
 
 <ol>
 {% for l in lessons %}
@@ -32,6 +45,8 @@
 	</li>
 {% endfor %}
 </ol><br><br>
-<button id='editBtn'>Edit</button>&nbsp;<button id='uploadLesson'>Upload Lesson</button><br>
+<button id='editBtn'>Edit</button>&nbsp;
+<button id='uploadLesson'>Upload Lesson</button><br>
 
+{% include "admin/upload_dialog.html" %}
 {% include "admin/footer.html" %}

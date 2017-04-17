@@ -1,0 +1,9 @@
+{% if uploading %}
+    
+    {% if upload_success %}
+        <span class='uploadSuccess'>{{ upload_status }}</span>
+    {% else %}
+        <span class='uploadFailed'>{{ upload_status }}</span>
+    {% endif %}
+
+{% endif %}

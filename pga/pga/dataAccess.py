@@ -65,6 +65,7 @@ class DataAccess:
         self._cursor.execute("COMMIT")
 
     def getLesson(self, coursename, lessonname):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
         lesson = ""
         for(Lesson_File_Path) in self._cursor:
@@ -72,6 +73,7 @@ class DataAccess:
         return lesson[0]
 
     def getCourses(self):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
         courses = []
         results = self._cursor.fetchall()
@@ -80,6 +82,7 @@ class DataAccess:
         return courses
 
     def getCourseLessons(self, coursename):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_Name, Lesson_File_Path FROM Lessons WHERE Course_Name = %s", [coursename])
         results = self._cursor.fetchall()
         lessons = []
@@ -159,7 +162,7 @@ class DataAccess:
         row = {"unit": course, "attempt":[{"question": results[0][i], "answer": results[0][i+1]}]}
         for i in range(1, len(results)):
             row["attempt"].append({"question": results[0][i], "answer": results[0][i+1]})
-        print course
+        #print course
         return results
 
     def getPercentPassed(self, unit):

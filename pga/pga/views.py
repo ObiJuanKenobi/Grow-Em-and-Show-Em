@@ -150,12 +150,6 @@ def adminCourseInfo(request):
 
 
 @staff_member_required
-def adminCourseMgmt(request):
-    courses = DataAccess().getCourses()
-    return render(request, 'admin/course_mgmt.html', {'courses': courses});
-
-
-@staff_member_required
 def adminUserProgress(request):
     return render(request, 'admin/user_progress.html');
 
@@ -163,23 +157,6 @@ def adminUserProgress(request):
 @staff_member_required
 def adminQuizStatistics(request):
     return render(request, 'admin/quiz_statistics.html');
-
-
-@staff_member_required
-def adminSupplementaryMaterials(request):
-    return render(request, 'admin/supplementary_materials.html');
-
-
-@staff_member_required
-def adminUnit(request, unit):
-    lessons = DataAccess().getCourseLessons(unit)
-    return render(request, 'admin/unit.html', {'lessons': lessons, 'unit': unit});
-
-
-@staff_member_required
-def adminLesson(request, lesson, unit):
-    return render(request, 'admin/lesson.html', {'lesson': lesson, 'unit': unit});
-
 
 @staff_member_required
 def adminQuiz(request, unit):

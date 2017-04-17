@@ -16,3 +16,11 @@
 li {
 	margin-top: 15px;
 }
+
+.uploadSuccess {
+    color: green;
+}
+
+.uploadFailed {
+    color: red;
+}
