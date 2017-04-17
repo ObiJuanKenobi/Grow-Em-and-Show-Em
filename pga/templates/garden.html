@@ -12,19 +12,20 @@
 {% endblock %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
-<link rel="stylesheet" type="text/css" href="{% static 'css/gardenImage.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
 <meta name="viewport" content="width=device-width,user-scalable=no">
-<h1>Garden's Image</h1>
+<h1>{{ gardenName }}'s Bed Plan</h1>
 
 <div class="container-fluid gardenLayout">
     <div class="row">
-        <button id="drawBtn" class="btn">Draw</button>
-        <button id="saveImg" class="btn">Save</button>
-        <button id="loadImg" class="btn">Load</button>
-        <button id="clrBtn" class="btn">Erase</button>
-        <button id="undoBtn" class="btn">Undo</button>
-        <button id="redoBtn" class="btn">Redo</button>
-        <button id="resetBtn" class="btn">Reset</button>
+        <button id="drawBtn" class="btn" onclick="draw()">Draw</button>
+        <button id="savePlan" class="btn" data-toggle="modal" data-target="#savePlanModal">Save</button>
+        <button id="loadPlans" class="btn" onclick="showPlans()" data-toggle="modal" data-target="#loadPlanModal">Load
+        </button>
+        <button id="clrBtn" class="btn" onclick="eraseObj()">Erase</button>
+        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>
+        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>
+        <button id="resetBtn" class="btn" onclick="resetCanvas()">Reset</button>
     </div>
     <div class="row">
         <div class="itemsLayout" id="itemsBoard">
@@ -34,10 +35,56 @@
     </div>
     <div class="row">
         <div class="bedContainer snapZone">
-            <canvas id="gardenCanvas" height="300px" width="600px"></canvas>
+            <canvas id="gardenCanvas" height="300px" width="500px"></canvas>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="savePlanModal" tabindex="-1" role="dialog" aria-labelledby="savePlanModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="savePlanModalLabel">New Bed Plan</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="bedPlanName" class="control-label">Bed Plan Name:</label>
+                        <input type="text" class="form-control" id="bedPlanName">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveBedBtn" data-dismiss="modal" onclick="savePlan()">
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="loadPlanModal" tabindex="-1" role="dialog" aria-labelledby="loadPlanModalTitle"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loadPlanModalTitle">Bed Plans</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="list-group" id="plansList"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="loadBedBtn" onclick="loadPlan()" data-dismiss="modal">Load</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% include "footer.html" %}

@@ -1,11 +1,16 @@
 .gardenLayout #gardenCanvas {
-    width: 100%;
+    max-width: 100%;
     height: auto;
     border: 1px solid #000000;
 }
 
 .gardenLayout #itemsCanvas {
     border: 1px solid #000000;
+}
+
+#loadPlanModal .deletePlanX {
+    color: red;
+    opacity: 1;
 }
 
 .gardenLayout .gardenItems, .gardenLayout .gardenItems img {
@@ -15,5 +20,5 @@
 
 .gardenLayout .itemsLayout {
     background-color: lightgrey;
-    width: 600px;
+    width: 500px;
 }

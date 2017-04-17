@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
-    
+
     # the '.' character in a regex matches any char besides newline
     url(r'^pgaadmin/unit/(?P<unit>.+)/(?P<lesson>.+)', AdminLessonView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>.+)', AdminUnitView.as_view()),
@@ -50,11 +50,16 @@ urlpatterns = [
     # url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
     # url(r'^quizResults', views.quizResults, name='quizResults'),
 
-    url(r'^gardenImage', views.garden, name='gardenImage'),
-    url(r'^saveImage/$', views.saveImage, name='saveImage'),
-    url(r'^loadImage/$', views.loadImage, name='loadImage'),
-
     #Urls for records
+    url(r'^harvest', views.harvest, name='harvest'),
+    url(r'^postHarvest', views.postHarvest, name='postHarvest'),
+    url(r'^records', views.records, name='records'),
+    url(r'^communication', views.communication, name='communication'),
+    url(r'^garden', views.garden, name='garden'),
+    url(r'^savePlan/$', views.savePlan, name='savePlan'),
+    url(r'^showPlans/$', views.showPlans, name='showPlans'),
+    url(r'^deletePlan/$', views.deletePlan, name='deletePlan'),
+    url(r'^getBedCanvas/$', views.getBedCanvas, name='getBedCanvas')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
