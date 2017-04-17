@@ -1,0 +1,21 @@
+<!--
+    HTML for a generic upload file dialog box
+-->
+<div id='uploadDialog'>
+    <!--
+        empty action sends form to current URL 
+        To set to custom action:
+        $("#uploadForm").attr('action', <action>); 
+    -->
+    <form id='uploadForm' enctype='multipart/form-data' method='post' action=''>
+        {% csrf_token %}
+        {{ form }}
+        <!--
+         django uses 'id_file' for a form field named 'file',
+          but I'm setting the id to a hidden value 
+          and then getting that in case django ever 
+          changes this id
+        -->
+        <input type='hidden' value='{{ form.file.auto_id }}' id='fileUploadId'>
+    </form>
+</div>

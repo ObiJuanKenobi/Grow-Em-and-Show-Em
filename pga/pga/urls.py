@@ -20,6 +20,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
 from . import views
+from pga.admin_views import *
 
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -29,31 +30,25 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # the '.' character in a regex matches any char besides newline
-    url(r'^pgaadmin/unit/(?P<unit>.+)/(?P<lesson>.+)', views.adminLesson),
-    url(r'^pgaadmin/unit/(?P<unit>.+)', views.adminUnit),
+    url(r'^pgaadmin/unit/(?P<unit>.+)/(?P<lesson>.+)', AdminLessonView.as_view()),
+    url(r'^pgaadmin/unit/(?P<unit>.+)', AdminUnitView.as_view()),
     url(r'^pgaadmin/quiz/(?P<unit>.+)', views.adminQuiz),
-    url(r'^pgaadmin/supplementaryMaterials', views.adminSupplementaryMaterials),
+    url(r'^pgaadmin/supplementaryMaterials/(?P<resource_type>.+)', AdminSuppMatView.as_view()),
+    url(r'^pgaadmin/supplementaryMaterials', adminSupplementaryMaterials),
     url(r'^pgaadmin/quizStatistics', views.adminQuizStatistics),
     url(r'^pgaadmin/userProgress', views.adminUserProgress),
-    url(r'^pgaadmin/courseMgmt', views.adminCourseMgmt),
+    url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),#views.adminCourseMgmt),
     url(r'^pgaadmin/courseInfo', views.adminCourseInfo),
     url(r'^pgaadmin/', views.adminHome),
 
     url(r'^quiz/(?P<course>[A-Za-z\s]+)', views.quiz, name='quiz'),
     url(r'^quizResults/(?P<course>[A-Za-z\s]+)', views.quizResults, name='quizResults'),
+    url(r'^courseNav/(?P<course>[a-z-]+)/(?P<color>[a-z0-9]+)/', views.courseNav, name='courseNav'),
 
     url(r'^glossary', views.glossary, name='glossary'),
-    url(r'^plan', views.plan, name='plan'),
-    url(r'^maintain', views.maintain, name='maintain'),
     url(r'^pests', views.pests, name='pests'),
     # url(r'^pestQuiz', views.pestsQuiz, name='pestsQuiz'),
     # url(r'^quizResults', views.quizResults, name='quizResults'),
-    url(r'^fertilizer', views.fertilizer, name='fertilizer'),
-    url(r'^produce', views.produce, name='produce'),
-    url(r'^maturityTimeline', views.maturityTimeline, name='maturityTimeline'),
-    url(r'^watering', views.watering, name='watering'),
-    url(r'^weedRecognition', views.weedRecognition, name='weedRecognition'),
-    url(r'^disease', views.disease, name='disease'),
 
     url(r'^harvest', views.harvest, name='harvest'),
     url(r'^postHarvest', views.postHarvest, name='postHarvest'),

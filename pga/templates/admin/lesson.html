@@ -1,8 +1,38 @@
 {% include "admin/header.html" %}
 
+<script type='text/javascript'>
+
+    var uploadDialog;
+    var fileUploadId;
+    
+    function confirmDeleteUnit() {
+        //TODO delete on server
+        $("#" + courseToDelete + "Li").remove();
+        confirmDeleteDialog.dialog("close");
+    }
+    
+	$(function() {
+    
+        fileUploadId = $("#fileUploadId").val();
+        uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js	
+        
+        $("#uploadLesson").click(function() {
+            uploadDialog.dialog('open');
+        });
+        
+    });
+    
+</script>
+
 <span class='adminPageTitle'>{{ lesson }}</span>&nbsp; &nbsp;<a class='backLink' href='/pgaadmin/unit/{{ unit }}'>Back</a><br><br>
 
-<button id='download'>Download Lesson</button><br><br>
-<button id='download'>Upload Replacement Lesson</button>
+<button id='downloadLesson'>Download Lesson</button><br><br>
+<button id='uploadLesson'>Upload Replacement Lesson</button>
+
+<br>
+
+{% include "admin/upload_status.html" %}
+
+{% include "admin/upload_dialog.html" %}
 
 {% include "admin/footer.html" %}

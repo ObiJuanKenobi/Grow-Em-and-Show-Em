@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from pga.dataAccess import DataAccess
 from django.views.generic import View
-from .forms import UserForm
+from .forms import UserForm, RecordTableForm
 import json
 
 
@@ -22,6 +22,16 @@ def login_view(request):
         return redirect('home')
     else:
         return render(request, 'login.html', {})
+
+@login_required(login_url='login/')
+def createRecordTable_Form(request):
+    if request.method == 'POST':
+        form = RecordTableForm(request.POST)
+        if form.is_valid():
+            pass
+    else:
+        form = RecordTableForm()
+    return render(request, '', {'form': form})
 
 
 @login_required(login_url='login/')
@@ -112,6 +122,7 @@ def quizResults(request, course):
     db.addQuizAttempt(course, 'todo-get username', 1)
     return render(request, 'quizResults.html', {'course': course})
 
+
 def garden(request):
     return render(request, 'garden.html', {'gardenName': "Venus"})
 
@@ -185,12 +196,6 @@ def adminCourseInfo(request):
 
 
 @staff_member_required
-def adminCourseMgmt(request):
-    courses = DataAccess().getCourses()
-    return render(request, 'admin/course_mgmt.html', {'courses': courses});
-
-
-@staff_member_required
 def adminUserProgress(request):
     return render(request, 'admin/user_progress.html');
 
@@ -199,28 +204,19 @@ def adminUserProgress(request):
 def adminQuizStatistics(request):
     return render(request, 'admin/quiz_statistics.html');
 
-
-@staff_member_required
-def adminSupplementaryMaterials(request):
-    return render(request, 'admin/supplementary_materials.html');
-
-
-@staff_member_required
-def adminUnit(request, unit):
-    lessons = DataAccess().getCourseLessons(unit)
-    return render(request, 'admin/unit.html', {'lessons': lessons, 'unit': unit});
-
-
-@staff_member_required
-def adminLesson(request, lesson, unit):
-    return render(request, 'admin/lesson.html', {'lesson': lesson, 'unit': unit});
-
-
 @staff_member_required
 def adminQuiz(request, unit):
     questions = DataAccess().getQuizQuestions(unit);
 
     return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
+
+
+def courseNav(request, course, color):
+    db = DataAccess()
+    courses = db.getCourseLessons(course)
+    for c in courses:
+        c['link'] = c['name'].lower().replace(' ', '_')
+    return render(request, 'courseNav.html', {'courses': courses, 'course': course.replace('-', ' '), 'color': color})
 
 
 class UserFormView(View):
