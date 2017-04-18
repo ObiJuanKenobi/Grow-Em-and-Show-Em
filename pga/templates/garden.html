@@ -1,20 +1,16 @@
 {% load static %}
 {% include "header.html" %}
 
-{% block javascript %}
-    <script src="{% static 'js/libraries/fabric.min.js' %}"></script>
-    <script src="{% static 'js/libraries/interact.min.js' %}"></script>
-    <script src="{% static 'js/gardenPlan.js' %}"></script>
-    <script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
-    <script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
-    <script src="{% static 'js/libraries/jquery.mobile-1.4.5.min.js' %}"></script>
-{% endblock %}
+<script src="{% static 'js/libraries/fabric.min.js' %}"></script>
+<script src="{% static 'js/gardenPlan.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
 
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
 <meta name="viewport" content="width=device-width,user-scalable=no">
-<h1>{{ gardenName }}'s Bed Plan</h1>
+<h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
 
 <div class="container-fluid gardenLayout">
     <div class="row">
@@ -23,8 +19,8 @@
         <button id="loadPlans" class="btn" onclick="showPlans()" data-toggle="modal" data-target="#loadPlanModal">Load
         </button>
         <button id="clrBtn" class="btn" onclick="eraseObj()">Erase</button>
-        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>
-        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>
+{#        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>#}
+{#        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>#}
         <button id="resetBtn" class="btn" onclick="resetCanvas()">Reset</button>
     </div>
     <div class="row">
@@ -81,7 +77,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" id="loadBedBtn" onclick="loadPlan()" data-dismiss="modal">Load</button>
+                <button type="button" class="btn btn-primary" id="loadBedBtn" onclick="loadPlan()" data-dismiss="modal">
+                    Load
+                </button>
             </div>
         </div>
     </div>

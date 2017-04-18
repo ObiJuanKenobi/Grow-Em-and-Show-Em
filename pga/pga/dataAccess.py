@@ -101,6 +101,16 @@ class DataAccess:
             courses.append({"CourseID": row[0], "Course_Name": row[1], "Course_Color": row[2]})
         return courses
 
+    def getCourseColor(self, course_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select Course_Color from Courses WHERE Course_Name = %s;", [course_name])
+        result = self._cursor.fetchone()
+
+        color = "000000"
+        if result is not None:
+            color = result[0]
+        return color
+
     def getCourseLessons(self, coursename):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_Name, Lesson_File_Path FROM Lessons WHERE Course_Name = %s", [coursename])
@@ -234,6 +244,17 @@ class DataAccess:
     def deleteBedPlan(self, planID):
         self._cursor = self._connection.cursor()
         self._cursor.execute("DELETE FROM Bed_Plans WHERE PlanID = %s", [planID])
+        self._cursor.execute("COMMIT")
+
+    def getDailyLogs(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate FROM Daily_Records ORDER BY Record_Date DESC")
+        results = self._cursor.fetchall()
+        return results
+
+    def addDailyLog(self, user, plant, location, quantity, date):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, quantity, Record_Date) VALUES (%s, %s, %s, %s, %s)", (user, plant, location, quantity, date))
         self._cursor.execute("COMMIT")
 
 #Class for passing quiz questions to the DB in a convenient object

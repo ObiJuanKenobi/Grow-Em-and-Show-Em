@@ -2,25 +2,15 @@
 
 {% include "header.html" %}
 
-    <div class="navbar navbar-inverse" id="titleBar" style="border-color:#{{ color }}; background-color:#{{ color }}">
-        <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <div class="navbar-header">
-                <span id="title">{{ course }}</span>
-            </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-            </div>
-            <!-- /.navbar-collapse -->
-        </div>
-        <!-- /.container -->
-    </div>
+{% include "courseHeader.html" %}
+
     <br>
     <!-- Page Content -->
     <div id='subMenus' class='container'>
         {% for l in lessons %}
             <div class="col-lg-3 col-md-4 col-xs-6thumb">
-                <a id='button{{ forloop.counter }}' href='{{l.link}}'>
+                <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
+                <a id='button{{ forloop.counter }}' href='/lesson/{{course}}/{{l.name}}'>
                     <div class="subMenuIcons" style="border-color:#{{ color }}">
                         <span class="subMenuText">
                             {{ l.name }}
