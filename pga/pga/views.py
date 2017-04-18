@@ -21,7 +21,7 @@ def login_view(request):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'login.html', {})
+        return render(request, 'login.html', add_courses_to_dict({}))
 
 @login_required(login_url='login/')
 def createRecordTable_Form(request):
@@ -31,12 +31,12 @@ def createRecordTable_Form(request):
             pass
     else:
         form = RecordTableForm()
-    return render(request, '', {'form': form})
+    return render(request, '', add_courses_to_dict({'form': form}))
 
 
 @login_required(login_url='login/')
 def glossary(request):
-    return render(request, 'glossary.html')
+    return render(request, 'glossary.html', add_courses_to_dict({}))
 
 
 @login_required(login_url='login/')
@@ -109,7 +109,7 @@ def disease(request):
 def quiz(request, course):
     db = DataAccess();
     questions = db.getQuizQuestions(course);
-    return render(request, 'quiz.html', {'questions': questions, 'course': course});
+    return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course}));
 
 
 @login_required(login_url='login/')
@@ -120,11 +120,11 @@ def pestsQuiz(request):
 def quizResults(request, course):
     db = DataAccess()
     db.addQuizAttempt(course, 'todo-get username', 1)
-    return render(request, 'quizResults.html', {'course': course})
+    return render(request, 'quizResults.html', add_courses_to_dict({'course': course}))
 
 
 def garden(request):
-    return render(request, 'garden.html', {'gardenName': "Venus"})
+    return render(request, 'garden.html', add_courses_to_dict({'gardenName': "Venus"}))
 
 def savePlan(request):
     if request.is_ajax() and request.POST:
@@ -194,12 +194,19 @@ def courseNav(request, course, color):
         link = DataAccess().getLesson(course, lesson['name'])
         lesson['link'] = link.replace(".", "", 1)
         
-    return render(request, 'courseNav.html', {'lessons': lessons, 'course': course.replace('-', ' '), 'color': color})
+    return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
     
 # def lesson(request, course, lesson):
     # lesson_file_path = DataAccess().getLesson(course, lesson)
     # lesson_file_path = lesson_file_path.replace(".", "", 1)
     # return render_to_response(lesson_file_path)#render(request, lesson_file_path, {'unit': course, 'lesson': lesson})
+    
+#Retrieves all courses and adds them to the data dictionary passed in,
+# which is returned by each view 
+def add_courses_to_dict(dict):
+    courses = DataAccess().getCourses();
+    dict['courses'] = courses;
+    return dict;
     
 
 class UserFormView(View):

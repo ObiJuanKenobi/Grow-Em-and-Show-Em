@@ -12,7 +12,7 @@
 						Prison Garden Application
 					</a>
                 </li>
-					<li>
+					<!--li>
 						<a href="/glossary">Glossary</a>
 					</li>
 					<li>
@@ -32,7 +32,12 @@
 					</li>
 					<li>
 						<a href="/courseNav/communication/b9bfbe">Communication</a>
-					</li>
+					</li-->
+                    {% for course in courses %}
+                        <li>
+                            <a href="/courseNav/{{course.Course_Name}}/{{course.Course_Color}}">{{course.Course_Name}}</a>
+                        </li>
+                    {% endfor %}
 					<li>
 						{% if user.is_authenticated %}
 							<a href="/logout">Log out</a>

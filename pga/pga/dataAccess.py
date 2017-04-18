@@ -94,11 +94,11 @@ class DataAccess:
 
     def getCourses(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
+        self._cursor.execute("Select CourseID, Course_Name, Course_Color from Courses ORDER BY Course_Order;")
         courses = []
         results = self._cursor.fetchall()
         for row in results:
-            courses.append({"CourseID": row[0], "Course_Name": row[1]})
+            courses.append({"CourseID": row[0], "Course_Name": row[1], "Course_Color": row[2]})
         return courses
 
     def getCourseLessons(self, coursename):
