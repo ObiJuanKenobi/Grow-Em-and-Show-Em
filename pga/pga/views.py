@@ -32,6 +32,10 @@ def createRecordTable_Form(request):
     if request.method == 'POST':
         form = RecordTableForm(request.POST)
         if form.is_valid():
+            plant = form.cleaned_data['plant']
+            quantity = form.cleaned_data['quantity']
+            location = form.cleaned_data['location']
+            notes = form.cleaned_data['notes']
             pass
     else:
         form = RecordTableForm()
