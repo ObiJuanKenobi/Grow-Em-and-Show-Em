@@ -39,8 +39,7 @@ def createRecordTable_Form(request):
             year = form.cleaned_data['year']
             month = form.cleaned_data['month']
             day = form.cleaned_data['day']
-            db = DataAccess()
-            db.addDailyLogs()
+            redirect('table_home')
     else:
         form = RecordTableForm()
     return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
