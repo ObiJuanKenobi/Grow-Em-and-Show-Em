@@ -13,6 +13,10 @@ from .forms import UserForm, RecordTableForm
 import json
 
 
+def home_page(request):
+    return render(request, 'home.html', add_courses_to_dict({}))
+
+
 def login_view(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
@@ -72,7 +76,7 @@ def communication(request):
 # Maintenance lessons:
 @login_required(login_url='login/')
 def pests(request):
-    return render(request, 'pests.html')
+    return render(request, 'pests.html', add_courses_to_dict({}))
 
 
 @login_required(login_url='login/')
