@@ -37,6 +37,8 @@ def createRecordTable_Form(request):
         form = RecordTableForm()
     return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
 
+def recordTable_Home(request):
+    return render(request, 'recordstable_home.html')
 
 @login_required(login_url='login/')
 def glossary(request):

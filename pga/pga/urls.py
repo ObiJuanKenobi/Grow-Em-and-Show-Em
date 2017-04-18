@@ -55,6 +55,7 @@ urlpatterns = [
     url(r'^postHarvest', views.postHarvest, name='postHarvest'),
     url(r'^records', views.records, name='records'),
     url(r'^table_form/$', views.createRecordTable_Form, name='table_form'),
+    url(r'^table_home/$', views.recordTable_Home, name='table_home'),
     url(r'^communication', views.communication, name='communication'),
     url(r'^garden', views.garden, name='garden'),
     url(r'^savePlan/$', views.savePlan, name='savePlan'),
