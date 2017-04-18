@@ -61,6 +61,11 @@ def processCourseZip(in_mem_file):
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
     for lesson_name in course_lessons:
+        print(lesson_name)
+        if lesson_name == 'quiz' or lesson_name == 'materials':
+            continue
+
+        # Create lesson directory if not already present
         lesson_path = os.path.join(course_path, lesson_name)
         if (os.path.exists(lesson_path)):
             print('[coursemanager] Modifying existing lesson')
@@ -70,14 +75,19 @@ def processCourseZip(in_mem_file):
         # Copy all lesson content to server lesson directory
         lesson_tmp_path = os.path.join(course_tmp_path, lesson_name)
         for content in glob.glob(os.path.join(lesson_tmp_path, '*')):
-            print(content)
-            if 'quiz' in content or 'materials' in content:
-                continue
             shutil.copy(content, lesson_path)
+
+        # Read file
+        # Replace
+        # Write file
 
         # Add lesson info to database
         lesson_path_html = os.path.join(lesson_path, 'lesson.html')
         db.addLesson(course_name, lesson_name, lesson_path_html)
+
+    # Cleanup temp dirs
+    os.remove(ZIP_TMP_FILE)
+    os.rmdir(ZIP_TMP_DIR)
 
     return True, 'Course uploaded successfully: ' + course_name
 
