@@ -27,7 +27,7 @@ class AdminUnitView(AbstractFileUploadView):
     unit = None
     
     def __init__(self):
-        super(AdminUnitView, self).__init__( ['.html'], [])
+        super(AdminUnitView, self).__init__( ['.zip'], [])
         
     def extract_extra_params(self, *args, **kwargs):
         self.unit = kwargs.pop('unit', None)
@@ -56,7 +56,7 @@ class AdminLessonView(AbstractFileUploadView):
     lesson = None
     
     def __init__(self):
-        super(AdminLessonView, self).__init__( ['.html'], [])
+        super(AdminLessonView, self).__init__( ['.zip'], [])
             
     def extract_extra_params(self, *args, **kwargs):
         self.unit = kwargs.pop('unit', None)
@@ -122,5 +122,48 @@ class AdminSuppMatView(AbstractFileUploadView):
 @staff_member_required
 def adminSupplementaryMaterials(request):
     return render(request, 'admin/supplementary_materials.html', {'index': True});
+    
+@staff_member_required
+def adminHome(request):
+    return render(request, 'admin/home.html')
+
+
+@staff_member_required
+def adminCourseInfo(request):
+    return render(request, 'admin/course_info.html')
+
+
+@staff_member_required
+def adminUserProgress(request):
+    return render(request, 'admin/user_progress.html')
+
+
+@staff_member_required
+def adminQuizStatistics(request):
+    return render(request, 'admin/quiz_statistics.html')
+
+class AdminQuizView(AbstractFileUploadView):
         
+    template_name = 'admin/quiz.html'
+    unit = None
+    
+    def __init__(self):
+        super(AdminQuizView, self).__init__( ['.csv', '.xlsx', '.xls'], [])
+            
+    def extract_extra_params(self, *args, **kwargs):
+        self.unit = kwargs.pop('unit', None)
+        if self.unit is not None:
+            return True
+            
+        #Invalid URL:
+        self.extra_params_errors = "Couldn't find unit for quiz"
+        return False
+    
+    def get_page_specific_data(self):
+        #Ensures 'self.unit'
+        questions = DataAccess().getQuizQuestions(self.unit);
+        return {'unit': self.unit, 'questions': questions}
         
+    def page_specific_handle_file(self, file):
+        # type of material is given by 'self.resource_type'
+        return FileHandlingResult(True, 'TODO - not implemented')

@@ -5,12 +5,6 @@
     var uploadDialog;
     var fileUploadId;
     
-    function confirmDeleteUnit() {
-        //TODO delete on server
-        $("#" + courseToDelete + "Li").remove();
-        confirmDeleteDialog.dialog("close");
-    }
-    
 	$(function() {
     
         fileUploadId = $("#fileUploadId").val();
@@ -19,7 +13,6 @@
         $("#uploadLesson").click(function() {
             uploadDialog.dialog('open');
         });
-        
     });
     
 </script>
@@ -33,6 +26,6 @@
 
 {% include "admin/upload_status.html" %}
 
-{% include "admin/upload_dialog.html" %}
+{% include "admin/dialogs.html" %}
 
 {% include "admin/footer.html" %}

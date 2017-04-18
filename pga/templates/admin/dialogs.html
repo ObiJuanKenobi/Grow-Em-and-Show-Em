@@ -1,5 +1,6 @@
 <!--
     HTML for a generic upload file dialog box
+    init func in adminUtils.js
 -->
 <div id='uploadDialog'>
     <!--
@@ -18,4 +19,13 @@
         -->
         <input type='hidden' value='{{ form.file.auto_id }}' id='fileUploadId'>
     </form>
+</div>
+
+<!-- 
+    Generic delete-confirmation dialog 
+    Before opening dialog, set the span text appropriately
+    init func in adminUtils.js
+-->
+<div id='confirmDeleteDialog' >
+    <span id='confirmDeleteText'></span>
 </div>

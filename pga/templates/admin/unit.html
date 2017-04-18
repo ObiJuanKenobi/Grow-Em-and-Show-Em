@@ -7,14 +7,21 @@
     var confirmDeleteDialog;
     var uploadDialog;
     var fileUploadId;
+    
+    function confirmDeleteLesson(){
+        //TODO send delete request
+        $("#" + lessonToDelete + "Li").remove();
+        confirmDeleteDialog.dialog("close");
+    }
 
 	$(function() {
 	
 		initEditButton();
 		
 		$(".removeBtn").click(function() {
-			var lesson = $(this).val();
-			alert("You sure you want to delete " + lesson + "?");
+			lessonToDelete = $(this).val();
+            $("#confirmDeleteText").text("Are you sure you want to delete " + lessonToDelete + "? All associated data will be deleted.");
+			confirmDeleteDialog.dialog("open");
 		});
         
         fileUploadId = $("#fileUploadId").val();
@@ -22,6 +29,8 @@
         $('#uploadLesson').click(function() {
             uploadDialog.dialog("open");
         });
+        
+        confirmDeleteDialog = createConfirmDeleteDialog(confirmDeleteLesson);
 	});
 
 </script>
@@ -39,7 +48,7 @@
 
 <ol>
 {% for l in lessons %}
-	<li>
+	<li id='{{ l.name }}Li'>
 		<a href='/pgaadmin/unit/{{ unit}}/{{ l.name }}' class='lessonLink'>{{ l.name }}</a>&nbsp;&nbsp;
 		<button class='removeBtn' value='{{l.name}}'>Delete Lesson</button>
 	</li>
@@ -48,5 +57,5 @@
 <button id='editBtn'>Edit</button>&nbsp;
 <button id='uploadLesson'>Upload Lesson</button><br>
 
-{% include "admin/upload_dialog.html" %}
+{% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}

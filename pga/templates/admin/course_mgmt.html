@@ -50,31 +50,12 @@
 		
 		$(".removeBtn").click(function() {
 			courseToDelete = $(this).val();
-            $("#confirmDeleteText").text("Are you sure you want to delete " + courseToDelete + "?");
+            $("#confirmDeleteText").text("Are you sure you want to delete " + courseToDelete + "? All associated data will be deleted.");
 			confirmDeleteDialog.dialog('open');
 		});
         
-        confirmDeleteDialog = $("#confirmDeleteDialog").dialog({
-			  autoOpen: false,
-			  height: 400,
-			  width: 450,
-			  modal: true,
-			  buttons: [
-				{
-					id: "deleteBtn",
-					text: "Delete Unit",
-					click: confirmDeleteUnit
-				},
-				{
-					id: "cancel",
-					text: "Cancel",
-					click: function() { confirmDeleteDialog.dialog("close"); }
-				}
-			  ],
-			  Close: function() {
-				
-			  }
-			});
+        confirmDeleteDialog = createConfirmDeleteDialog(confirmDeleteUnit);
+        
 	});
 
 </script>
@@ -106,10 +87,6 @@
 	<a href='supplementaryMaterials'><button id='suppBtn'>Supplementary Materials</button></a>
 </div>
 
-<div id='confirmDeleteDialog'>
-    <span id='confirmDeleteText'></span>
-</div>
-
-{% include "admin/upload_dialog.html" %}
+{% include "admin/dialogs.html" %}
 
 {% include "admin/footer.html" %}

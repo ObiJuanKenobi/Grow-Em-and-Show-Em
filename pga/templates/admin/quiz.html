@@ -14,50 +14,53 @@
 
 	var editing = false;
 	var uploadDialog;
+    var fileUploadId;
 	
 	var uploadNewQuizFile = function() {
-		var file = document.getElementById("uploadFile").files[0];
+		var file = document.getElementById(fileUploadId).files[0];
 		//alert(file.name);
 		
 		var uploadType = $('input[name=uploadType]:checked').val();
 		//alert(uploadType);
+        
+        $("#uploadForm").submit();
 		
 		uploadDialog.dialog("close");
 	}
 	
-	var handleFiles = function() {
-		var disabled = document.getElementById("uploadFile").files.length == 0;
-		$("#uploadBtn").button("option", "disabled", disabled);
-	}
-	
 	$(function() {
 	
-		var inputElement = document.getElementById("uploadFile");
+        fileUploadId = $("#fileUploadId").val();
+        var handleFiles = function() {
+            var disabled = document.getElementById(fileUploadId).files.length == 0;
+            $("#uploadBtn").button("option", "disabled", disabled);
+        };
+		var inputElement = document.getElementById(fileUploadId);
 		inputElement.addEventListener("change", handleFiles, false);
 		
 	
-		uploadDialog = $("#uploadNewQuestionList").dialog({
-			  autoOpen: false,
-			  height: 400,
-			  width: 450,
-			  modal: true,
-			  buttons: [
-				{
-					id: "uploadBtn",
-					text: "Upload",
-					disabled: 'true',
-					click: uploadNewQuizFile
-				},
-				{
-					id: "cancel",
-					text: "Cancel",
-					click: function() { uploadDialog.dialog("close"); }
-				}
-			  ],
-			  Close: function() {
-				
-			  }
-			});
+		uploadDialog = uploadDialog = $("#uploadNewQuestionList").dialog({
+          autoOpen: false,
+          height: 400,
+          width: 450,
+          modal: true,
+          buttons: [
+            {
+                id: "cancel",
+                text: "Cancel",
+                click: function() { uploadDialog.dialog("close"); }
+            },
+            {
+                id: "uploadBtn",
+                text: "Upload",
+                disabled: 'true',
+                click: uploadNewQuizFile
+            }
+          ],
+          Close: function() {
+            
+          }
+        });
 			
 		$("#uploadListBtn").click(function(){
 			uploadDialog.dialog("open");
@@ -112,6 +115,8 @@
 	<button id='editBtn'>Edit</button>&nbsp;
 	<button id='addBtn'>Add Question</button>&nbsp;
 	<button id='uploadListBtn'>Upload New Question List</button><br><br>
+    
+    {% include "admin/upload_status.html" %}
 	
 	<div id='questionsDiv'>
 	{% for q in questions %}
@@ -150,7 +155,17 @@
 		<label><input type='radio' name='uploadType' value='add' checked>Add questions</label><br>
 		<label><input type='radio' name='uploadType' value='replace'>Replace questions</label><br><br>
 		
-		<input type='file' id='uploadFile' accept='.xls,.xlsx,.csv'>
+		<form id='uploadForm' enctype='multipart/form-data' method='post' action=''>
+            {% csrf_token %}
+            {{ form }}
+            <!--
+             django uses 'id_file' for a form field named 'file',
+              but I'm setting the id to a hidden value 
+              and then getting that in case django ever 
+              changes this id
+            -->
+            <input type='hidden' value='{{ form.file.auto_id }}' id='fileUploadId'>
+        </form>
 	</div>
 	
 </div>

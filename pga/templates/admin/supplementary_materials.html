@@ -7,6 +7,12 @@
     var confirmDeleteDialog;
     var uploadDialog;
     var fileUploadId;
+    
+    var confirmDeleteCallback = function() {
+        //TODO send delete request
+        $("#" + resourceToDelete + "Li").remove();
+        confirmDeleteDialog.dialog("close");
+    }
 
 	$(function() {
 		
@@ -14,8 +20,9 @@
         initEditButton();
         
 		$(".removeBtn").click(function() {
-			var lesson = $(this).val();
-			alert("You sure you want to delete " + lesson + "?");
+			resourceToDelete = $(this).val();
+			$("#confirmDeleteText").text("Are you sure you want to delete " + resourceToDelete + "? Lessons linked to this may now contain invalid links.");
+			confirmDeleteDialog.dialog("open");
 		});
         
         fileUploadId = $("#fileUploadId").val();
@@ -25,6 +32,8 @@
         $('#uploadResourceBtn').click(function() {
             uploadDialog.dialog("open");
         });
+        
+        confirmDeleteDialog = createConfirmDeleteDialog();
 	});
 
 </script>
@@ -47,7 +56,7 @@
         
         <ul id='resources'>
             {% for r in resources %}
-                <li><a href='/pgaadmin/supplementaryMaterials/{{resource_type}}/{{r.name}}'>{{r.name}}</a><button class='removeBtn'>Remove</button></li>
+                <li id='{{ c.Course_Name }}Li'><a href='/pgaadmin/supplementaryMaterials/{{resource_type}}/{{r.name}}'>{{r.name}}</a>&nbsp;<button class='removeBtn'>Remove</button></li>
             {% endfor %}
         </ul>
         
@@ -57,5 +66,5 @@
         
     {% endif %}
 	
-{% include "admin/upload_dialog.html" %}
+{% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}
