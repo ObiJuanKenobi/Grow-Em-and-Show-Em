@@ -92,7 +92,6 @@ function draw() {
         $('#drawBtn').text("Cancel");
     else
         $('#drawBtn').text("Draw");
-
 }
 
 /**
@@ -100,12 +99,14 @@ function draw() {
  */
 function savePlan() {
     var bedCanvas = JSON.stringify(canvas),
-        bedPlan = $('#bedPlanName').val();
+        bedPlan = $('#bedPlanName').val(),
+        gardenTitle = $('#gardenTitle').html(),
+        bedName = gardenTitle.substr(0, gardenTitle.indexOf('\'s'));
     $.ajax({
         url: "/savePlan/",
         type: "POST",
         data: {
-            bedName: "Venus",
+            bedName: bedName,
             bedPlan: bedPlan,
             bedCanvas: bedCanvas
         },
@@ -151,11 +152,13 @@ function setSelectedPlan(el) {
  * Display all bed plans for the current garden
  */
 function showPlans() {
+    var gardenTitle = $('#gardenTitle').html(),
+        bedName = gardenTitle.substr(0, gardenTitle.indexOf('\'s'));
     $.ajax({
         url: "/showPlans",
         type: "GET",
         data: {
-            bedName: "Venus"
+            bedName: bedName
         },
         success: function (resp) {
             var plans = resp.context;
@@ -266,21 +269,14 @@ function initGardenItems() {
     $('#gardenCanvas').droppable({
         accept: ".gardenItems",
         drop: function (event, ui) {
-            var imgSrc = ui.draggable.context.getAttribute("src"),
-                offLeft = $(this).offset().left,
-                offTop = $(this).offset().top;
+            var imgSrc = ui.draggable.context.getAttribute("src");
 
             fabric.Image.fromURL(imgSrc, function (img) {
                 img.scaleToWidth(gridSize);
                 img.scaleToHeight(gridSize);
-                if ($(window).width() < 768) {
-                    img.left = calSnapOffset(ui.position.left - offLeft);
-                    img.top = calSnapOffset(ui.position.top - offTop);
-                } else {
-                    var pointer = canvas.getPointer(event);
-                    img.left = calSnapOffset(pointer.x);
-                    img.top = calSnapOffset(pointer.y);
-                }
+                var pointer = canvas.getPointer(event);
+                img.left = Math.floor(pointer.x / gridSize) * gridSize;
+                img.top = Math.floor(pointer.y / gridSize) * gridSize;
                 canvas.add(img);
                 canvas.sendToBack(img);
             });
@@ -317,6 +313,7 @@ function resetCanvas() {
     drawGrid();
 }
 
+
 $(document).ready(function () {
     var resetBtn = document.getElementById("resetBtn"),
         savePlan = document.getElementById("savePlan");
@@ -339,6 +336,7 @@ $(document).ready(function () {
 
     // Initialize the garden items
     initGardenItems();
+    $(".ui-loader").hide();
 });
 
 
