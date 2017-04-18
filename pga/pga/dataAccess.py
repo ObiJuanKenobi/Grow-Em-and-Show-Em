@@ -100,6 +100,16 @@ class DataAccess:
         for row in results:
             courses.append({"CourseID": row[0], "Course_Name": row[1], "Course_Color": row[2]})
         return courses
+        
+    def getCourseColor(self, course_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select Course_Color from Courses WHERE Course_Name = %s;", [course_name])
+        result = self._cursor.fetchone()
+         
+        color = "000000"
+        if result is not None:
+            color = result[0]
+        return color
 
     def getCourseLessons(self, coursename):
         self._cursor = self._connection.cursor()

@@ -42,8 +42,8 @@ urlpatterns = [
 
     url(r'^quiz/(?P<course>[A-Za-z0-9\-\s]+)', views.quiz, name='quiz'),
     url(r'^quizResults/(?P<course>[A-Za-z0-9\-\s]+)', views.quizResults, name='quizResults'),
-   # url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
-    url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/(?P<color>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
+    url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
+    url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
 
     url(r'^glossary', views.glossary, name='glossary'),
     url(r'^pests', views.pests, name='pests'),

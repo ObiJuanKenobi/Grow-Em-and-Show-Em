@@ -40,85 +40,85 @@ def createRecordTable_Form(request):
 def recordTable_Home(request):
     return render(request, 'recordstable_home.html')
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def glossary(request):
     return render(request, 'glossary.html', add_courses_to_dict({}))
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def plan(request):
     return render(request, 'plan.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def maintain(request):
     return render(request, 'maintain.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def harvest(request):
     return render(request, 'harvest.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def postHarvest(request):
     return render(request, 'postHarvest.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def records(request):
     return render(request, 'records.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def communication(request):
     return render(request, 'communication.html')
 
 
 # Maintenance lessons:
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def pests(request):
     return render(request, 'pests.html', add_courses_to_dict({}))
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def fertilizer(request):
     return render(request, 'fertilizer.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def produce(request):
     return render(request, 'produce.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def maturityTimeline(request):
     return render(request, 'maturityTimeline.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def watering(request):
     return render(request, 'watering.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def weedRecognition(request):
     return render(request, 'weedRecognition.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def disease(request):
     return render(request, 'disease.html')
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def quiz(request, course):
     db = DataAccess();
     questions = db.getQuizQuestions(course);
     return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course}));
 
 
-@login_required(login_url='login/')
+@login_required(login_url='/login/')
 def pestsQuiz(request):
     return render(request, 'quiz.html')
 
@@ -192,9 +192,10 @@ def deletePlan(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
-@login_required(login_url='login/')
-def courseNav(request, course, color):
+@login_required(login_url='/login/')
+def courseNav(request, course):
     db = DataAccess()
+    color = db.getCourseColor(course)
     lessons = db.getCourseLessons(course)
     for lesson in lessons:
         link = DataAccess().getLesson(course, lesson['name'])
@@ -202,10 +203,12 @@ def courseNav(request, course, color):
         
     return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
     
-# def lesson(request, course, lesson):
-    # lesson_file_path = DataAccess().getLesson(course, lesson)
-    # lesson_file_path = lesson_file_path.replace(".", "", 1)
-    # return render_to_response(lesson_file_path)#render(request, lesson_file_path, {'unit': course, 'lesson': lesson})
+def lesson(request, course, lesson):
+    db = DataAccess()
+    color = db.getCourseColor(course)
+    lesson_file_path = DataAccess().getLesson(course, lesson)
+    lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
+    return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view 
