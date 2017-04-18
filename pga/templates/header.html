@@ -40,21 +40,25 @@
             margin-top: 18px;
             margin-left: 50px;
         }
+        
+        div.stretchHeight {
+            height: 100%;
+        }
     </style>
 </head>
 
 <body>
 <div id="wrapper">
-    <div class="overlay"></div>
+    <div class="overlay stretchHeight"></div>
 
     <!-- Page Content -->
-    <div id="page-content-wrapper" style='display: inline;'>
+    <div id="page-content-wrapper" class="stretchHeight" style='display: inline;'>
         <button type="button" class="hamburger is-closed" data-toggle="offcanvas">
             <span class="hamb-top"></span>
             <span class="hamb-middle"></span>
             <span class="hamb-bottom"></span>
         </button>
         <!-- <span>Prison Garden Application</span> -->
-        <div class="container inline">
+        <div class="container inline stretchHeight">
             <div class="row">
-                <div class="col-lg-8 col-lg-offset-2">
+                <div class="col-lg-8 col-lg-offset-2 stretchHeight">
