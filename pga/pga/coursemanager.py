@@ -1,8 +1,8 @@
 import os
+import re
 import glob
 import shutil
 import zipfile
-from subprocess import Popen, PIPE
 from .dataAccess import DataAccess
 
 # Directory in which to store course / lesson data.
@@ -61,7 +61,6 @@ def processCourseZip(in_mem_file):
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
     for lesson_name in course_lessons:
-        print(lesson_name)
         if lesson_name == 'quiz' or lesson_name == 'materials':
             continue
 
@@ -77,17 +76,25 @@ def processCourseZip(in_mem_file):
         for content in glob.glob(os.path.join(lesson_tmp_path, '*')):
             shutil.copy(content, lesson_path)
 
-        # Read file
-        # Replace
-        # Write file
-
         # Add lesson info to database
         lesson_path_html = os.path.join(lesson_path, 'lesson.html')
         db.addLesson(course_name, lesson_name, lesson_path_html)
 
+        # Read file
+        with open(lesson_path_html, 'r') as html_file:
+            html_text = html_file.read()
+
+        # Replace links
+        pattern_content = '<!--\s*LINK:\s*\"(.*)\",\s*type:\s*\"(.*)\",\s*text:\s*\"(.*)\"\s*-->'
+        pattern_section = '<!--\s*LINK:\s*\"(.*)\",\s*type:\s*\"subsection\",\s*name:\s*\"(.*)\"\s*-->'
+        html_text = re.sub(r'text', r'ayyyy', html_text)
+
+        # Write file
+        with open(lesson_path_html, 'w') as html_file:
+           html_file.write(html_text)
+
     # Cleanup temp dirs
-    os.remove(ZIP_TMP_FILE)
-    os.rmdir(ZIP_TMP_DIR)
+    shutil.rmtree(ZIP_TMP_DIR)
 
     return True, 'Course uploaded successfully: ' + course_name
 
