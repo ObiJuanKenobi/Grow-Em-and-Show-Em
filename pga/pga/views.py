@@ -1,6 +1,6 @@
 from django.core.serializers import json
 from django.http import HttpResponse, Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 from django.contrib.auth import authenticate, login
 from django.views.generic.edit import CreateView, UpdateView
 from django.template import loader
@@ -185,39 +185,22 @@ def deletePlan(request):
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
 
-@staff_member_required
-def adminHome(request):
-    return render(request, 'admin/home.html');
 
-
-@staff_member_required
-def adminCourseInfo(request):
-    return render(request, 'admin/course_info.html');
-
-
-@staff_member_required
-def adminUserProgress(request):
-    return render(request, 'admin/user_progress.html');
-
-
-@staff_member_required
-def adminQuizStatistics(request):
-    return render(request, 'admin/quiz_statistics.html');
-
-@staff_member_required
-def adminQuiz(request, unit):
-    questions = DataAccess().getQuizQuestions(unit);
-
-    return render(request, 'admin/quiz.html', {'unit': unit, 'questions': questions});
-
-
+@login_required(login_url='login/')
 def courseNav(request, course, color):
     db = DataAccess()
-    courses = db.getCourseLessons(course)
-    for c in courses:
-        c['link'] = c['name'].lower().replace(' ', '_')
-    return render(request, 'courseNav.html', {'courses': courses, 'course': course.replace('-', ' '), 'color': color})
-
+    lessons = db.getCourseLessons(course)
+    for lesson in lessons:
+        link = DataAccess().getLesson(course, lesson['name'])
+        lesson['link'] = link.replace(".", "", 1)
+        
+    return render(request, 'courseNav.html', {'lessons': lessons, 'course': course.replace('-', ' '), 'color': color})
+    
+# def lesson(request, course, lesson):
+    # lesson_file_path = DataAccess().getLesson(course, lesson)
+    # lesson_file_path = lesson_file_path.replace(".", "", 1)
+    # return render_to_response(lesson_file_path)#render(request, lesson_file_path, {'unit': course, 'lesson': lesson})
+    
 
 class UserFormView(View):
     form_class = UserForm

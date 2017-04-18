@@ -18,22 +18,23 @@
     <br>
     <!-- Page Content -->
     <div id='subMenus' class='container'>
-        {% for c in courses %}
+        {% for l in lessons %}
             <div class="col-lg-3 col-md-4 col-xs-6thumb">
-                <a id='button{{ forloop.counter }}' href='{{ c.link }}'>
+                <a id='button{{ forloop.counter }}' href='{{l.link}}'>
                     <div class="subMenuIcons" style="border-color:#{{ color }}">
                         <span class="subMenuText">
-                            {{ c.name }}
+                            {{ l.name }}
                         </span>
                     </div>
                 </a>
             </div>
-            {% endfor %}
+        {% endfor %}
     </div>
 	
 {% include "footer.html" %}
 
 <script type='text/javascript'>
+/*
     $(function(){
         var courses = {{ courses|safe }};
         var title = $('#title').text().toLowerCase();
@@ -41,5 +42,5 @@
           $('#button' + i).attr('href', window.location.href.replace('/courseNav/' + title, '/' + courses[i-1].name.toLowerCase()));  
         }
     });
-    
+    */
 </script>
