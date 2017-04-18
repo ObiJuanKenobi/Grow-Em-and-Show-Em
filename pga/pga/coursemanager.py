@@ -1,9 +1,10 @@
+import glob
+import openpyxl
 import os
 import re
-import glob
 import shutil
 import zipfile
-from .dataAccess import DataAccess
+from .dataAccess import DataAccess, QuizQuestion, QuizAnswer
 
 # Directory in which to store course / lesson data.
 COURSE_DIR = './static/courses'
@@ -57,6 +58,7 @@ def processCourseZip(in_mem_file):
 
     # Add course info to database
     db.addCourse(course_name, course_order, course_path)
+    processQuiz(course_name, course_path)
 
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
@@ -103,6 +105,62 @@ def processCourseZip(in_mem_file):
     shutil.rmtree(ZIP_TMP_DIR)
 
     return True, 'Course uploaded successfully: ' + course_name
+
+"""
+Process the contents of a given quiz spreadsheet by adding its
+  questions and answers to the database.
+
+@param course_dir Directory of course containing quiz to be processed
+"""
+def processQuiz(course_name, course_dir):
+    quiz_path = os.path.join(course_dir, 'quiz/quiz.xlsx')
+    wb = openpyxl.load_workbook(filename = quiz_path)
+
+    questions = []
+
+    # Will probably only ever be 1 sheet
+    for sheet in wb:
+        
+        # Accumulate questions and their answers
+        #
+        # Spreadsheet cols:
+        # [0] = Question itself
+        # [1] = Correct answer
+        # [2] = Other answer 1
+        # [3] = Other answer 2
+        # [4] = Other answer 3
+        for row in sheet.iter_rows(row_offset = 1):
+            if type(row[0].value) != unicode:
+                continue
+
+            # Create a QuizAnswer object for each answer
+            correct = QuizAnswer()
+            correct._Text = row[1].value
+            correct._IsCorrect = True
+
+            other1 = QuizAnswer()
+            other1._Text = row[2].value
+
+            other2 = QuizAnswer()
+            other2._Text = row[3].value
+
+            other3 = QuizAnswer()
+            other3._Text = row[4].value
+
+            # Create a QuizQuestion object and add its answers
+            question = QuizQuestion()
+            question._Text = row[0].value
+            question._Answers.append(correct)
+            question._Answers.append(other1)
+            question._Answers.append(other2)
+            question._Answers.append(other3)
+
+            # Add QuizQuestion to list of questions
+            questions.append(question)
+
+        db = DataAccess()
+        db.deleteQuiz(course_name)
+        db.addQuiz(course_name, questions)
 
 """
 Split a course directory into its order and name.

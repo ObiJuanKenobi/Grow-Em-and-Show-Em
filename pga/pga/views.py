@@ -32,6 +32,10 @@ def createRecordTable_Form(request):
     if request.method == 'POST':
         form = RecordTableForm(request.POST)
         if form.is_valid():
+            plant = form.cleaned_data['plant']
+            quantity = form.cleaned_data['quantity']
+            location = form.cleaned_data['location']
+            notes = form.cleaned_data['notes']
             pass
     else:
         form = RecordTableForm()
@@ -129,8 +133,8 @@ def quizResults(request, course):
     return render(request, 'quizResults.html', add_courses_to_dict({'course': course}))
 
 
-def garden(request):
-    return render(request, 'garden.html', add_courses_to_dict({'gardenName': "Venus"}))
+def garden(request, garden):
+    return render(request, 'garden.html', {'gardenName': garden})
 
 def savePlan(request):
     if request.is_ajax() and request.POST:
@@ -209,9 +213,9 @@ def lesson(request, course, lesson):
     lesson_file_path = DataAccess().getLesson(course, lesson)
     lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
-    
+
 #Retrieves all courses and adds them to the data dictionary passed in,
-# which is returned by each view 
+# which is returned by each view
 def add_courses_to_dict(dict):
     courses = DataAccess().getCourses();
     dict['courses'] = courses;
