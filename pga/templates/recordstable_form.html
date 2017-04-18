@@ -10,13 +10,13 @@
         {% if error_message %}
         <p><strong>{{error_message}}</strong></p>
         {% endif %}
-        <form class="form-recordtable" name="recordTable-form" role="form" action="" method="post" enctype="multipart/form-data">
+        <form class="form-register" name="recordTable-form" role="form" action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <h3 class="form-recordTable-heading">Create A Record for the Taale</h3>
+            <h3 class="form-register-heading">Create A Record</h3>
             <hr class="colorgraph">
             <br>
-
             {% include 'form-template.html' %}
+                <br>
                 <button type="submit" class="btn btn-lg btn-primary btn-block" value="Submit">Submit</button>
                 <br>
         </form>

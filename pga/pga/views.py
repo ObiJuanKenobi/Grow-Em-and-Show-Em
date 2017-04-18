@@ -27,7 +27,7 @@ def login_view(request):
     else:
         return render(request, 'login.html', add_courses_to_dict({}))
 
-@login_required(login_url='login/')
+
 def createRecordTable_Form(request):
     if request.method == 'POST':
         form = RecordTableForm(request.POST)
@@ -35,7 +35,7 @@ def createRecordTable_Form(request):
             pass
     else:
         form = RecordTableForm()
-    return render(request, '', add_courses_to_dict({'form': form}))
+    return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
 
 
 @login_required(login_url='login/')
