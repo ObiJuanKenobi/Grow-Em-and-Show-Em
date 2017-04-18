@@ -123,8 +123,8 @@ def quizResults(request, course):
     return render(request, 'quizResults.html', {'course': course})
 
 
-def garden(request):
-    return render(request, 'garden.html', {'gardenName': "Venus"})
+def garden(request, garden):
+    return render(request, 'garden.html', {'gardenName': garden})
 
 def savePlan(request):
     if request.is_ajax() and request.POST:
