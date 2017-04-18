@@ -256,7 +256,15 @@ class DataAccess:
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate FROM Daily_Records ORDER BY Record_Date DESC")
         results = self._cursor.fetchall()
-        return results
+        logs = []
+        for row in results:
+            user = row[0]
+            plant = row[1]
+            location = row[2]
+            quantity = row[3]
+            logdate = row[4]
+            logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate})
+        return logs
 
     def addDailyLog(self, user, plant, location, quantity, date):
         self._cursor = self._connection.cursor()
