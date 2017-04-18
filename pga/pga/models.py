@@ -15,5 +15,13 @@ class GardenImages(models.Model):
         managed = False
         db_table = 'Bed_Plans'
 
+class RecordTableEntry(models.Model):
+    userName = models.CharField(max_length=50)
+    plantName = models.CharField(max_length=50)
+    quantity = models.CharField(max_length=100)
+    location = models.CharField(max_length=100)
+    notes = models.CharField
+    date = models.DateField
+
 class DataFile(models.Model):
     data = models.FileField()

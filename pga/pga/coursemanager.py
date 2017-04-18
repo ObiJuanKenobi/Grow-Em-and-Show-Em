@@ -1,8 +1,8 @@
 import os
+import re
 import glob
 import shutil
 import zipfile
-from subprocess import Popen, PIPE
 from .dataAccess import DataAccess
 
 # Directory in which to store course / lesson data.
@@ -48,12 +48,12 @@ def processCourseZip(in_mem_file):
     # Ex. 1_Course_Name
     course_dir_name = os.listdir(ZIP_TMP_DIR)[0]
     course_order, course_name = splitCourseDirectoryName(course_dir_name)
-    course_path = os.path.join(COURSE_DIR, course_dir_name)
+    course_path = os.path.join(COURSE_DIR, course_name)
     course_tmp_path = os.path.join(ZIP_TMP_DIR, course_dir_name)
     if (os.path.exists(course_path)):
         print('[coursemanager] Modifying existing course')
     else:
-        os.mkdir(course_path)
+        os.makedirs(course_path)
 
     # Add course info to database
     db.addCourse(course_name, course_order, course_path)
@@ -61,23 +61,46 @@ def processCourseZip(in_mem_file):
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
     for lesson_name in course_lessons:
+
+        # Create lesson directory if not already present
         lesson_path = os.path.join(course_path, lesson_name)
         if (os.path.exists(lesson_path)):
             print('[coursemanager] Modifying existing lesson')
         else:
-            os.mkdir(os.path.join(course_path, lesson_name))
+            os.makedirs(os.path.join(course_path, lesson_name))
 
         # Copy all lesson content to server lesson directory
         lesson_tmp_path = os.path.join(course_tmp_path, lesson_name)
         for content in glob.glob(os.path.join(lesson_tmp_path, '*')):
-            print(content)
-            if 'quiz' in content or 'materials' in content:
-                continue
             shutil.copy(content, lesson_path)
+
+        # Skip lesson processing for quizzes and materials
+        if lesson_name == 'quiz' or lesson_name == 'materials':
+            continue
 
         # Add lesson info to database
         lesson_path_html = os.path.join(lesson_path, 'lesson.html')
         db.addLesson(course_name, lesson_name, lesson_path_html)
+
+        # Read file
+        with open(lesson_path_html, 'r') as html_file:
+            html_text = html_file.read()
+
+        # Replace links
+        pattern_content = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"(.*)",\s*text:\s*"(.*)"\s*-->'
+        replace_content = r'<a href="/static/courses/' + course_name + r'/materials/\1">\3</a>'
+        pattern_section = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"subsection",\s*name:\s*"(.*)"\s*-->'
+        replace_section = r'<a href="#\1">\2</a>'
+
+        html_text = re.sub(pattern_content, replace_content, html_text)
+        html_text = re.sub(pattern_section, replace_section, html_text)
+
+        # Write file
+        with open(lesson_path_html, 'w') as html_file:
+           html_file.write(html_text)
+
+    # Cleanup temp dirs
+    shutil.rmtree(ZIP_TMP_DIR)
 
     return True, 'Course uploaded successfully: ' + course_name
 

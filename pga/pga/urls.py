@@ -23,7 +23,7 @@ from . import views
 from pga.admin_views import *
 
 urlpatterns = [
-    url(r'^$', TemplateView.as_view(template_name='home.html'), name='home'),
+    url(r'^$', views.home_page, name='home'),
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
@@ -42,8 +42,8 @@ urlpatterns = [
 
     url(r'^quiz/(?P<course>[A-Za-z0-9\-\s]+)', views.quiz, name='quiz'),
     url(r'^quizResults/(?P<course>[A-Za-z0-9\-\s]+)', views.quizResults, name='quizResults'),
-   # url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
-    url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/(?P<color>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
+    url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
+    url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
 
     url(r'^glossary', views.glossary, name='glossary'),
     url(r'^pests', views.pests, name='pests'),
@@ -54,6 +54,8 @@ urlpatterns = [
     url(r'^harvest', views.harvest, name='harvest'),
     url(r'^postHarvest', views.postHarvest, name='postHarvest'),
     url(r'^records', views.records, name='records'),
+    url(r'^table_form/$', views.createRecordTable_Form, name='table_form'),
+    url(r'^table_home/$', views.recordTable_Home, name='table_home'),
     url(r'^communication', views.communication, name='communication'),
     url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', views.garden, name='garden'),
     url(r'^savePlan/$', views.savePlan, name='savePlan'),

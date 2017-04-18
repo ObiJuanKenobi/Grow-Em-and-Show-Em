@@ -94,12 +94,22 @@ class DataAccess:
 
     def getCourses(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("Select CourseID, Course_Name from Courses ORDER BY Course_Order;")
+        self._cursor.execute("Select CourseID, Course_Name, Course_Color from Courses ORDER BY Course_Order;")
         courses = []
         results = self._cursor.fetchall()
         for row in results:
-            courses.append({"CourseID": row[0], "Course_Name": row[1]})
+            courses.append({"CourseID": row[0], "Course_Name": row[1], "Course_Color": row[2]})
         return courses
+        
+    def getCourseColor(self, course_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select Course_Color from Courses WHERE Course_Name = %s;", [course_name])
+        result = self._cursor.fetchone()
+         
+        color = "000000"
+        if result is not None:
+            color = result[0]
+        return color
 
     def getCourseLessons(self, coursename):
         self._cursor = self._connection.cursor()
