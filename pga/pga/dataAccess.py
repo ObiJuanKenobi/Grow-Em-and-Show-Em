@@ -120,6 +120,11 @@ class DataAccess:
             lessons.append({"name": row[0], "path": row[1]})
         return lessons
 
+    def deleteQuiz(self, coursename):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Quiz_Questions WHERE Course_Name = %s;", [coursename])
+        self._cursor.execute("COMMIT")
+
     def addQuiz(self, coursename, questions):
         self._cursor = self._connection.cursor()
         for question in questions:
@@ -246,6 +251,7 @@ class DataAccess:
         self._cursor.execute("DELETE FROM Bed_Plans WHERE PlanID = %s", [planID])
         self._cursor.execute("COMMIT")
 
+# Class for passing quiz questions to the DB in a convenient object
     def getDailyLogs(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate FROM Daily_Records ORDER BY Record_Date DESC")
@@ -259,18 +265,12 @@ class DataAccess:
 
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
-    _Text = None
-    _Answers = None
-
     def __init__(self):
-        _Text = ""
-        _Answers = []
+        self._Text = ""
+        self._Answers = []
 
-#Class for passing quiz answers to the DB in a convenient object
+# Class for passing quiz answers to the DB in a convenient object
 class QuizAnswer:
-    _Text = None
-    _IsCorrect = None
-
     def __init__(self):
-        _Text = ""
-        _IsCorrect = False
+        self._Text = ""
+        self._IsCorrect = False
