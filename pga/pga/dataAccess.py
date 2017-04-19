@@ -263,7 +263,8 @@ class DataAccess:
             location = row[2]
             quantity = row[3]
             logdate = row[4]
-            logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate})
+            notes = row[5]
+            logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate, "notes": notes})
         return logs
 
     def addDailyLog(self, user, plant, location, quantity, date, notes):
