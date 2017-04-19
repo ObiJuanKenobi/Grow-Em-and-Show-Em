@@ -14,7 +14,7 @@ import json
 
 
 def home_page(request):
-    return render(request, 'home.html', add_courses_to_dict({}))
+    return render(request, 'home.html', add_courses_to_dict(get_home_page_dict()))
 
 
 def login_view(request):
@@ -25,7 +25,7 @@ def login_view(request):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'login.html', add_courses_to_dict({}))
+        return render(request, 'login.html', add_courses_to_dict(get_home_page_dict(), False))
 
 
 def createRecordTable_Form(request):
@@ -226,10 +226,14 @@ def lesson(request, course, lesson):
 
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view
-def add_courses_to_dict(dict):
-    courses = DataAccess().getCourses();
-    dict['courses'] = courses;
+def add_courses_to_dict(dict, is_authenticated=True):
+    if is_authenticated is True:
+        courses = DataAccess().getCourses();
+        dict['courses'] = courses;
     return dict;
+    
+def get_home_page_dict():
+    return {'course': 'Prison Garden Production', 'color': '01af01'}
     
 
 class UserFormView(View):

@@ -27,7 +27,7 @@ urlpatterns = [
     url(r'^$', views.home_page, name='home'),
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
-    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
+    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': views.add_courses_to_dict(views.get_home_page_dict(), False) }, name='logout', ),
     url(r'^admin/', admin.site.urls),
 
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/supplementaryMaterials', AdminSuppMatView.as_view()),
