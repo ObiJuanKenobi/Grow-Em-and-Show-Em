@@ -151,8 +151,16 @@ def lesson(request, course, lesson):
 # which is returned by each view
 def add_courses_to_dict(dict, is_authenticated=True):
     if is_authenticated is True:
-        courses = DataAccess().getCourses();
-        dict['courses'] = courses;
+        db = DataAccess()
+        courses = db.getCourses()
+        #dict['courses'] = courses
+        
+        colors = []
+        for course in courses:
+            print(course)
+            colors.append(db.getCourseColor(course['Course_Name']))
+        #dict['colors'] = colors
+        dict['courses'] = zip(courses, colors)
     return dict;
     
 #Sets color and name for home page & login/logout views

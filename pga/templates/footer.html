@@ -12,8 +12,8 @@
 						Prison Garden Application
 					</a>
                 </li>
-                    {% for course in courses %}
-                        <li>
+                    {% for course, color in courses %}
+                        <li style='background-color: {{color}};'>
                             <a href="/courseNav/{{course.Course_Name}}/">{{course.Course_Name}}</a>
                         </li>
                     {% endfor %}
