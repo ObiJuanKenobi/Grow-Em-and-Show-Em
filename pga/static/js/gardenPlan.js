@@ -190,7 +190,6 @@ function loadPlan() {
         },
         success: function (resp) {
             canvas.loadFromJSON(resp, canvas.renderAll.bind(canvas));
-            $("#loadPlanModal").close();
         },
         error: function (xhr, errmsg, err) {
             alert("Error: " + errmsg);
