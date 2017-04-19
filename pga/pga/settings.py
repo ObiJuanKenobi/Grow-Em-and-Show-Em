@@ -28,11 +28,10 @@ SECRET_KEY = 'f5-7h2x948$i(fs!nflq8f2ews&&g%8gpr10tqx5cj_ifep(!2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.15']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.15', '173.28.184.84']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'pga.apps.PgaConfig',
     'django.contrib.admin',
@@ -79,14 +78,12 @@ WSGI_APPLICATION = 'pga.wsgi.application'
 
 DATABASES = {
     'default': {
-		'ENGINE': 'django.db.backends.sqlite3',
-		'NAME': os.path.join(BASE_DIR, 'db.sqlite3')
-        #'ENGINE': 'django.db.backends.mysql',
-        #'NAME': 'may1713_db',
-        #'USER': 'may1713',
-        #'PASSWORD': '',
-        #'HOST': '',
-        #'PORT': '',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'may1713_PrisonGardenApp',
+        'USER': 'may1713',
+        'PASSWORD': 'gawrA75Nac!&',
+        'HOST': 'sddb.ece.iastate.edu',
+        'PORT': '3306'
     }
 }
 

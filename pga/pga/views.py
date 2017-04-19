@@ -41,17 +41,21 @@ def createRecordTable_Form(request):
                 year = form.cleaned_data['year']
                 month = form.cleaned_data['month']
                 day = form.cleaned_data['day']
-                username = request.user.username
-                time = year + '-' + month + '-' + day
+                username = request.user.get_username()
+                time = year + '/' + month + '/' + day
                 db = DataAccess()
-                db.addDailyLog(username=username, plant=plant, location=location, quantity=quantity, date=time)
-                redirect('table_home')
+                db.addDailyLog(user=username, plant=plant, location=location, quantity=quantity, date=time, notes=notes)
+                db.__del__()
+                return redirect('table_home')
     else:
         form = RecordTableForm()
     return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
 
 def recordTable_Home(request):
-    return render(request, 'recordstable_home.html')
+    db = DataAccess()
+    logs = db.getDailyLogs()
+
+    return render(request, 'recordstable_home.html', add_courses_to_dict({'logs' : logs}))
 
 # Maintenance lessons:
 @login_required(login_url='/login/')
@@ -190,6 +194,7 @@ class UserFormView(View):
             user.set_password(password)
             user.save()
             db.addUser(username, password, first_name, last_name)
+            db.__del__()
             user = authenticate(username=username, password=password)
 
             if user is not None:

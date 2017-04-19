@@ -14,10 +14,10 @@
     <table style="width:100%">
         <tr>
             <th>Username</th>
-            <th>Date</th>
             <th>Plant/Variety</th>
             <th>Location</th>
             <th>Quantity</th>
+            <th>Date</th>
             <th>Notes</th>
         </tr>
         {% for log in logs %}
@@ -27,6 +27,7 @@
             <td>{{log.location}}</td>
             <td>{{log.quantity}}</td>
             <td>{{log.logdate}}</td>
+            <td>{{log.notes}}</td>
         </tr>
         {% endfor %}
     </table>
