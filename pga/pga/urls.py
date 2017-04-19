@@ -21,6 +21,7 @@ from django.views.generic.base import TemplateView
 
 from . import views
 from pga.admin_views import *
+from . import admin_quiz_mgmt
 
 urlpatterns = [
     url(r'^$', views.home_page, name='home'),
@@ -29,11 +30,14 @@ urlpatterns = [
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html'}, name='logout'),
     url(r'^admin/', admin.site.urls),
 
+    url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/supplementaryMaterials', AdminSuppMatView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s]+)', AdminLessonView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)', AdminUnitView.as_view()),
+    url(r'^pgaadmin/quiz/editQuestion', admin_quiz_mgmt.edit_quiz_question),
+    url(r'^pgaadmin/quiz/editAnswer', admin_quiz_mgmt.edit_quiz_answer),
     url(r'^pgaadmin/quiz/(?P<unit>[A-Za-z0-9\-\s]+)', AdminQuizView.as_view()),
-    url(r'^pgaadmin/supplementaryMaterials/(?P<resource_type>[A-Za-z0-9\-\s]+)', AdminSuppMatView.as_view()),
-    url(r'^pgaadmin/supplementaryMaterials', adminSupplementaryMaterials),
+    #url(r'^pgaadmin/supplementaryMaterials/(?P<resource_type>[A-Za-z0-9\-\s]+)', AdminSuppMatView.as_view()),
+    #url(r'^pgaadmin/supplementaryMaterials', adminSupplementaryMaterials),
     url(r'^pgaadmin/quizStatistics', adminQuizStatistics),
     url(r'^pgaadmin/userProgress', adminUserProgress),
     url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),#views.adminCourseMgmt),

@@ -165,7 +165,7 @@ class DataAccess:
         self._cursor.execute("COMMIT")
 
     def editAnswer(self, answerID, answerText, isCorrect):
-        self._cursor = self._conneciton.cursor()
+        self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Quiz_Answers SET Answer_Text = %s, Is_Correct = %s WHERE AnswerID = %s", (answerText, isCorrect, answerID))
         self._cursor.execute("COMMIT")
 

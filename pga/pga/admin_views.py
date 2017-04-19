@@ -84,44 +84,33 @@ class AdminLessonView(AbstractFileUploadView):
 class AdminSuppMatView(AbstractFileUploadView):
     
     template_name = 'admin/supplementary_materials.html'
+    unit = None
     
     def __init__(self):
-        super(AdminSuppMatView, self).__init__( [], [])
+        #TODO find more image extensions            
+        #TODO find more video extensions
+        super(AdminSuppMatView, self).__init__( ['.pdf', '.jpg', '.jpeg', '.png', '.tiff', '.gif', '.mp4'], [])
             
     def extract_extra_params(self, *args, **kwargs):
-        self.resource_type = kwargs.pop('resource_type', None)
-        if self.resource_type is not None:
-            if self.resource_type == 'PDF':
-                self.valid_file_extensions = ['.pdf']
-            elif self.resource_type == 'Image':
-                #TODO find more image extensions
-                self.valid_file_extensions = ['.jpg', '.jpeg', '.png', '.tiff', '.gif']
-            elif self.resource_type == 'Video':
-                #TODO find more video extensions
-                self.valid_file_extensions = ['.mp4']
-            else:
-                self.extra_params_errors += self.resource_type + " is not a valid resource type"
+        self.unit = kwargs.pop('unit', None)
+        if self.unit is not None:
             return True
-            
-        #Invalid URL:
+           
+        #Invalid URL:           
+        self.extra_params_errors += "couldn't find unit in url"
         return False
     
     def get_page_specific_data(self):
         #Ensures 'self.resource_type' is set before reaching here
         #TODO - get actual resources
-        resources = [{'name': 'Fake ' + self.resource_type + ' 1'},
-                    {'name': 'Fake ' + self.resource_type + ' 2'}]
-        return { 'resource_type': self.resource_type, 'resources': resources }
+        resources = [{'name': 'Fake resource 1'},
+                    {'name': 'Fake resource 2'}]
+        return { 'unit': self.unit, 'resources': resources }
         
     def page_specific_handle_file(self, file):
         # type of material is given by 'self.resource_type'
         return FileHandlingResult(True, 'TODO - not implemented')
         
-        
-#Simply returns the index page of supp mat's, listing the types, not actual files
-@staff_member_required
-def adminSupplementaryMaterials(request):
-    return render(request, 'admin/supplementary_materials.html', {'index': True});
     
 @staff_member_required
 def adminHome(request):

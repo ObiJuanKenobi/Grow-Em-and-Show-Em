@@ -12,6 +12,120 @@
 
 <script type='text/javascript'>
 
+    /**
+     * Setup csrftoken for ajax queries.
+     */
+    function setupCSRF() {
+        // CSRF code
+        // using jQuery
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+    }
+    
+    function saveChangedQuestions(){
+        //Save was pressed, find text that changed and update DB
+        $("#questionsDiv div").each(function() {
+            var id = $(this).attr('id');
+            id = id.replace("question", ""); // Turns 'question19' into '19'
+            var originalText = $(this).find(".questionText").text().trim();
+            var editedText = String($(this).find(".questionTextEdit").val()).trim();
+            
+            if(originalText !== editedText){
+                alert("New question: " + editedText + ", " + originalText + ", " + id);
+                
+                updateQuestion(id, editedText);
+            }
+            
+            $(this).find("ol li").each(function() {
+                var answerId = $(this).attr('id');
+                answerId = answerId.replace("answer", "");
+                var originalAnswer = $(this).find(".answer").text().trim();
+                var editedAnswer = String($(this).find(".answerEdit").val()).trim();
+                var name = 'correct' + id;
+                var isCorrect = $(this).find("input[name=" + name + "]").is(":checked");
+                var wasCorrect = $(this).find("span").hasClass("correct");
+                
+                if(originalAnswer !== editedAnswer){
+                    alert("New answer: " + editedAnswer + " , id: " + answerId + ", isCorrect: " + isCorrect);
+                    updateAnswer(answerId, editedAnswer, isCorrect);
+                }
+                else if( isCorrect !== wasCorrect){
+                    alert("Answer didn't change, but correctness did");
+                    updateAnswer(answerId, editedAnswer, isCorrect);
+                }
+                
+                
+            });
+        });
+    }
+    
+    function updateQuestion(id, editedText){
+        $.ajax({
+            url: "/pgaadmin/quiz/editQuestion",
+            type: "POST",
+            data: {
+                questionid: id,
+                newquestion: editedText
+            },
+            success: function (data) {
+                alert("Success!");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+    
+    function updateAnswer(answerId, newAnswer, isCorrect){
+        $.ajax({
+            url: "/pgaadmin/quiz/editAnswer",
+            type: "POST",
+            data: {
+                answerid: answerId,
+                newanswer: newAnswer,
+                iscorrect: isCorrect
+            },
+            success: function (data) {
+                alert("Success!");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
 	var editing = false;
 	var uploadDialog;
     var fileUploadId;
@@ -29,38 +143,11 @@
 	}
 	
 	$(function() {
+    
+        setupCSRF();
+        fileUploadId = $("#fileUploadId").val();		
 	
-        fileUploadId = $("#fileUploadId").val();
-        var handleFiles = function() {
-            var disabled = document.getElementById(fileUploadId).files.length == 0;
-            $("#uploadBtn").button("option", "disabled", disabled);
-        };
-		var inputElement = document.getElementById(fileUploadId);
-		inputElement.addEventListener("change", handleFiles, false);
-		
-	
-		uploadDialog = uploadDialog = $("#uploadNewQuestionList").dialog({
-          autoOpen: false,
-          height: 400,
-          width: 450,
-          modal: true,
-          buttons: [
-            {
-                id: "cancel",
-                text: "Cancel",
-                click: function() { uploadDialog.dialog("close"); }
-            },
-            {
-                id: "uploadBtn",
-                text: "Upload",
-                disabled: 'true',
-                click: uploadNewQuizFile
-            }
-          ],
-          Close: function() {
-            
-          }
-        });
+		uploadDialog = createUploadDialog(fileUploadId);
 			
 		$("#uploadListBtn").click(function(){
 			uploadDialog.dialog("open");
@@ -82,27 +169,7 @@
 			else {
 				$("#editBtn").text('Edit');
 				
-				//Save was pressed, find text that changed and update DB
-				$("#questionsDiv div").each(function() {
-					var id = $(this).attr('id');
-					var originalText = $(this).find(".questionText").text().trim();
-					var editedText = String($(this).find(".questionTextEdit").val()).trim();
-					
-					if(originalText !== editedText){
-						alert("New question: " + editedText + ", " + originalText + ", " + id);
-					}
-					
-					$(this).find("ol li").each(function() {
-						var originalAnswer = $(this).find(".answer").text().trim();
-						var editedAnswer = String($(this).find(".answerEdit").val()).trim();
-						
-						if(originalAnswer !== editedAnswer){
-							alert("New answer: " + editedAnswer);
-						}
-						
-						
-					});
-				});
+				saveChangedQuestions();
 			}
 		});
 		
@@ -121,26 +188,24 @@
 	<div id='questionsDiv'>
 	{% for q in questions %}
 		
-		<div class='questionDiv' id='{{ q.id }}'>
+		<div class='questionDiv' id='question{{ q.id }}'>
 		<b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span>
 			<input type='text' class='questionTextEdit' value='{{ q.question }}'><br>
 		
 		<ol type='a' class='q{{q.id}}'>
 		{% for a in q.answers %}
 			
-			
+			<li id='answer{{a.id}}'>
 			{% if a.correct %}
-				<li>
 					<span class='option{{ forloop.counter }} answer correct'>{{a.answer}}</span>
 					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'> 
 					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}' checked>Correct Answer</label>
-				</li>
 			{% else %}
-				<li><span class='option{{ forloop.counter }} answer'>{{a.answer}}</span>
+                    <span class='option{{ forloop.counter }} answer'>{{a.answer}}</span>
 					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'>  
 					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}'>Correct Answer</label>
-				</li>
 			{% endif %}
+            </li>
 			
 		{% endfor %}
 		</ol>
@@ -149,25 +214,6 @@
 	{% endfor %}
 	</div>
 	
-	<div id='uploadNewQuestionList'>
-		<span>Choose a file to upload, and whether you are adding questions to the existing set or would like to replace all existing questions.</span>
-		<br><br>
-		<label><input type='radio' name='uploadType' value='add' checked>Add questions</label><br>
-		<label><input type='radio' name='uploadType' value='replace'>Replace questions</label><br><br>
-		
-		<form id='uploadForm' enctype='multipart/form-data' method='post' action=''>
-            {% csrf_token %}
-            {{ form }}
-            <!--
-             django uses 'id_file' for a form field named 'file',
-              but I'm setting the id to a hidden value 
-              and then getting that in case django ever 
-              changes this id
-            -->
-            <input type='hidden' value='{{ form.file.auto_id }}' id='fileUploadId'>
-        </form>
-	</div>
-	
 </div>
-
+{% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}

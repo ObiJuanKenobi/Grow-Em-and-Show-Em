@@ -38,33 +38,20 @@
 
 </script>
     
-    {% if index %}
-        <span class='adminPageTitle'>Supplementary Materials</span>&nbsp;&nbsp;<a href='/pgaadmin/courseMgmt' class='backLink'>Back</a><br><br>
-        
-        <ul>
-            <li><a href='/pgaadmin/supplementaryMaterials/PDF'>PDF's</a></li>
-            <li><a href='/pgaadmin/supplementaryMaterials/Image'>Image's</a></li>
-            <li><a href='/pgaadmin/supplementaryMaterials/Video'>Video's</a></li>
-        </ul>
-    
-    {% else %}
-        <span class='adminPageTitle'>Supplementary Materials</span>&nbsp;&nbsp;<a href='/pgaadmin/supplementaryMaterials' class='backLink'>Back</a><br><br>
+        <span class='adminPageTitle'>Supplementary Materials for {{ unit }}</span>&nbsp;&nbsp;<a href='/pgaadmin/unit/{{unit}}' class='backLink'>Back</a><br><br>
     
         {% include "admin/upload_status.html" %}
         
-        <h3>{{ resource_type }}'s</h3>
-        
         <ul id='resources'>
             {% for r in resources %}
-                <li id='{{ c.Course_Name }}Li'><a href='/pgaadmin/supplementaryMaterials/{{resource_type}}/{{r.name}}'>{{r.name}}</a>&nbsp;<button class='removeBtn'>Remove</button></li>
+                <li id='{{ c.Course_Name }}Li'><a href='/pgaadmin/supplementaryMaterials/{{r.name}}'>{{r.name}}</a>&nbsp;<button class='removeBtn'>Remove</button></li>
             {% endfor %}
         </ul>
         
         <br><br>
         <button id='editBtn'>Edit</button>&nbsp;
         <button id='uploadResourceBtn'>Upload</button><br>
-        
-    {% endif %}
+
 	
 {% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}

@@ -214,7 +214,14 @@ def lesson(request, course, lesson):
     db = DataAccess()
     color = db.getCourseColor(course)
     lesson_file_path = DataAccess().getLesson(course, lesson)
-    lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
+    
+    #records url does not have the preceding '.'
+    if "static" in lesson_file_path:
+        lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
+    
+    if "Garden Planning" in lesson:
+        return redirect('/courseNav/Gardens')
+    
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
 
 #Retrieves all courses and adds them to the data dictionary passed in,
