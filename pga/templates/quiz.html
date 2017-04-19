@@ -3,82 +3,22 @@
 {% include 'jquery_loader.html' %}
 	
 	<!--script type='text/javascript' src='static/js/quizParser.js'></script-->
-	<h2 class='unitTitle'>{{ course }} Quiz</h2>
+	<h2 class='unitTitle' id='{{course}}'>{{ course }} Quiz</h2>
 	
-	<script type='text/javascript'>
-		$(function(){
-			$("#submitBtn").click(function() {
-				var results = gradeQuiz();
-				
-				if(results.length == 0){
-					quizPassed();
-				}
-				else {
-					quizFailed(results);
-				}
-			});
-		});
-		
-		function gradeQuiz() {
-			var results = [];
-			
-			$(".questionDiv").each(function(index) {
-				var correct_answer = $(this).find('.answer').val();
-				var questionId = $(this).attr('id');
-				var users_answer = $(this).find("input[name='" + questionId + "']:checked").val();
-				
-				var correct = correct_answer === users_answer;
-				if(!correct){
-					results.push({"question": questionId, "correct": correct_answer});
-				}
-			});
-			
-			return results;
-		}
-		
-		function quizPassed() {
-			window.location.href = "/quizResults/" + $(".unitTitle").first().text();
-		}
-		
-		function quizFailed(results) {
-			var msg = "You did not pass the quiz! Missed " + results.length + " questions.";
-			alert(msg);
-			
-			for(var i=0; i<results.length; i++){
-				var qId = results[i].question;
-				var correctOption = results[i].correct;
-				$("#" + qId + " ." + correctOption).css("color", "red");
-			}
-			
-			var extraAttempts = 3; //GET from DB
-			
-			if(extraAttempts > 0) {
-				$("#submitBtn").val("Try Again");
-				$("#submitBtn").click(function() {
-					alert("TODO - load new quiz questions, add failed attempt to DB for user");
-					$("#submitBtn").val("Submit Answers");
-				});
-			}
-			else {
-				//Redirect to lessons?
-			}
-		}
-	
-	</script>
+	<script type='text/javascript' src='{% static "js/quiz.js" %}'></script>
 	
 	<div class='content'>
 	
 		{% if questions %}
-			{{ questions }}
 			<br><br>
 			{% for q in questions %}
 				
-				<div class='questionDiv' id='{{ q.id }}'>
+				<div class='questionDiv' id='question{{ q.id }}'>
 			    <b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span> <br>
 				<ol type='a' style='display: inline-block;'>
 				{% for a in q.answers %}
 					<label class='{{ forloop.counter }}'>
-                        <input type='radio' value='{{ forloop.counter }}' name='{{ q.id }}'>
+                        <input type='radio' value='{{ forloop.counter }}' id='answer{{a.id}}' name='{{ q.id }}'>
                         <li style='display: inline-block; margin-bottom: 8px;'> {{a.answer}}
                     </label><br>
 					

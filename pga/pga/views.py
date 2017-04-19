@@ -14,7 +14,8 @@ import json
 
 
 def home_page(request):
-    return render(request, 'home.html', add_courses_to_dict(get_home_page_dict()))
+    authenticated = request.user.is_authenticated()
+    return render(request, 'home.html', add_courses_to_dict(get_home_page_dict(), authenticated))
 
 
 def login_view(request):
