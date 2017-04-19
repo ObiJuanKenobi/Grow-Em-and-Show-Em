@@ -281,6 +281,15 @@ function initGardenItems() {
             });
         }
     });
+
+    $("#gridInput").val(50);
+}
+
+function changeGridSize(){
+    gridSize = Math.round($("#gridInput").val());
+    $("#gridInput").val(gridSize)
+    resetCanvas();
+    drawGrid();
 }
 
 function timeStamp() {
