@@ -14,7 +14,7 @@ import json
 
 
 def home_page(request):
-    return render(request, 'home.html', add_courses_to_dict({}))
+    return render(request, 'home.html', add_courses_to_dict(get_home_page_dict()))
 
 
 def login_view(request):
@@ -25,7 +25,7 @@ def login_view(request):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'login.html', add_courses_to_dict({}))
+        return render(request, 'login.html', add_courses_to_dict(get_home_page_dict(), False))
 
 
 def createRecordTable_Form(request):
@@ -47,94 +47,10 @@ def createRecordTable_Form(request):
 def recordTable_Home(request):
     return render(request, 'recordstable_home.html')
 
-@login_required(login_url='/login/')
-def glossary(request):
-    return render(request, 'glossary.html', add_courses_to_dict({}))
-
-
-@login_required(login_url='/login/')
-def plan(request):
-    return render(request, 'plan.html')
-
-
-@login_required(login_url='/login/')
-def maintain(request):
-    return render(request, 'maintain.html')
-
-
-@login_required(login_url='/login/')
-def harvest(request):
-    return render(request, 'harvest.html')
-
-
-@login_required(login_url='/login/')
-def postHarvest(request):
-    return render(request, 'postHarvest.html')
-
-
-@login_required(login_url='/login/')
-def records(request):
-    return render(request, 'records.html')
-
-
-@login_required(login_url='/login/')
-def communication(request):
-    return render(request, 'communication.html')
-
-
 # Maintenance lessons:
 @login_required(login_url='/login/')
 def pests(request):
     return render(request, 'pests.html', add_courses_to_dict({}))
-
-
-@login_required(login_url='/login/')
-def fertilizer(request):
-    return render(request, 'fertilizer.html')
-
-
-@login_required(login_url='/login/')
-def produce(request):
-    return render(request, 'produce.html')
-
-
-@login_required(login_url='/login/')
-def maturityTimeline(request):
-    return render(request, 'maturityTimeline.html')
-
-
-@login_required(login_url='/login/')
-def watering(request):
-    return render(request, 'watering.html')
-
-
-@login_required(login_url='/login/')
-def weedRecognition(request):
-    return render(request, 'weedRecognition.html')
-
-
-@login_required(login_url='/login/')
-def disease(request):
-    return render(request, 'disease.html')
-
-
-@login_required(login_url='/login/')
-def quiz(request, course):
-    db = DataAccess();
-    questions = db.getQuizQuestions(course);
-    return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course}));
-
-
-@login_required(login_url='/login/')
-def pestsQuiz(request):
-    return render(request, 'quiz.html')
-
-
-def quizResults(request, course):
-    db = DataAccess()
-    db.addQuizAttempt(course, 'todo-get username', 1)
-    return render(request, 'quizResults.html', add_courses_to_dict({'course': course}))
-
 
 def garden(request, garden):
     return render(request, 'garden.html', {'gardenName': garden})
@@ -210,19 +126,32 @@ def courseNav(request, course):
         
     return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
     
+@login_required(login_url='/login/')
 def lesson(request, course, lesson):
     db = DataAccess()
     color = db.getCourseColor(course)
     lesson_file_path = DataAccess().getLesson(course, lesson)
-    lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
+    
+    #records url does not have the preceding '.'
+    if "static" in lesson_file_path:
+        lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
+    
+    if "Garden Planning" in lesson:
+        return redirect('/courseNav/Gardens')
+    
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
 
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view
-def add_courses_to_dict(dict):
-    courses = DataAccess().getCourses();
-    dict['courses'] = courses;
+def add_courses_to_dict(dict, is_authenticated=True):
+    if is_authenticated is True:
+        courses = DataAccess().getCourses();
+        dict['courses'] = courses;
     return dict;
+    
+#Sets color and name for home page & login/logout views
+def get_home_page_dict():
+    return {'course': 'Prison Garden Production', 'color': '01af01'}
     
 
 class UserFormView(View):
@@ -231,7 +160,9 @@ class UserFormView(View):
 
     def get(self, request):
         form = self.form_class(None)
-        return render(request, self.template_name, {'form': form})
+        dict = get_home_page_dict()
+        dict['form'] = form
+        return render(request, self.template_name, dict)
 
     def post(self, request):
         form = self.form_class(request.POST)
@@ -252,4 +183,6 @@ class UserFormView(View):
                     login(request, user)
                     return redirect('home')
 
-        return render(request, self.template_name, {'form': form})
+        dict = get_home_page_dict()
+        dict['form'] = form
+        return render(request, self.template_name, dict)
