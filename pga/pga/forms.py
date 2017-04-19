@@ -17,5 +17,5 @@ class RecordTableForm(forms.Form):
     quantity = forms.CharField(label="Quantity", max_length='75')
     year = forms.CharField(label='Year', min_length='4', widget=forms.TextInput(attrs={'placeholder': 'Ex. 2017'}))
     month = forms.CharField(label='Month', min_length='2', widget=forms.TextInput(attrs={'placeholder': 'Ex. 29'}))
-    date = forms.CharField(label='Day', min_length='2', widget=forms.TextInput(attrs={'placeholder': 'Ex. 04'}))
+    day = forms.CharField(label='Day', min_length='2', widget=forms.TextInput(attrs={'placeholder': 'Ex. 04'}))
     notes = forms.CharField(label='Notes', max_length='200', widget=forms.Textarea(attrs={'placeholder': 'Warning! This will be publically displayed'}))

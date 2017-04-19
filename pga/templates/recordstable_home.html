@@ -11,7 +11,7 @@
     <a href="/table_form" class="btn btn-default">Create an entry!</a>
     <br>
     <br>
-    <table style="width: 100%">
+    <table style="width:100%">
         <tr>
             <th>Username</th>
             <th>Date</th>
@@ -20,6 +20,15 @@
             <th>Quantity</th>
             <th>Notes</th>
         </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{log.username}}</td>
+            <td>{{log.plant}}</td>
+            <td>{{log.location}}</td>
+            <td>{{log.quantity}}</td>
+            <td>{{log.logdate}}</td>
+        </tr>
+        {% endfor %}
     </table>
 </div>
 
