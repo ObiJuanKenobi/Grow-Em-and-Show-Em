@@ -14,23 +14,15 @@
 
 <div class="container-fluid gardenLayout">
     <div class="row toolbar">
-        <div class="col-md-6">
-            <button id="drawBtn" class="btn btn-info" onclick="draw()">Draw</button>
-            <button id="savePlan" class="btn btn-info" data-toggle="modal" data-target="#savePlanModal">Save</button>
-            <button id="loadPlans" class="btn btn-info" onclick="showPlans()" data-toggle="modal"
-                    data-target="#loadPlanModal">Load
-            </button>
-            <button id="clrBtn" class="btn btn-info" onclick="eraseObj()">Erase</button>
-            {#        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>#}
-            {#        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>#}
-            <button id="resetBtn" class="btn btn-info" onclick="resetCanvas()">Reset</button>
-        </div>
-        <div class="col-md-3">
-            <div class="input-group">
-                <span class="input-group-addon" id="gridSize">Grid Size</span>
-                <input type="number" class="form-control" id="gridInput" aria-describedby="gridSize" onblur="changeGridSize()" step="1">
-            </div>
-        </div>
+        <button id="drawBtn" class="btn btn-info" onclick="draw()">Draw</button>
+        <button id="savePlan" class="btn btn-info" data-toggle="modal" data-target="#savePlanModal">Save</button>
+        <button id="loadPlans" class="btn btn-info" onclick="showPlans()" data-toggle="modal"
+                data-target="#loadPlanModal">Load
+        </button>
+        <button id="clrBtn" class="btn btn-info" onclick="eraseObj()">Erase</button>
+        {#        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>#}
+        {#        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>#}
+        <button id="resetBtn" class="btn btn-info" onclick="resetCanvas()">Reset</button>
     </div>
     <div class="row">
         <div class="itemsLayout" id="itemsBoard">

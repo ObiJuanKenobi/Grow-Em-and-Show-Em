@@ -285,7 +285,7 @@ function initGardenItems() {
     $("#gridInput").val(50);
 }
 
-function changeGridSize(){
+function changeGridSize() {
     gridSize = Math.round($("#gridInput").val());
     $("#gridInput").val(gridSize)
     resetCanvas();
