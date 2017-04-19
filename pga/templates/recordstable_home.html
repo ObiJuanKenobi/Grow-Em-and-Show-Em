@@ -4,7 +4,25 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'css/recordstable-home.css' %}">
 
+{% block content %}
+<div class="container">
+    <header><strong>Table Home View</strong></header>
+    <br>
+    <a href="/table_form" class="btn btn-default">Create an entry!</a>
+    <br>
+    <br>
+    <table style="width: 100%">
+        <tr>
+            <th>Username</th>
+            <th>Date</th>
+            <th>Plant/Variety</th>
+            <th>Location</th>
+            <th>Quantity</th>
+            <th>Notes</th>
+        </tr>
+    </table>
+</div>
 
-
+{% endblock %}
 
 {% include "footer.html" %}
