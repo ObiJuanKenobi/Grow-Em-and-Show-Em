@@ -114,7 +114,7 @@ Process the contents of a given quiz spreadsheet by adding its
 """
 def processQuiz(course_name, course_dir):
     quiz_path = os.path.join(course_dir, 'quiz/quiz.xlsx')
-    wb = openpyxl.load_workbook(filename = quiz_path)
+    wb = openpyxl.load_workbook(filename = quiz_path, read_only = True, data_only = True)
 
     questions = []
 
