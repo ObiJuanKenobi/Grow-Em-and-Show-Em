@@ -6,7 +6,7 @@
 var imgCache = [],
     canvas,
     gardenInstance,
-    gridSize = 100;
+    gridSize = 50;
 
 /**
  * Setup csrftoken for ajax queries.
@@ -312,7 +312,6 @@ function resetCanvas() {
     drawGrid();
 }
 
-
 $(document).ready(function () {
     var resetBtn = document.getElementById("resetBtn"),
         savePlan = document.getElementById("savePlan");
@@ -325,6 +324,8 @@ $(document).ready(function () {
         gardenInstance = img;
     });
     canvas = new fabric.Canvas('gardenCanvas');
+    canvas.setHeight(window.innerHeight / 2);
+    canvas.setWidth($(".toolbar").width());
     fixCanvasBound();
     drawGrid();
     setupCSRF();
@@ -335,6 +336,7 @@ $(document).ready(function () {
 
     // Initialize the garden items
     initGardenItems();
+
     $(".ui-loader").hide();
 });
 
