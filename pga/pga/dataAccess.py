@@ -165,7 +165,7 @@ class DataAccess:
         self._cursor.execute("COMMIT")
 
     def editAnswer(self, answerID, answerText, isCorrect):
-        self._cursor = self._connection.cursor()
+        self._cursor = self._conneciton.cursor()
         self._cursor.execute("UPDATE Quiz_Answers SET Answer_Text = %s, Is_Correct = %s WHERE AnswerID = %s", (answerText, isCorrect, answerID))
         self._cursor.execute("COMMIT")
 
@@ -254,7 +254,7 @@ class DataAccess:
 # Class for passing quiz questions to the DB in a convenient object
     def getDailyLogs(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate FROM Daily_Records ORDER BY Record_Date DESC")
+        self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate, Notes FROM Daily_Records ORDER BY Record_Date DESC")
         results = self._cursor.fetchall()
         logs = []
         for row in results:
@@ -266,9 +266,9 @@ class DataAccess:
             logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate})
         return logs
 
-    def addDailyLog(self, user, plant, location, quantity, date):
+    def addDailyLog(self, user, plant, location, quantity, date, notes):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, quantity, Record_Date) VALUES (%s, %s, %s, %s, %s)", (user, plant, location, quantity, date))
+        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
         self._cursor.execute("COMMIT")
 
 #Class for passing quiz questions to the DB in a convenient object
