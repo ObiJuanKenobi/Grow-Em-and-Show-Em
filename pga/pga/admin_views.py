@@ -87,9 +87,10 @@ class AdminSuppMatView(AbstractFileUploadView):
     unit = None
     
     def __init__(self):
-        #TODO find more image extensions            
-        #TODO find more video extensions
-        super(AdminSuppMatView, self).__init__( ['.pdf', '.jpg', '.jpeg', '.png', '.tiff', '.gif', '.mp4'], [])
+        super(AdminSuppMatView, self).__init__( ['.pdf',
+                                                '.jpg', '.jpeg', '.png', '.tiff', '.gif', '.bmp', #image types
+                                                '.mp4', '.m4p', '.m4v', '.flv', '.f4v', '.f4p', '.f4a', '.f4b', '.mpg', '.mpeg', '.avi', '.mov', '.qt', #video types
+                                                '.zip'], [])
             
     def extract_extra_params(self, *args, **kwargs):
         self.unit = kwargs.pop('unit', None)
