@@ -33,14 +33,19 @@ def createRecordTable_Form(request):
     if request.method == 'POST':
         form = RecordTableForm(request.POST)
         if form.is_valid():
-            plant = form.cleaned_data['plant']
-            quantity = form.cleaned_data['quantity']
-            location = form.cleaned_data['location']
-            notes = form.cleaned_data['notes']
-            year = form.cleaned_data['year']
-            month = form.cleaned_data['month']
-            day = form.cleaned_data['day']
-            redirect('table_home')
+            if request.user.is_authenticated():
+                plant = form.cleaned_data['plant']
+                quantity = form.cleaned_data['quantity']
+                location = form.cleaned_data['location']
+                notes = form.cleaned_data['notes']
+                year = form.cleaned_data['year']
+                month = form.cleaned_data['month']
+                day = form.cleaned_data['day']
+                username = request.user.username
+                time = year + '-' + month + '-' + day
+                db = DataAccess()
+                db.addDailyLog(username=username, plant=plant, location=location, quantity=quantity, date=time)
+                redirect('table_home')
     else:
         form = RecordTableForm()
     return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))

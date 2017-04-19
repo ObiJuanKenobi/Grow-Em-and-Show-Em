@@ -16,15 +16,12 @@ apt update
 apt upgrade
 
 # General utities
-apt install vim tree git htop ssh
-
-# Django-specific utilities
-apt install django
+apt install vim tree git htop ssh gcc g++ virtualenv libmysqld-dev
 
 # Open ports for SSH and HTTPS
 ufw enable
 ufw allow 22
-ufw allow 443
+ufw allow 8000
 ufw reload
 
 # Set SSH to only allow auth via keys
@@ -33,3 +30,17 @@ sed -i 's/UsePAM yes/UsePAM no/g' /etc/ssh/sshd_config
 service ssh restart
 
 echo 'Please restart in order to complete the changes.'
+
+# Once restarted, setup the virtualenv:
+# git clone https://github.com/obijuankenobi/Prison-Garden-Application.git
+# cd Prison-Garden-Application
+# virtualenv venv
+# source venv/bin/activate
+# pip install django openpyxl mysql-python
+# 
+# To quit:
+# deactivate
+#
+# To start server:
+# cd pga/
+# python manage.py runserver 0.0.0.0:8000
