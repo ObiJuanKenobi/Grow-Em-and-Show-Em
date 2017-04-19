@@ -263,12 +263,13 @@ class DataAccess:
             location = row[2]
             quantity = row[3]
             logdate = row[4]
-            logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate})
+            notes = row[5]
+            logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate, "notes": notes})
         return logs
 
     def addDailyLog(self, user, plant, location, quantity, date, notes):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
+        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
         self._cursor.execute("COMMIT")
 
 #Class for passing quiz questions to the DB in a convenient object
