@@ -51,7 +51,7 @@
 {% for l in lessons %}
 	<li id='{{ l.name }}Li'>
 		<a href='/pgaadmin/unit/{{ unit}}/{{ l.name }}' class='lessonLink'>{{ l.name }}</a>&nbsp;&nbsp;
-		<button class='removeBtn' value='{{l.name}}'>Delete Lesson</button>
+		<button class='edit-input removeBtn' value='{{l.name}}'>Delete Lesson</button>
 	</li>
 {% endfor %}
 </ol><br><br>

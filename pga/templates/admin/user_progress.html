@@ -1,5 +1,29 @@
 {% include "admin/header.html" %}
 
+<style type="text/css">
+td
+{
+    padding:0 15px 0 15px;
+}
+</style>
+
 <span class='adminPageTitle'>User Progress</span>&nbsp;&nbsp;<a href='/pgaadmin/courseInfo' class='backLink'>Back</a><br><br>
+
+<table>
+    <tr>
+        <th>Username</th><th># Completed Courses</th>
+    </tr>
+{% for user, completed in user_progress %}
+    <tr>
+        <td>
+            <a href='/pgaadmin/userProgress/{{ user }}'>{{ user }}</a>
+        </td>
+        
+        <td>
+            {{ completed }}
+        </td>
+    </tr>
+{% endfor %}
+</table>
 
 {% include "admin/footer.html" %}

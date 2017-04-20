@@ -134,7 +134,12 @@ def courseNav(request, course):
         link = DataAccess().getLesson(course, lesson['name'])
         lesson['link'] = link.replace(".", "", 1)
         
-    return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
+    completed_courses = db.getCompletedCoursesForUser(request.user.username)
+    passed = False 
+    if course in completed_courses:
+        passed = True
+        
+    return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'passed': passed}))
     
 @login_required(login_url='/login/')
 def lesson(request, course, lesson):
@@ -150,6 +155,14 @@ def lesson(request, course, lesson):
         return redirect('/courseNav/Gardens')
     
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
+    
+@login_required(login_url='/login/')
+def quiz_wrapper(request, course):
+    db = DataAccess()
+    color = db.getCourseColor(course)
+    lesson_file_path = "/quiz/" + course
+    
+    return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'color': color, 'lesson_file_path': lesson_file_path}))
 
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view
@@ -161,7 +174,6 @@ def add_courses_to_dict(dict, is_authenticated=True):
         
         colors = []
         for course in courses:
-            print(course)
             colors.append(db.getCourseColor(course['Course_Name']))
         #dict['colors'] = colors
         dict['courses'] = zip(courses, colors)

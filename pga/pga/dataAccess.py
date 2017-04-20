@@ -54,6 +54,16 @@ class DataAccess:
             courses.append(row[0])
 
         return courses
+        
+    def getCompletedCoursesForUser(self, user):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select distinct Course_Name from Quiz_Attempts WHERE Username=%s and Passed=1;", [user])
+        results = self._cursor.fetchall()
+        courses = []
+        for row in results:
+            courses.append(row[0])
+            
+        return courses
 
     def addLesson(self, coursename, lessonname, lessonfilepath):
         self._cursor = self._connection.cursor()
@@ -110,6 +120,11 @@ class DataAccess:
         if result is not None:
             color = result[0]
         return color
+        
+    def setCourseColor(self, course_name, color):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Courses SET Course_Color = %s WHERE Course_Name = %s;", [color, course_name])
+        self._cursor.execute("COMMIT")
 
     def getCourseLessons(self, coursename):
         self._cursor = self._connection.cursor()

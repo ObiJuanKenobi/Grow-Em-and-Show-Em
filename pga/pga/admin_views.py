@@ -1,6 +1,8 @@
+from django.http import HttpResponse, Http404
 from pga.abstract_upload_view import *
 from pga.dataAccess import DataAccess
 from pga.coursemanager import *
+import json
 
 #Displays all units, allowing users to delete them, upload another,
 # go to a unit's lessons, or go to supplementary materials
@@ -125,12 +127,27 @@ def adminCourseInfo(request):
 
 @staff_member_required
 def adminUserProgress(request):
-    return render(request, 'admin/user_progress.html')
+    db = DataAccess()
+    progress = db.getAllUserProgress()
+    
+    completed = []
+    
+    for user in progress:
+        num_courses = len(progress[user])
+        completed.append(num_courses)
+    #print(progress)
+    
+    user_progress = zip(progress, completed)
+    return render(request, 'admin/user_progress.html', {'user_progress': user_progress})
 
 
 @staff_member_required
 def adminQuizStatistics(request):
     return render(request, 'admin/quiz_statistics.html')
+    
+def adminSetCourseColor(request, course, color):
+    DataAccess().setCourseColor(course, color)
+    return HttpResponse(json.dumps({ 'status': 200, 'message': 'Success' }), content_type='application/json')
 
 class AdminQuizView(AbstractFileUploadView):
         

@@ -33,6 +33,8 @@
     
 	$(function() {
     
+        setupCSRF();
+    
         fileUploadId = $("#fileUploadId").val();
         uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js	
         
@@ -47,6 +49,26 @@
             $("#confirmDeleteText").text("Are you sure you want to delete " + courseToDelete + "? All associated data will be deleted.");
 			confirmDeleteDialog.dialog('open');
 		});
+        
+        $(".change-color").click(function() {
+            var courseName = $(this).val();
+            var colorInputId = "color" + courseName;
+            var newColor = $("#" + colorInputId).val();
+            //alert(newColor);
+            
+             $.ajax({
+                url: "/pgaadmin/changeColor/" + courseName + "/" + newColor,
+                type: "POST",
+                success: function (data) {
+                    alert("Success!");
+                    console.log(data);
+                },
+                error: function (xhr, errmsg, err) {
+                    alert("Error: " + errmsg);
+                    console.log(errmsg);
+                }
+            });
+        });
         
         confirmDeleteDialog = createConfirmDeleteDialog(confirmDeleteUnit);
         
@@ -66,8 +88,13 @@
 	<ol>
 		{% for c in courses %}
 			<li id='{{ c.Course_Name }}Li'>
-				<div><a href='unit/{{ c.Course_Name }}' class='unitLink'><span class='unitTitle'>{{ c.Course_Name }}</span></a>
-				&nbsp; <button class='removeBtn' value='{{ c.Course_Name}}'>Delete Unit</button></div>
+				<div>
+                    <span width=30px style='background-color: {{c.Course_Color}};'>&nbsp; &nbsp; &nbsp; &nbsp;</span>&nbsp; &nbsp; 
+                    <a href='unit/{{ c.Course_Name }}' class='unitLink'><span class='unitTitle'>{{ c.Course_Name }}</span></a>&nbsp; &nbsp; 
+                    <button class='edit-input removeBtn' value='{{ c.Course_Name}}'>Delete Unit</button>&nbsp; &nbsp; 
+                    <input type='text' value='{{c.Course_Color}}' class='edit-input courseColor' id='color{{c.Course_Name}}'>
+                    <button class='edit-input change-color' value='{{ c.Course_Name }}'>Change Color</button>
+                </div>
 			</li>
 		{% endfor %}
 	</ol>
