@@ -58,7 +58,6 @@ def processCourseZip(in_mem_file):
 
     # Add course info to database
     db.addCourse(course_name, course_order, course_path)
-    processQuiz(course_name, course_path)
 
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
@@ -89,17 +88,23 @@ def processCourseZip(in_mem_file):
             html_text = html_file.read()
 
         # Replace links
-        pattern_content = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"(.*)",\s*text:\s*"(.*)"\s*-->'
-        replace_content = r'<a href="/static/courses/' + course_name + r'/materials/\1">\3</a>'
-        pattern_section = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"subsection",\s*name:\s*"(.*)"\s*-->'
-        replace_section = r'<a href="#\1">\2</a>'
+        content_pattern = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"(.*)",\s*text:\s*"(.*)"\s*-->'
+        content_replace = r'<a href="/static/courses/' + course_name + r'/materials/\1">\3</a>'
+        section_pattern = r'<!--\s*LINK:\s*"(.*)",\s*type:\s*"subsection",\s*name:\s*"(.*)"\s*-->'
+        section_replace = r'<a href="#\1">\2</a>'
+        image_pattern = r'<img.*src=".*\/(.*)".*alt="(.*)".*\/>'
+        image_replace = r'<img src="/static/courses/' + course_name + r'/materials/\1" alt="\2"/>'
 
-        html_text = re.sub(pattern_content, replace_content, html_text)
-        html_text = re.sub(pattern_section, replace_section, html_text)
+        html_text = re.sub(content_pattern, content_replace, html_text)
+        html_text = re.sub(section_pattern, section_replace, html_text)
+        html_text = re.sub(image_pattern, image_replace, html_text)
 
         # Write file
         with open(lesson_path_html, 'w') as html_file:
            html_file.write(html_text)
+
+    # Import quiz data
+    processQuiz(course_name, course_path)
 
     # Cleanup temp dirs
     shutil.rmtree(ZIP_TMP_DIR)
