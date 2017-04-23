@@ -6,8 +6,6 @@ import shutil
 import zipfile
 from .dataAccess import DataAccess, QuizQuestion, QuizAnswer
 
-# Directory in which to store course / lesson data.
-COURSE_DIR = './static/courses'
 
 """
 coursemanager.py
@@ -16,6 +14,21 @@ coursemanager.py
 The code in this file is for managing the conversion of course packages (zip files)
   into their proper directory structure and database entries.
 """
+
+# Directory in which to store course / lesson data.
+COURSE_DIR = './static/courses'
+
+"""
+Get a list of paths to the extra materials for a given course.
+
+@param course_name Name of course to get materials from
+@return List of materials associated with given course
+"""
+def getMaterialPaths(course_name):
+    course_dir = os.path.join(COURSE_DIR, course_name)
+    materials_dir = os.path.join(course_dir, 'materials')
+
+    return [os.path.join(materials_dir, f) for f in os.listdir(materials_dir)]
 
 """
 From a given zip file, move its lesson data into the proper server-side directories.
