@@ -31,6 +31,17 @@ def getMaterialPaths(course_name):
     return [os.path.join(materials_dir, f) for f in os.listdir(materials_dir)]
 
 """
+Given a directory, return the first file with given extension.
+
+@param base_path Directory to search
+@param extension Desired extension of file
+@return First file found with this extension
+"""
+def getFirstPathWithExtension(base_path, extension):
+    valid_files = [f for f in os.listdir(base_path) if f.endswith(extension)]
+    return os.path.join(base_path, valid_files[0])
+
+"""
 From a given zip file, move its lesson data into the proper server-side directories.
 Then, add the new course and lesson data into the database.
 
@@ -93,7 +104,7 @@ def processCourseZip(in_mem_file):
             continue
 
         # Add lesson info to database
-        lesson_path_html = os.path.join(lesson_path, 'lesson.html')
+        lesson_path_html = getFirstPathWithExtension(lesson_path, '.html')
         db.addLesson(course_name, lesson_name, lesson_path_html)
 
         # Read file
@@ -131,7 +142,7 @@ Process the contents of a given quiz spreadsheet by adding its
 @param course_dir Directory of course containing quiz to be processed
 """
 def processQuiz(course_name, course_dir):
-    quiz_path = os.path.join(course_dir, 'quiz/quiz.xlsx')
+    quiz_path = getFirstPathWithExtension(os.path.join(course_dir, 'quiz'), '.xlsx')
     wb = openpyxl.load_workbook(filename = quiz_path, read_only = True, data_only = True)
 
     questions = []
