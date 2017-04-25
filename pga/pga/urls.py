@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^$', views.home_page, name='home'),
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
-    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': views.add_courses_to_dict(views.get_home_page_dict(), False) }, name='logout', ),
+    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': views.get_home_page_dict() }, name='logout', ),
     
 
     #Admin urls:

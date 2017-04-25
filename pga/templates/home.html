@@ -8,22 +8,67 @@
 
 {% include "courseHeader.html" %}
 
+<style>
+table, th, td {
+    text-align: center;
+    border: 1px solid black;
+}
+table {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-spacing: 30px 0;
+}
+
+td, th {
+  padding: 10px 10px;
+}
+
+#homePageContent {
+    float: left;
+}
+
+#logoutBtn {
+    float: right;
+    margin-right: 100px;
+    margin-top: 50px;
+}
+</style>
+
 {% block content %}
+
 {% if user.is_authenticated %}
 
-{% comment %}
-Loggen in as: {{ user.username }}!
-{% endcomment %}
-
-
-<h3> Welcome back, {{ user.username}} !</h3>
-<br>
-<h4>Pick up where you left off in the <a href="/pests">Identifying Pests</a> lesson.</h4>
-<br><br>
-<a href="{% url 'logout' %}" class="btn btn-default">Logout</a>
+    <div id='homePageContent'>
+        <h3> Welcome back, {{ user.username}}!</h3>
+        <h4>Here is your overall course progress:</h4>
+        <br>
+        <table>
+            <tr><th>Unit</th><th>Quiz Completion</th></tr>
+        {% for unit, is_completed, has_quiz in units %}
+            <tr>
+                <td>{{ unit }}</td>
+                <td>
+                {% if is_completed %}
+                    Completed
+                {% else %}
+                    {% if has_quiz %}
+                        Not Completed
+                    {% else %}
+                        No Quiz
+                    {% endif %}
+                {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <a id='logoutBtn' href="{% url 'logout' %}" class="btn btn-default">Logout</a>
+    
 {% else %}
-<h1>Prison Garden Application</h1>
-<a href="{% url 'login' %}" class="btn btn-default">Login</a>
+
+    <h1>Prison Garden Application</h1>
+    <a href="{% url 'login' %}" class="btn btn-default">Login</a>
+    
 {% endif %}
 {% endblock %}
 

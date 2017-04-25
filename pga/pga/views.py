@@ -16,7 +16,29 @@ gardens_color = '00AA00'
 
 def home_page(request):
     authenticated = request.user.is_authenticated()
-    return render(request, 'home.html', add_courses_to_dict(get_home_page_dict(), authenticated))
+    
+    if authenticated:
+    
+        # Get list of completed/non-completed courses to display
+        db = DataAccess()
+        units = db.getAllUnits()
+        completed_units = db.getCompletedCoursesForUser(request.user.get_username())
+        units_quiz_completed = [False] * len(units)
+        units_has_quiz = [False] * len(units)
+        for index, unit in enumerate(units):
+            if unit in completed_units:
+                units_quiz_completed[index] = True
+            has_quiz = db.doesCourseHaveQuiz(unit)
+            if has_quiz > 0:
+                units_has_quiz[index] = True
+                
+        units_zipped = zip(units, units_quiz_completed, units_has_quiz)
+        dict = get_home_page_dict()
+        dict.update({'units': units_zipped})
+        dict = add_courses_to_dict(dict)
+        return render(request, 'home.html', dict)
+    else:
+        return render(request, 'home.html', get_home_page_dict())
 
 
 def login_view(request):
@@ -27,7 +49,7 @@ def login_view(request):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'login.html', add_courses_to_dict(get_home_page_dict(), False))
+        return render(request, 'login.html', get_home_page_dict())
 
 @login_required(login_url='/login/')
 def createRecordTable_Form(request):
@@ -185,17 +207,16 @@ def quiz_wrapper(request, course):
 
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view
-def add_courses_to_dict(dict, is_authenticated=True):
-    if is_authenticated is True:
-        db = DataAccess()
-        courses = db.getCourses()
-        #dict['courses'] = courses
-        
-        colors = []
-        for course in courses:
-            colors.append(db.getCourseColor(course['Course_Name']))
-        #dict['colors'] = colors
-        dict['courses'] = zip(courses, colors)
+def add_courses_to_dict(dict):
+    db = DataAccess()
+    courses = db.getCourses()
+    #dict['courses'] = courses
+    
+    colors = []
+    for course in courses:
+        colors.append(db.getCourseColor(course['Course_Name']))
+    #dict['colors'] = colors
+    dict['courses'] = zip(courses, colors)
     return dict;
     
 #Sets color and name for home page & login/logout views
