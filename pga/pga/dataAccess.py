@@ -121,6 +121,15 @@ class DataAccess:
             color = result[0]
         return color
         
+    def getGardens(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select garden_name from gardens;")
+        gardens = []
+        results = self._cursor.fetchall()
+        for row in results:
+            gardens.append({"name": row[0]})
+        return gardens
+        
     def doesCourseHaveQuiz(self, course_name):
         self._cursor = self._connection.cursor()
         self._cursor.execute("Select Has_Quiz from Courses WHERE Course_Name = %s;", [course_name])

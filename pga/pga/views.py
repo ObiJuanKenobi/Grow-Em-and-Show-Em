@@ -12,6 +12,7 @@ from django.views.generic import View
 from .forms import UserForm, RecordTableForm
 import json
 
+gardens_color = '00AA00'
 
 def home_page(request):
     authenticated = request.user.is_authenticated()
@@ -66,9 +67,8 @@ def pests(request):
 
 @login_required(login_url='/login/')
 def garden(request, garden):
-    color = DataAccess().getCourseColor('Gardens')
     return render(request, 'garden.html', add_courses_to_dict({'gardenName': garden,
-        'course': garden, 'color': color}))
+        'course': garden, 'color': gardens_color}))
 
 @login_required(login_url='/login/')
 def savePlan(request):
@@ -138,10 +138,9 @@ def deletePlan(request):
 def gardenNav(request):
     course = 'Gardens'
     db = DataAccess()
-    color = db.getCourseColor(course)
-    lessons = db.getCourseLessons(course)
+    lessons = db.getGardens()
         
-    return render(request, 'gardenNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
+    return render(request, 'gardenNav.html', add_courses_to_dict({'lessons': lessons, 'course': course, 'color': gardens_color}))
     
 @login_required(login_url='/login/')
 def courseNav(request, course):
