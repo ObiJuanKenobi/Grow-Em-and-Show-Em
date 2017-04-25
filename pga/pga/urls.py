@@ -56,6 +56,7 @@ urlpatterns = [
     
     #General course urls:
     url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
+    url(r'^gardenNav/', views.gardenNav, name='gardenNav'),
     url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
 
     #Demo url - remove

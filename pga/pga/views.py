@@ -50,6 +50,8 @@ def createRecordTable_Form(request):
     else:
         form = RecordTableForm()
     return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
+    
+    
 @login_required(login_url='/login/')
 def recordTable_Home(request):
     db = DataAccess()
@@ -62,9 +64,13 @@ def recordTable_Home(request):
 def pests(request):
     return render(request, 'pests.html', add_courses_to_dict({}))
 
+@login_required(login_url='/login/')
 def garden(request, garden):
-    return render(request, 'garden.html', {'gardenName': garden})
+    color = DataAccess().getCourseColor('Gardens')
+    return render(request, 'garden.html', add_courses_to_dict({'gardenName': garden,
+        'course': garden, 'color': color}))
 
+@login_required(login_url='/login/')
 def savePlan(request):
     if request.is_ajax() and request.POST:
         bedName = request.POST.get('bedName')
@@ -83,6 +89,7 @@ def savePlan(request):
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
 
+@login_required(login_url='/login/')
 def showPlans(request):
     bedName = request.GET['bedName']
     db = DataAccess()
@@ -102,12 +109,14 @@ def showPlans(request):
 
     return HttpResponse(json.dumps(response),content_type='application/json')
 
+@login_required(login_url='/login/')
 def getBedCanvas(request):
     planID = request.GET['planID']
     db = DataAccess()
     canvas = db.getBedCanvas(planID)
     return HttpResponse(canvas, content_type='application/json')
 
+@login_required(login_url='/login/')
 def deletePlan(request):
     if request.POST:
         planID = request.POST.get('planID')
@@ -125,6 +134,15 @@ def deletePlan(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
+@login_required(login_url='/login/')
+def gardenNav(request):
+    course = 'Gardens'
+    db = DataAccess()
+    color = db.getCourseColor(course)
+    lessons = db.getCourseLessons(course)
+        
+    return render(request, 'gardenNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color}))
+    
 @login_required(login_url='/login/')
 def courseNav(request, course):
     db = DataAccess()
@@ -152,7 +170,7 @@ def lesson(request, course, lesson):
         lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
     
     if "Garden Planning" in lesson:
-        return redirect('/courseNav/Gardens')
+        return redirect('/gardenNav/')
     
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     
@@ -181,7 +199,7 @@ def add_courses_to_dict(dict, is_authenticated=True):
     
 #Sets color and name for home page & login/logout views
 def get_home_page_dict():
-    return {'course': 'Prison Garden Production', 'color': '01af01'}
+    return {'course': 'Gardening 101', 'color': '01af01'}
     
 
 class UserFormView(View):
