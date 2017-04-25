@@ -44,7 +44,7 @@
         
         <ul id='resources'>
             {% for r in resources %}
-                <li id='{{ c.Course_Name }}Li'><a href='/pgaadmin/supplementaryMaterials/{{r.name}}'>{{r.name}}</a>&nbsp;<button class='edit-input removeBtn'>Remove</button></li>
+                <li id='{{ c.Course_Name }}Li'><a href='{{r.path}}'>{{r.name}}</a>&nbsp;<button class='edit-input removeBtn'>Remove</button></li>
             {% endfor %}
         </ul>
         

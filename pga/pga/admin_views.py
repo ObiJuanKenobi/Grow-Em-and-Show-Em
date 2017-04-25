@@ -104,11 +104,16 @@ class AdminSuppMatView(AbstractFileUploadView):
         return False
     
     def get_page_specific_data(self):
-        #Ensures 'self.resource_type' is set before reaching here
-        #TODO - get actual resources
-        resources = [{'name': 'Fake resource 1'},
-                    {'name': 'Fake resource 2'}]
-        return { 'unit': self.unit, 'resources': resources }
+        #Ensures 'self.unit' is set before reaching here
+        resources = getMaterialPaths(self.unit)
+        resources_list = []
+        for resource in resources:
+            resource_path = resource.replace(".", "", 1)
+            last_slash_index = resource.rfind('\\')
+            resource_name = resource[last_slash_index+1:]
+            resources_list.append({'path': resource_path, 'name': resource_name})
+        
+        return { 'unit': self.unit, 'resources': resources_list }
         
     def page_specific_handle_file(self, file):
         # type of material is given by 'self.resource_type'
