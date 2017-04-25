@@ -121,6 +121,16 @@ class DataAccess:
             color = result[0]
         return color
         
+    def doesCourseHaveQuiz(self, course_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select Has_Quiz from Courses WHERE Course_Name = %s;", [course_name])
+        result = self._cursor.fetchone()
+
+        has_quiz = False
+        if result is not None:
+            has_quiz = result[0]
+        return has_quiz
+        
     def setCourseColor(self, course_name, color):
         self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Courses SET Course_Color = %s WHERE Course_Name = %s;", [color, course_name])
