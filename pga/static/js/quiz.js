@@ -85,18 +85,47 @@ function submitQuiz(questionsArr, answersArr){
             'answers[]': answersArr
         },
         success: function (data) {
-            alert("Success!");
             console.log(data);
+            if(data.passed){
+                window.location.href = data.redirect_url;
+            }
+            else {
+                
+                var num_wrong = 0;
+                var results = data.results;
+                for(var i=0; i<results.length; i++){
+                    var qResult = JSON.parse(results[i]);
+                    if(!qResult.user_correct){
+                        num_wrong++;
+                        
+                        var qId = qResult.question_id;
+                        var aId = qResult.answer_id;
+                        
+                        var htmlQid = "#question" + String(qId);
+                        var htmlAid = "#answerLabel" + String(aId);
+                        console.log(htmlAid);
+                        $(htmlAid).css("color", "red");
+                    }
+                }
+                
+                var questionsStr = "questions";
+                if (num_wrong == 1){
+                    questionsStr = "question";
+                }
+                $("#quizStatus").text("You did not pass the quiz. You missed " + String(num_wrong) + " " + questionsStr + ". Correct answers are shown in red. Spend more time reviewing lessons, or click 'Retake' to try again.");
+                
+                $("#submitBtn").val("Retake");
+                $("#submitBtn").off("click");
+                $("#submitBtn").wrap("<a href='" + data.redirect_url + "'></a>")
+                
+                jQuery('html,body').animate({scrollTop:0},0);
+            }
         },
         error: function (xhr, errmsg, err) {
             alert("Error: " + errmsg);
             console.log(errmsg);
         }
     });
-}
-
-function quizPassed() {
-    window.location.href = "/quizResults/" + $(".unitTitle").first().text();
 }
 
 function quizFailed(results) {

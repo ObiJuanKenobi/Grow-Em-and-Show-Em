@@ -1,14 +1,14 @@
 {% load static %}
 
 {% include "header.html" %}
+{% include "courseHeader.html" %}
 
-	<h1 class='unitTitle'>{{ course }}</h1>
 	<h2 class='unitTitle'>{{ course }} Quiz Results</h2>
 	
 	<div class='content'>
-		Congratulations! You answered all questions correctly, and have passed the {{ course }} lesson!<br><br>
+		Nice job! You answered all questions correctly, and have passed the {{ course }} unit!<br><br>
 		
-		<a href='/{{ course }}'>Click here to return to the {{ course }} unit menu</a>
+		<a href='/courseNav/{{ course }}'>Click here to return to the {{ course }} unit menu</a>
 	</div>
 
 {% include "footer.html" %}

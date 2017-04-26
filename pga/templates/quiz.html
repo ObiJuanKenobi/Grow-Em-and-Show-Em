@@ -1,7 +1,8 @@
 {% load static %}
 
-<!-- jQuery: -->
-{% include 'jquery_loader.html' %}
+{% include "header.html" %}
+
+{% include "courseHeader.html" %}
 	
 	<!--script type='text/javascript' src='static/js/quizParser.js'></script-->
 	<h2 class='unitTitle' id='{{course}}'>{{ course }} Quiz</h2>
@@ -9,6 +10,8 @@
 	<script type='text/javascript' src="{% static 'js/quiz.js' %}"></script>
 	
 	<div class='content'>
+    
+    <span id='quizStatus'></span>
 	
 		{% if questions %}
 			<br><br>
@@ -18,25 +21,23 @@
 			    <b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span> <br>
 				<ol type='a' style='display: inline-block;'>
 				{% for a in q.answers %}
-					<label class='{{ forloop.counter }}'>
+					<label id='answerLabel{{a.id}}' class='{{ forloop.counter }}'>
                         <input type='radio' value='{{ forloop.counter }}' id='answer{{a.id}}' name='{{ q.id }}'>
-                        <li style='display: inline-block; margin-bottom: 8px;'> {{a.answer}}
+                        <li style='display: inline-block; margin-bottom: 8px;'> {{a.answer}}</li>
                     </label><br>
-					
-					{% if a.correct %}
-						<input type='hidden' class='answer' value='{{ forloop.counter }}'>
-					{% endif %}
-                    </li><br>
+                    <br>
 				{% endfor %}
                 </ol>
 				</div>
 			{% endfor %}
 			
 		{% else %}
-			<div>No errors occurred but no questions were retrieved. The URL should be /quiz/<course_name></div>
+			<div>No errors occurred but no questions were retrieved. The URL should be /takeQuiz/<course_name></div>
 		{% endif %}
 		
 		<input id='submitBtn' type='button' value='Submit Answers'><br><br>
 		<!--input id='url' type='hidden' value=' {{ request.get_full_path }}' -->
 		<span id='url' style='display: none;'> {{ request.get_full_path}} </span>
 	</div>	
+
+{% include "footer.html" %}

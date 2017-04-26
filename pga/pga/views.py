@@ -197,13 +197,13 @@ def lesson(request, course, lesson):
     
     return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     
-@login_required(login_url='/login/')
-def quiz_wrapper(request, course):
-    db = DataAccess()
-    color = db.getCourseColor(course)
-    lesson_file_path = "/quiz/" + course
+# @login_required(login_url='/login/')
+# def quiz_wrapper(request, course):
+    # db = DataAccess()
+    # color = db.getCourseColor(course)
+    # lesson_file_path = "/quiz/" + course
     
-    return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'color': color, 'lesson_file_path': lesson_file_path}))
+    # return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'color': color, 'lesson_file_path': lesson_file_path}))
 
 #Retrieves all courses and adds them to the data dictionary passed in,
 # which is returned by each view

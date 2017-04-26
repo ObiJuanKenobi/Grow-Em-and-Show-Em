@@ -19,6 +19,9 @@ def quiz(request, course):
     
 @login_required(login_url='/login/')
 def grade_quiz(request, course):
+
+    response = {}
+    
     if request.POST:
         
         db = DataAccess()
@@ -67,16 +70,21 @@ def grade_quiz(request, course):
         
         db.addQuizAttempt(course, username, passed, users_attempt)
         
-        response = {
+        if passed == 1:
+            response.update({'redirect_url': '/quizResults/' + course, 'passed': True})
+        else:
+            response.update({'redirect_url': '/quiz/' + course})
+
+        response.update({
             'status': 200,
             'results': graded_questions,
-            'message': 'Successfully updated quiz'
-        }
+            'message': 'Quiz graded'
+        })
     else:
-        response = {
+        response.update({
             'status': 404,
             'message': 'Invalid request'
-        }
+        })
     return HttpResponse(json.dumps(response), content_type='application/json')
     
     
@@ -99,5 +107,4 @@ class GradedQuestion:
 @login_required(login_url='/login/')
 def quiz_results(request, course):
     db = DataAccess()
-    db.addQuizAttempt(course, username, 1)
     return render(request, 'quizResults.html', {'course': course})
