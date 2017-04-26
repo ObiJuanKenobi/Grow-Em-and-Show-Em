@@ -7,23 +7,15 @@ td
 }
 </style>
 
-<span class='adminPageTitle'>User Progress</span>&nbsp;&nbsp;<a href='/pgaadmin/courseInfo' class='backLink'>Back</a><br><br>
+<span class='adminPageTitle'>User Progress</span>&nbsp;&nbsp;<a href='/pgaadmin/userProgress' class='backLink'>Back</a><br><br>
 
-<table>
-    <tr>
-        <th>Username</th><th># Completed Courses</th>
-    </tr>
-{% for user, completed in user_progress %}
-    <tr>
-        <td>
-            <a href='/pgaadmin/userProgress/{{ user }}'>{{ user }}</a>
-        </td>
-        
-        <td>
-            {{ completed }}
-        </td>
-    </tr>
-{% endfor %}
-</table>
+<span>Showing completed courses for: {{ user }}</span><br>
+<ul>
+    {% for course in completed_courses %}
+
+        <li><a href='/pgaadmin/userProgress/{{ user }}/{{course}}'>{{ course }}</a></li>
+
+    {% endfor %}
+</ul>
 
 {% include "admin/footer.html" %}

@@ -1,0 +1,13 @@
+{% include "admin/header.html" %}
+
+<span class='adminPageTitle'>Quiz Statistics</span>&nbsp;&nbsp;<a href='/pgaadmin/courseInfo' class='backLink'>Back</a><br><br>
+
+<span>Select a unit to see details on the quiz for that unit.</span><br><br>
+
+<ul>
+{% for unit in units %}
+    <li><a href='/pgaadmin/quizStatistics/{{unit}}'>{{unit}}</a></li>
+{% endfor %}
+</ul>
+
+{% include "admin/footer.html" %}

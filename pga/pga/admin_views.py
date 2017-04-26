@@ -130,8 +130,14 @@ def adminCourseInfo(request):
     return render(request, 'admin/course_info.html')
 
 
+def adminUserProgress(request, user):
+    db = DataAccess()
+    completed = db.getCompletedCoursesForUser(user)
+    
+    return render(request, 'admin/user_progress.html', {'completed_courses': completed})
+    
 @staff_member_required
-def adminUserProgress(request):
+def adminUserProgressOverview(request):
     db = DataAccess()
     progress = db.getAllUserProgress()
     
@@ -143,12 +149,22 @@ def adminUserProgress(request):
     #print(progress)
     
     user_progress = zip(progress, completed)
-    return render(request, 'admin/user_progress.html', {'user_progress': user_progress})
-
+    return render(request, 'admin/user_progress_overview.html', {'user_progress': user_progress})
 
 @staff_member_required
-def adminQuizStatistics(request):
-    return render(request, 'admin/quiz_statistics.html')
+def adminQuizStatistics(request, unit):
+    # TODO get quiz stats...
+    return render(request, 'admin/quiz_statistics.html', {'unit': unit})
+
+@staff_member_required
+def adminQuizStatisticsOverview(request):
+    db = DataAccess()
+    units = db.getAllUnits()
+    quiz_units = []
+    for unit in units:
+        if db.doesCourseHaveQuiz(unit) > 0:
+            quiz_units.append(unit)
+    return render(request, 'admin/quiz_statistics_overview.html', {'units': quiz_units})
     
 def adminSetCourseColor(request, course, color):
     DataAccess().setCourseColor(course, color)
