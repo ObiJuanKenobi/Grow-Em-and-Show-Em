@@ -5,6 +5,7 @@ from django.core.serializers import json
 import json
 
 from pga.dataAccess import DataAccess
+from pga.views import add_courses_to_dict
 
 #TODO - shuffle questions
 #     - pick 10
@@ -15,7 +16,7 @@ from pga.dataAccess import DataAccess
 def quiz(request, course):
     db = DataAccess()
     questions = db.getQuizQuestions(course)
-    return render(request, 'quiz.html', {'questions': questions, 'course': course})
+    return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course}))
     
 @login_required(login_url='/login/')
 def grade_quiz(request, course):
@@ -107,4 +108,4 @@ class GradedQuestion:
 @login_required(login_url='/login/')
 def quiz_results(request, course):
     db = DataAccess()
-    return render(request, 'quizResults.html', {'course': course})
+    return render(request, 'quizResults.html', add_courses_to_dict({'course': course}))
