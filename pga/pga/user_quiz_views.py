@@ -16,7 +16,8 @@ from pga.views import add_courses_to_dict
 def quiz(request, course):
     db = DataAccess()
     questions = db.getQuizQuestions(course)
-    return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course}))
+    color = db.getCourseColor(course)
+    return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course, 'color': color}))
     
 @login_required(login_url='/login/')
 def grade_quiz(request, course):
@@ -108,4 +109,5 @@ class GradedQuestion:
 @login_required(login_url='/login/')
 def quiz_results(request, course):
     db = DataAccess()
-    return render(request, 'quizResults.html', add_courses_to_dict({'course': course}))
+    color = db.getCourseColor(course)
+    return render(request, 'quizResults.html', add_courses_to_dict({'course': course, 'color': color}))
