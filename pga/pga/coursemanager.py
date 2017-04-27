@@ -80,8 +80,11 @@ def processCourseZip(in_mem_file):
     else:
         os.makedirs(course_path)
 
+    # Check if this course has a quiz
+    has_quiz = 'quiz' in os.listdir(course_tmp_path) and 1 or 0
+
     # Add course info to database
-    db.addCourse(course_name, course_order, course_path)
+    db.addCourse(course_name, course_order, course_path, has_quiz)
 
     # Create server directories for each lesson
     course_lessons = os.listdir(os.path.join(ZIP_TMP_DIR, course_dir_name))
@@ -128,7 +131,8 @@ def processCourseZip(in_mem_file):
            html_file.write(html_text)
 
     # Import quiz data
-    processQuiz(course_name, course_path)
+    if has_quiz == 1:
+        processQuiz(course_name, course_path)
 
     # Cleanup temp dirs
     shutil.rmtree(ZIP_TMP_DIR)
