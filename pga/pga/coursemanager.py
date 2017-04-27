@@ -81,7 +81,7 @@ def processCourseZip(in_mem_file):
         os.makedirs(course_path)
 
     # Check if this course has a quiz
-    has_quiz = 'quiz' in os.listdir(course_tmp_path) and 1 or 0
+    has_quiz = 1 if 'quiz' in os.listdir(course_tmp_path) else 0
 
     # Add course info to database
     db.addCourse(course_name, course_order, course_path, has_quiz)

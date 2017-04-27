@@ -180,16 +180,19 @@ class DataAccess:
             question = row[1];
             answerID = row[2];
             answer = row[3];
-            correct = row[4];
+            correct = True if bytearray(row[4])[0] == 1 else False
 
-            if id in questions:
-                questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
-            else:
-                questions[id] = {"question": question, "id": id};
-                questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
+            if answer is not None:
+                answer = unicode(answer, errors='ignore')
+                if id in questions:
+                    questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": correct});
+                else:
+                    questions[id] = {"question": question, "id": id};
+                    questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": correct}];
 
         questionsArr = [];
         for id in questions:
+            print(questions[id])
             questionsArr.append(questions[id])
         return questionsArr;
 
