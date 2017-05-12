@@ -21,6 +21,7 @@ from django.views.generic.base import TemplateView
 
 from . import views
 from . import home_view
+from . import records_view
 from . import view_utils
 from pga.admin_views import *
 from . import user_quiz_views
@@ -68,8 +69,8 @@ urlpatterns = [
     url(r'^pests', views.pests, name='pests'),
 
     #Record keeping urls:
-    url(r'^table_form/$', views.createRecordTable_Form, name='table_form'),
-    url(r'^table_home/$', views.recordTable_Home, name='table_home'),
+    url(r'^table_form/$', records_view.createRecordTable_Form, name='table_form'),
+    url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
     
     #Garden planning urls:
     url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', views.garden, name='garden'),

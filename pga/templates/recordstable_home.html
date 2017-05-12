@@ -4,35 +4,95 @@
 
 <link rel="stylesheet" href="{% static 'css/recordstable-home.css' %}">
 
-{% block content %}
-<div class="container">
-    <header><strong>Table Home View</strong></header>
-    <br>
-    <a href="/table_form" class="btn btn-default">Create an entry!</a>
-    <br>
-    <br>
-    <table style="width:100%">
-        <tr>
-            <th>Username</th>
-            <th>Plant/Variety</th>
-            <th>Location</th>
-            <th>Quantity</th>
-            <th>Date</th>
-            <th>Notes</th>
-        </tr>
-        {% for log in logs %}
-        <tr>
-            <td>{{log.username}}</td>
-            <td>{{log.plant}}</td>
-            <td>{{log.location}}</td>
-            <td>{{log.quantity}}</td>
-            <td>{{log.logdate}}</td>
-            <td>{{log.notes}}</td>
-        </tr>
+    <!-- <br> -->
+    <!-- <a href="/table_form" class="btn btn-default">Create an entry!</a> -->
+    <!-- <br> -->
+    <!-- <br> -->
+    
+    <div id='notesTables'>
+        <h3>Garden Notes</h3>
+        
+        {% for year_log in notes_logs %}
+            
+            <h4>{{ year_log.year }}</h4>
+            
+            <table class='notesTable'>
+                <tr>
+                    <th>Username</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                </tr>
+                
+                {% if forloop.counter == 1 %}
+                    <tr class='addEntryRow'>
+                        <td><input type='button' value='Add Entry'></td>
+                        <td>{{ today }}</td>
+                        <td><input type='text' placeholder='notes'></td>
+                    </tr>
+                {% endif %}
+                
+                {% for log in year_log.records %}
+                    <tr>
+                        <td>{{log.username}}</td>
+                        <td>{{log.logdate}}</td>
+                        <td>{{log.notes}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
         {% endfor %}
-    </table>
-</div>
-
-{% endblock %}
+    </div>
+    
+    <div id='harvestTables'>
+        <h3>Harvest Log</h3>
+        
+        {% for year_log in harvest_logs %}
+        
+            <h4>{{ year_log.year }}</h4>
+            
+            <table class='harvestTable'>
+                <tr>
+                    <th>Username</th>
+                    <th>Date</th>
+                    <th>Crop</th>
+                    <th>Location</th>
+                    <th>Quantity</th>
+                </tr>
+                
+                {% if forloop.counter == 1 %}
+                    <tr class='addEntryRow'>
+                        <td><input type='button' value='Add Entry'></td>
+                        <td>{{ today }}</td>
+                        <td>
+                            <select>
+                                {% for crop in current_crops %}
+                                    <option>{{crop}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select>
+                                {% for garden in gardens %}
+                                    <option>{{garden}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><input type='text' size='3'></td>
+                    </tr>
+                {% endif %}
+                
+                {% for log in year_log.records %}
+                    <tr>
+                        <td>{{log.username}}</td>
+                        <td>{{log.logdate}}</td>
+                        <td>{{log.plant}}</td>
+                        <td>{{log.location}}</td>
+                        <td>{{log.quantity}}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+        {% endfor %}
+    </div>
 
 {% include "footer.html" %}

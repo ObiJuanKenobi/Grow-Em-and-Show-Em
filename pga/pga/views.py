@@ -32,41 +32,11 @@ def login_view(request):
     else:
         return render(request, 'login.html', view_utils.get_home_page_dict())
         
+@login_required(login_url='/login/')
 def create_schedule(request):
     dict = view_utils.get_home_page_dict()
     dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']})
     return render(request, 'create_schedule.html', view_utils.add_courses_to_dict(dict))
-
-@login_required(login_url='/login/')
-def createRecordTable_Form(request):
-    if request.method == 'POST':
-        form = RecordTableForm(request.POST)
-        if form.is_valid():
-            if request.user.is_authenticated():
-                plant = form.cleaned_data['plant']
-                quantity = form.cleaned_data['quantity']
-                location = form.cleaned_data['location']
-                notes = form.cleaned_data['notes']
-                year = form.cleaned_data['year']
-                month = form.cleaned_data['month']
-                day = form.cleaned_data['day']
-                username = request.user.get_username()
-                time = year + '/' + month + '/' + day
-                db = DataAccess()
-                db.addDailyLog(user=username, plant=plant, location=location, quantity=quantity, date=time, notes=notes)
-                db.__del__()
-                return redirect('table_home')
-    else:
-        form = RecordTableForm()
-    return render(request, 'recordstable_form.html', view_utils.add_courses_to_dict({'form': form}))
-    
-    
-@login_required(login_url='/login/')
-def recordTable_Home(request):
-    db = DataAccess()
-    logs = db.getDailyLogs()
-
-    return render(request, 'recordstable_home.html', view_utils.add_courses_to_dict({'logs' : logs}))
 
 # Maintenance lessons:
 @login_required(login_url='/login/')

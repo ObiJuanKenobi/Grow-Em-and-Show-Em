@@ -1,8 +1,29 @@
-table {
-  border-collapse: separate;
-  border-spacing: 10px 0;
+#notesTables {
+    float: right;
+    width: 40%;
+}
+
+.notesTable {
+    border-collapse: collapse;
+    border-spacing: 10px 0;    
+    width: 100%;
+}
+
+#harvestTables {
+    float: left;
+    width: 40%;
+}
+
+.harvestTable {
+    border-collapse: collapse;
+    border-spacing: 10px 0;
+    width: 100%;
 }
 
 td {
-  padding: 10px 0;
+    padding: 10px 5px;
+} 
+
+.addEntryRow {
+    background-color: #FAFAD2;
 }
