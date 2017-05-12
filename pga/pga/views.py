@@ -18,10 +18,6 @@ from .forms import UserForm, RecordTableForm
 from pga.dataAccess import DataAccess
 from . import view_utils
 
-#TODO - store this in DB?
-gardens_color = '00AA00'
-
-
 def login_view(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
@@ -42,83 +38,6 @@ def create_schedule(request):
 @login_required(login_url='/login/')
 def pests(request):
     return render(request, 'pests.html', view_utils.add_courses_to_dict({}))
-
-@login_required(login_url='/login/')
-def garden(request, garden):
-    return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden,
-        'course': garden, 'color': gardens_color}))
-
-@login_required(login_url='/login/')
-def savePlan(request):
-    if request.is_ajax() and request.POST:
-        bedName = request.POST.get('bedName')
-        bedPlan = request.POST.get('bedPlan')
-        bedCanvas = request.POST.get('bedCanvas')
-        db = DataAccess()
-        db.saveBedPlan(bedName, bedPlan, bedCanvas)
-        response = {
-            'status': 200,
-            'message': 'Successfully saved changes on canvas'
-        }
-    else:
-        response = {
-            'status': 404,
-            'message': 'Unable to save canvas as an image'
-        }
-    return HttpResponse(json.dumps(response), content_type='application/json')
-
-@login_required(login_url='/login/')
-def showPlans(request):
-    bedName = request.GET['bedName']
-    db = DataAccess()
-    plans = db.getBedPlans(bedName)
-    response = {
-        'status': 200,
-        'context': []
-    }
-    for plan in plans:
-        p = {
-            'planID': plan[0],
-            'bedPlan': plan[1],
-            'updatedAt': str(plan[2].now()),
-            'createdAt': str(plan[3].now())
-        }
-        response["context"].append(p)
-
-    return HttpResponse(json.dumps(response),content_type='application/json')
-
-@login_required(login_url='/login/')
-def getBedCanvas(request):
-    planID = request.GET['planID']
-    db = DataAccess()
-    canvas = db.getBedCanvas(planID)
-    return HttpResponse(canvas, content_type='application/json')
-
-@login_required(login_url='/login/')
-def deletePlan(request):
-    if request.POST:
-        planID = request.POST.get('planID')
-        db = DataAccess()
-        db.deleteBedPlan(planID)
-        response = {
-            'status': 200,
-            'message': 'Successfully remove the selected plan'
-        }
-    else:
-        response = {
-            'status': 404,
-            'message': 'Invalid request'
-        }
-    return HttpResponse(json.dumps(response), content_type='application/json')
-
-
-@login_required(login_url='/login/')
-def gardenNav(request):
-    course = 'Gardens'
-    db = DataAccess()
-    lessons = db.getGardens()
-        
-    return render(request, 'gardenNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course, 'color': gardens_color}))
     
 @login_required(login_url='/login/')
 def courseNav(request, course):
@@ -149,7 +68,7 @@ def lesson(request, course, lesson):
         lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
     
     if "Garden Planning" in lesson:
-        return redirect('/gardenNav/')
+        return redirect('/gardensNav/')
     
     return render(request, 'lesson.html', view_utils.add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     

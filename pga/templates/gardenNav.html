@@ -7,30 +7,38 @@
     <br>
     <!-- Page Content -->
     <div id='subMenus' class='container col-lg-offset-2'>
-        {% for l in lessons %}
-            <div class="col-lg-3 col-md-4 col-xs-6thumb">
-                <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
-                <a id='button{{ forloop.counter }}' href='/garden/{{l.name}}'>
-                    <div class="subMenuIcons" style="border-color:#{{ color }}">
-                        <span class="subMenuText">
-                            {{ l.name }}
-                        </span>
-                    </div>
-                </a>
-            </div>
-        {% endfor %}
+        <div class="col-lg-3 col-md-4 col-xs-6thumb">
+            <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
+            <a id='button{{ forloop.counter }}' href='/garden/{{course}}'>
+                <div class="subMenuIcons" style="border-color:#{{ color }}">
+                    <span class="subMenuText">
+                        Current Plan
+                    </span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-xs-6thumb">
+            <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
+            <a id='button{{ forloop.counter }}' href='/garden/{{course}}'>
+                <div class="subMenuIcons" style="border-color:#{{ color }}">
+                    <span class="subMenuText">
+                        Create/View Plans
+                    </span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-lg-3 col-md-4 col-xs-6thumb">
+            <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
+            <a id='button{{ forloop.counter }}' href='/garden/{{course}}'>
+                <div class="subMenuIcons" style="border-color:#{{ color }}">
+                    <span class="subMenuText">
+                        Past plans
+                    </span>
+                </div>
+            </a>
+        </div>
     </div>
 	
 {% include "footer.html" %}
-
-<script type='text/javascript'>
-/*
-    $(function(){
-        var courses = {{ courses|safe }};
-        var title = $('#title').text().toLowerCase();
-        for(var i = 1; i <= courses.length; ++i){
-          $('#button' + i).attr('href', window.location.href.replace('/courseNav/' + title, '/' + courses[i-1].name.toLowerCase()));  
-        }
-    });
-    */
-</script>

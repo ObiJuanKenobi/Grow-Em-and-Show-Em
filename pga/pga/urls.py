@@ -22,6 +22,7 @@ from django.views.generic.base import TemplateView
 from . import views
 from . import home_view
 from . import records_view
+from . import garden_planning_views
 from . import view_utils
 from pga.admin_views import *
 from . import user_quiz_views
@@ -62,7 +63,6 @@ urlpatterns = [
     
     #General course urls:
     url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
-    url(r'^gardenNav/', views.gardenNav, name='gardenNav'),
     url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
 
     #Demo url - remove
@@ -73,11 +73,13 @@ urlpatterns = [
     url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
     
     #Garden planning urls:
-    url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', views.garden, name='garden'),
-    url(r'^savePlan/$', views.savePlan, name='savePlan'),
-    url(r'^showPlans/$', views.showPlans, name='showPlans'),
-    url(r'^deletePlan/$', views.deletePlan, name='deletePlan'),
-    url(r'^getBedCanvas/$', views.getBedCanvas, name='getBedCanvas')
+    url(r'^gardensNav/', garden_planning_views.gardensNav, name='gardensNav'),
+    url(r'^gardenNav/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.gardenNav, name='gardenNav'),
+    url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.garden, name='garden'),
+    url(r'^savePlan/$', garden_planning_views.savePlan, name='savePlan'),
+    url(r'^showPlans/$', garden_planning_views.showPlans, name='showPlans'),
+    url(r'^deletePlan/$', garden_planning_views.deletePlan, name='deletePlan'),
+    url(r'^getBedCanvas/$', garden_planning_views.getBedCanvas, name='getBedCanvas')
 ]
 
 urlpatterns += staticfiles_urlpatterns()

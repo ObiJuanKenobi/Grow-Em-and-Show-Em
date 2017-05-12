@@ -1,0 +1,26 @@
+{% load static %}
+
+{% include "header.html" %}
+
+{% include "courseHeader.html" %}
+
+    <div style='float: right; width: 40%; margin-right: 5%;'>
+        {% for garden in gardens %}
+            <div class="col-md-4">
+                <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
+                <a id='button{{ forloop.counter }}' href='/gardenNav/{{garden.name}}'>
+                    <div class="subMenuIcons" style="border-color:#{{ color }}">
+                        <span class="subMenuText">
+                            {{ garden.name }}
+                        </span>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+    
+    <div id='gardensImage' style='float: left; width: 50%'>
+        <img src='{% static "img/gardenPlan.jpg" %}' alt='All Gardens'/>
+    </div>
+	
+{% include "footer.html" %}
