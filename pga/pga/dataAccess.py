@@ -36,13 +36,13 @@ class DataAccess:
         else:
             return False
 
-    def addCourse(self, coursename, courseorder, courseHTMLpath):
+    def addCourse(self, coursename, courseorder, courseHTMLpath, has_quiz):
         self._cursor = self._connection.cursor()
         exists = self._cursor.execute("SELECT Course_Name FROM Courses WHERE Course_Name = %s", [coursename])
         if exists:
-            self._cursor.execute("UPDATE Courses SET Course_Order = %s, Course_HTML_Path = %s WHERE Course_Name = %s", (courseorder, courseHTMLpath, coursename))
+            self._cursor.execute("UPDATE Courses SET Course_Order = %s, Course_HTML_Path = %s, Has_Quiz = %s WHERE Course_Name = %s", (courseorder, courseHTMLpath, coursename, has_quiz))
         else:
-            self._cursor.execute("INSERT into Courses (Course_Name, Course_Order, Course_HTML_Path) values (%s, %s, %s)", (coursename, courseorder, courseHTMLpath))
+            self._cursor.execute("INSERT into Courses (Course_Name, Course_Order, Course_HTML_Path, Has_Quiz) values (%s, %s, %s, %s)", (coursename, courseorder, courseHTMLpath, has_quiz))
         self._cursor.execute("COMMIT")
 
     def getAllUnits(self):
@@ -180,16 +180,19 @@ class DataAccess:
             question = row[1];
             answerID = row[2];
             answer = row[3];
-            correct = row[4];
+            correct = True if bytearray(row[4])[0] == 1 else False
 
-            if id in questions:
-                questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))});
-            else:
-                questions[id] = {"question": question, "id": id};
-                questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": bool(int.from_bytes(correct, byteorder='big'))}];
+            if answer is not None:
+                answer = unicode(answer, errors='ignore')
+                if id in questions:
+                    questions[id]["answers"].append({"id": answerID, "answer": answer, "correct": correct});
+                else:
+                    questions[id] = {"question": question, "id": id};
+                    questions[id]["answers"] = [{"id": answerID, "answer": answer, "correct": correct}];
 
         questionsArr = [];
         for id in questions:
+            print(questions[id])
             questionsArr.append(questions[id])
         return questionsArr;
 
