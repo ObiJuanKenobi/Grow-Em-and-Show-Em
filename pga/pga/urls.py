@@ -20,17 +20,20 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 
 from . import views
+from . import home_view
+from . import view_utils
 from pga.admin_views import *
 from . import user_quiz_views
 from . import admin_quiz_mgmt
 
 urlpatterns = [
 
-    #Home page & authentication-related urls:
-    url(r'^$', views.home_page, name='home'),
+    #Home page, schedule, & authentication-related urls:
+    url(r'^$', home_view.home_page, name='home'),
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
-    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': views.get_home_page_dict() }, name='logout', ),
+    url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': view_utils.get_home_page_dict() }, name='logout', ),
+    url(r'^createNewSchedule', views.create_schedule, name='schedule'),
     
 
     #Admin urls:

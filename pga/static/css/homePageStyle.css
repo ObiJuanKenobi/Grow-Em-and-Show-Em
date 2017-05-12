@@ -1,0 +1,61 @@
+#cropsTable th, #cropsTable td {
+    text-align: center;
+}
+
+#scheduleTable {
+    max-width: 60%;
+}
+
+#scheduleTable td, #scheduleTable th {
+    text-align: left;
+}
+
+.borderedTable {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-spacing: 30px 0;
+}
+
+.taskTable {
+    width: 100%;
+}
+
+#current-day {
+    background-color: #FAFAD2;
+}
+
+.borderedTableCell {
+  padding: 10px 10px;
+  border: 1px solid black;
+}
+
+#homePageContent {
+    margin-left: 100px;
+}
+
+#gardenOverview {
+    margin-right: 25px;
+}
+
+.small-btn {
+    width: 60px;
+    height: 20px;
+    font-size: 10px;
+}
+
+.scheduleItem {
+    width: 100%;
+}
+
+tr.scheduleItem > td {
+    padding-top: .3em;
+    padding-bottom: .3em;
+}
+
+.taskCell {
+    width: 90%;
+}
+
+.completedTask {
+    text-decoration: line-through;
+}

@@ -5,7 +5,7 @@ from django.core.serializers import json
 import json
 
 from pga.dataAccess import DataAccess
-from pga.views import add_courses_to_dict
+from pga.view_utils import add_courses_to_dict
 
 #TODO - shuffle questions
 #     - pick 10

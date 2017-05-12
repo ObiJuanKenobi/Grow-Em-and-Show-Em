@@ -1,3 +1,7 @@
+#python imports:
+import json
+
+#Django imports:
 from django.core.serializers import json
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, render_to_response
@@ -7,38 +11,15 @@ from django.template import loader
 from django.template import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from pga.dataAccess import DataAccess
 from django.views.generic import View
+
+#pga imports:
 from .forms import UserForm, RecordTableForm
-import json
+from pga.dataAccess import DataAccess
+from . import view_utils
 
+#TODO - store this in DB?
 gardens_color = '00AA00'
-
-def home_page(request):
-    authenticated = request.user.is_authenticated()
-    
-    if authenticated:
-    
-        # Get list of completed/non-completed courses to display
-        db = DataAccess()
-        units = db.getAllUnits()
-        completed_units = db.getCompletedCoursesForUser(request.user.get_username())
-        units_quiz_completed = [False] * len(units)
-        units_has_quiz = [False] * len(units)
-        for index, unit in enumerate(units):
-            if unit in completed_units:
-                units_quiz_completed[index] = True
-            has_quiz = db.doesCourseHaveQuiz(unit)
-            if has_quiz > 0:
-                units_has_quiz[index] = True
-                
-        units_zipped = zip(units, units_quiz_completed, units_has_quiz)
-        dict = get_home_page_dict()
-        dict.update({'units': units_zipped})
-        dict = add_courses_to_dict(dict)
-        return render(request, 'home.html', dict)
-    else:
-        return render(request, 'home.html', get_home_page_dict())
 
 
 def login_view(request):
@@ -49,7 +30,12 @@ def login_view(request):
         login(request, user)
         return redirect('home')
     else:
-        return render(request, 'login.html', get_home_page_dict())
+        return render(request, 'login.html', view_utils.get_home_page_dict())
+        
+def create_schedule(request):
+    dict = view_utils.get_home_page_dict()
+    dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']})
+    return render(request, 'create_schedule.html', view_utils.add_courses_to_dict(dict))
 
 @login_required(login_url='/login/')
 def createRecordTable_Form(request):
@@ -72,7 +58,7 @@ def createRecordTable_Form(request):
                 return redirect('table_home')
     else:
         form = RecordTableForm()
-    return render(request, 'recordstable_form.html', add_courses_to_dict({'form': form}))
+    return render(request, 'recordstable_form.html', view_utils.add_courses_to_dict({'form': form}))
     
     
 @login_required(login_url='/login/')
@@ -80,16 +66,16 @@ def recordTable_Home(request):
     db = DataAccess()
     logs = db.getDailyLogs()
 
-    return render(request, 'recordstable_home.html', add_courses_to_dict({'logs' : logs}))
+    return render(request, 'recordstable_home.html', view_utils.add_courses_to_dict({'logs' : logs}))
 
 # Maintenance lessons:
 @login_required(login_url='/login/')
 def pests(request):
-    return render(request, 'pests.html', add_courses_to_dict({}))
+    return render(request, 'pests.html', view_utils.add_courses_to_dict({}))
 
 @login_required(login_url='/login/')
 def garden(request, garden):
-    return render(request, 'garden.html', add_courses_to_dict({'gardenName': garden,
+    return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden,
         'course': garden, 'color': gardens_color}))
 
 @login_required(login_url='/login/')
@@ -162,7 +148,7 @@ def gardenNav(request):
     db = DataAccess()
     lessons = db.getGardens()
         
-    return render(request, 'gardenNav.html', add_courses_to_dict({'lessons': lessons, 'course': course, 'color': gardens_color}))
+    return render(request, 'gardenNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course, 'color': gardens_color}))
     
 @login_required(login_url='/login/')
 def courseNav(request, course):
@@ -180,7 +166,7 @@ def courseNav(request, course):
     if course in completed_courses:
         passed = True
         
-    return render(request, 'courseNav.html', add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed}))
+    return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed}))
     
 @login_required(login_url='/login/')
 def lesson(request, course, lesson):
@@ -195,7 +181,7 @@ def lesson(request, course, lesson):
     if "Garden Planning" in lesson:
         return redirect('/gardenNav/')
     
-    return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
+    return render(request, 'lesson.html', view_utils.add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     
 # @login_required(login_url='/login/')
 # def quiz_wrapper(request, course):
@@ -204,24 +190,6 @@ def lesson(request, course, lesson):
     # lesson_file_path = "/quiz/" + course
     
     # return render(request, 'lesson.html', add_courses_to_dict({'course': course, 'color': color, 'lesson_file_path': lesson_file_path}))
-
-#Retrieves all courses and adds them to the data dictionary passed in,
-# which is returned by each view
-def add_courses_to_dict(dict):
-    db = DataAccess()
-    courses = db.getCourses()
-    #dict['courses'] = courses
-    
-    colors = []
-    for course in courses:
-        colors.append(db.getCourseColor(course['Course_Name']))
-    #dict['colors'] = colors
-    dict['courses'] = zip(courses, colors)
-    return dict;
-    
-#Sets color and name for home page & login/logout views
-def get_home_page_dict():
-    return {'course': 'Gardening 101', 'color': '01af01'}
     
 
 class UserFormView(View):

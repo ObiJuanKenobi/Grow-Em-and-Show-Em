@@ -1,0 +1,127 @@
+{% load static %}
+
+{% include "header.html" %}
+
+{% include "courseHeader.html" %}
+
+<style>
+
+#pageContent {
+    margin-left: 20px;
+}
+
+table {
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-spacing: 30px 0;
+    text-align: left;
+    width: 80%;
+}
+
+table th, table td {
+    padding: 10px 10px;
+    border: 1px solid black;
+}
+
+.taskCell {
+    width: 75%;
+}
+
+.verticalAlignContainer * {
+    vertical-align: top;
+}
+
+.small-btn {
+    width: 60px;
+    height: 20px;
+    font-size: 10px;
+}
+
+.removeTaskBtn {
+    margin-left: 10px;
+}
+</style>
+
+<script type='text/javascript'>
+
+    var day;
+    
+    function addTask() {
+        var task = $("#taskDescription").val();
+        var dayTasksId = '#' + day + 'List';
+        
+        var newTaskDiv = $("<div>").addClass('verticalAlignContainer');
+        var newTaskLi = $("<li>").text(task).css('margin-bottom', '8px');
+        var newTaskRemoveBtn = $("<input>").attr('type', 'button')
+                                           .attr('value', 'Remove')
+                                           .addClass('removeTaskBtn')
+                                           .addClass('small-btn');
+                                           
+        newTaskLi.append(newTaskRemoveBtn);
+        newTaskDiv.append(newTaskLi);
+        
+        newTaskRemoveBtn.click(function() {
+            newTaskDiv.remove();
+        });
+        
+        $(dayTasksId).append(newTaskDiv);
+    }
+    
+    $(function() {
+        var addTaskDialog = $("#addTaskDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 600,
+            modal: true,	
+            buttons: {
+                Cancel: function() {
+                  addTaskDialog.dialog( "close" );
+                },
+                "Add": function() {
+                    addTask();
+                    addTaskDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+            
+            }
+        });
+    
+        $(".addTaskBtn").click(function() {
+            day = $(this).attr('id');
+            console.log("Day to add task to: " + day);
+            $("#taskDescription").val('');
+            addTaskDialog.dialog('open');
+        });
+    });
+</script>
+
+<div id='pageContent'>
+    <h3>Create New Schedule</h3>
+
+    <table>
+        <tr><th>Day</th><th class='taskCell'>Tasks</th></tr>
+        {% for day in days %}
+            <tr>
+                <td>{{ day }}</td>
+                <td class='taskCell'>
+                    <ul id='{{day}}List'>
+                        
+                    </ul>
+                    <br>
+                    <input type='button' class='btn btn-default addTaskBtn' value='Add Task' id='{{ day }}'>
+                </td>
+            </tr>
+        {% endfor %}    
+    </table>
+    <br>
+    <a href='/createSchedule' class='btn btn-default'>Create</a>
+</div>
+
+<div id='addTaskDialog' title='Add a Task'>
+    <div class='verticalAlignContainer'>
+        <label>Enter task description: <textarea id='taskDescription' cols='40' rows='12'></textarea>
+    </div>
+</div>
+
+{% include "footer.html" %}

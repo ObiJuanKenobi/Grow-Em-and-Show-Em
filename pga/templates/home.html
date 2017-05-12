@@ -8,62 +8,97 @@
 
 {% include "courseHeader.html" %}
 
-<style>
-table, th, td {
-    text-align: center;
-    border: 1px solid black;
-}
-table {
-  border: 1px solid black;
-  border-collapse: collapse;
-  border-spacing: 30px 0;
-}
-
-td, th {
-  padding: 10px 10px;
-}
-
-#homePageContent {
-    float: left;
-    margin-left: 100px;
-}
-
-#logoutBtn {
-    float: right;
-    margin-right: 100px;
-    margin-top: 50px;
-}
-</style>
+<link rel='stylesheet' type='text/css' href="{% static 'css/homePageStyle.css' %}">
 
 {% block content %}
+
+<script type='text/javascript'>
+    
+    $(function() {
+        var completeConfirmDialog = $("#completeConfirmDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,	
+            buttons: {
+                Cancel: function() {
+                  completeConfirmDialog.dialog( "close" );
+                },
+                "Confirm": function() {
+                    completeConfirmDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+            
+            }
+        });
+    
+        $(".markCompleteBtn").click(function() {
+            var id = $(this).attr('id');
+            console.log("Task id: " + id);
+            completeConfirmDialog.dialog('open');
+        });
+    });
+</script>
 
 {% if user.is_authenticated %}
 
     <div id='homePageContent'>
-        <h3> Welcome back, {{ user.username}}!</h3>
-        <h4>Here is your overall course progress:</h4>
-        <br>
-        <table>
-            <tr><th>Unit</th><th>Quiz Completion</th></tr>
-        {% for unit, is_completed, has_quiz in units %}
-            <tr>
-                <td>{{ unit }}</td>
-                <td>
-                {% if is_completed %}
-                    Completed
-                {% else %}
-                    {% if has_quiz %}
-                        Not Completed
+        <h3> Welcome back, {{ user.username}}! <a id='logoutBtn' href="{% url 'logout' %}" class="btn btn-default">Logout</a></h3>
+        
+        <div id='gardenOverview' style='float: right;'>
+            <h4>Garden Overview:</h4>
+            <br>
+            <table id='cropsTable' class='borderedTable'>
+                <tr><th class='borderedTableCell'>Crop</th><th class='borderedTableCell'># Planted</th><th class='borderedTableCell'># Harvested</th></tr>
+                {% for crop in crops %}
+                    <tr>
+                        <td class='borderedTableCell'>{{ crop.crop }}</td>
+                        <td class='borderedTableCell'>{{ crop.planted }}</td>
+                        <td class='borderedTableCell'>{{ crop.harvested }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        
+        <div id='gardenSchedule'>
+            <h4>Garden Schedule:</h4>
+            <br>
+            <table id='scheduleTable' class='borderedTable'>
+                <tr><th class='borderedTableCell'>Day</th><th class='borderedTableCell'>Tasks</th></tr>
+                {% for day, tasks in schedule %}
+                    {% if forloop.counter == current_day %}
+                        <tr id='current-day'>
                     {% else %}
-                        No Quiz
+                        <tr>
                     {% endif %}
-                {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        </table>
+                        <td class='borderedTableCell'>{{ day }}</td>
+                        <td class='borderedTableCell'>
+                            <table class='taskTable'>
+                                {% for task in tasks %}
+                                    {% if task.complete %}
+                                        <tr class='scheduleItem completedTask'><td colspan='2'>{{ task.task }}</td></tr>
+                                    {% else %}
+                                        <tr class='scheduleItem' >
+                                            <td class='taskCell'>{{ task.task }} </td>
+                                            <td><input class='small-btn markCompleteBtn' type='button' value='Complete' id='{{task.id}}'></td>
+                                        </tr> 
+                                    {% endif %}
+                                {% endfor %}
+                            </table></td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+            <a href='/createNewSchedule' class="btn btn-default">Create New Schedule</a>
+        </div>
+        <br><!-- Just to give some spacing at bottom of page -->
+        <br>
     </div>
-    <a id='logoutBtn' href="{% url 'logout' %}" class="btn btn-default">Logout</a>
+    
+    <div id='completeConfirmDialog' title='Confirm Completion'>
+        Are you sure you wish to mark this task as completed?
+    </div>
     
 {% else %}
 
