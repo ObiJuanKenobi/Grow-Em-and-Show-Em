@@ -121,13 +121,13 @@ class DataAccess:
             color = result[0]
         return color
         
-    def getGardens(self):
+    def get_gardens(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("Select garden_name from gardens;")
+        self._cursor.execute("Select garden_name from gardens ORDER BY garden_name ASC;")
         gardens = []
         results = self._cursor.fetchall()
         for row in results:
-            gardens.append({"name": row[0]})
+            gardens.append(row[0])
         return gardens
         
     def doesCourseHaveQuiz(self, course_name):
@@ -308,7 +308,16 @@ class DataAccess:
         self._cursor = self._connection.cursor()
         self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
         self._cursor.execute("COMMIT")
-
+        
+    def get_current_crops(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT crop FROM Current_Crops ORDER BY crop ASC;")
+        results = self._cursor.fetchall()
+        crops = []
+        for row in results:
+            crops.append(row[0])
+        return crops
+            
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
     def __init__(self):

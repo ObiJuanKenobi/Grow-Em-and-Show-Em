@@ -80,8 +80,8 @@ def recordTable_Home(request):
                     ]
                     
     #TODO add current crops table 
-    current_crops = ['corn', 'tomatoes', 'soybeans', 'carrots', 'eggplant']
-    gardens = ['Athena', 'Garden 2', 'Garden 3']
+    current_crops = db.get_current_crops()
+    gardens = db.get_gardens()
     today = datetime.datetime.today().strftime("%m/%d/%Y");
     
     dict = {'harvest_logs' : harvest_logs, 'notes_logs': notes_logs, 'current_crops': current_crops, 'gardens': gardens, 'today': today}

@@ -52,6 +52,7 @@ urlpatterns = [
     url(r'^pgaadmin/userProgress/(?P<user>[A-Za-z0-9\-\s]+)', adminUserProgress),
     url(r'^pgaadmin/userProgress', adminUserProgressOverview),
     url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),#views.adminCourseMgmt),
+    url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
     url(r'^pgaadmin/courseInfo', adminCourseInfo),
     url(r'^pgaadmin/', adminHome),
 

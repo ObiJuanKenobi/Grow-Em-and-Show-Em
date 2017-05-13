@@ -119,6 +119,9 @@ class AdminSuppMatView(AbstractFileUploadView):
         # type of material is given by 'self.resource_type'
         return FileHandlingResult(True, 'TODO - not implemented')
         
+@staff_member_required
+def garden_mgmt_menu(request):
+    return render(request, 'admin/gardenMgmtMenu.html')
     
 @staff_member_required
 def adminHome(request):

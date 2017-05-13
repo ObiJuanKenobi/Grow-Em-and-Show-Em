@@ -90,8 +90,8 @@ def deletePlan(request):
 def gardensNav(request):
     course = 'Garden Planning'
     db = DataAccess()
-    #gardens = db.getGardens()
-    gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}, {'name': 'Other Garden3'}]
+    gardens = db.get_gardens()
+    #gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}, {'name': 'Other Garden3'}]
         
     return render(request, 'gardensNav.html', view_utils.add_courses_to_dict({'gardens': gardens, 'course': course, 'color': gardens_color}))
     

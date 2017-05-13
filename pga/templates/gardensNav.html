@@ -8,10 +8,10 @@
         {% for garden in gardens %}
             <div class="col-md-4">
                 <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
-                <a id='button{{ forloop.counter }}' href='/gardenNav/{{garden.name}}'>
+                <a id='button{{ forloop.counter }}' href='/gardenNav/{{garden}}'>
                     <div class="subMenuIcons" style="border-color:#{{ color }}">
                         <span class="subMenuText">
-                            {{ garden.name }}
+                            {{ garden }}
                         </span>
                     </div>
                 </a>
