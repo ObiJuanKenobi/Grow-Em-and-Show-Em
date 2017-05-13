@@ -288,7 +288,6 @@ class DataAccess:
         self._cursor.execute("DELETE FROM Bed_Plans WHERE PlanID = %s", [planID])
         self._cursor.execute("COMMIT")
 
-# Class for passing quiz questions to the DB in a convenient object
     def getDailyLogs(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Username, Plant, Location, Quantity, DATE_FORMAT(Record_Date, '%m/%d/%Y') AS RecDate, Notes FROM Daily_Records ORDER BY Record_Date DESC")
@@ -317,6 +316,12 @@ class DataAccess:
         for row in results:
             crops.append(row[0])
         return crops
+        
+    
+    def mark_task_complete(self, task_id, username):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Tasks SET IsComplete = 1, CompletedBy = %s, CompletedDate = now() WHERE TaskId = %s;", (username, task_id))
+        self._cursor.execute("COMMIT")
         
     def get_current_schedule(self):
         #First find current schedule Id
@@ -350,6 +355,27 @@ class DataAccess:
                 to_return.append( tuple_to_append )
                 
         return to_return
+        
+        
+    def create_schedule(self, username, day_tasks_dict):
+        self._cursor = self._connection.cursor()
+        
+        #First thing to do is set the current schedule to non-current 
+        self._cursor.execute("UPDATE Schedules SET IsCurrent = 0 WHERE IsCurrent = 1")
+        self._cursor.execute("COMMIT")
+        
+        #Next create a new current schedule:
+        self._cursor.execute("INSERT INTO Schedules (IsCurrent, CreatedBy) VALUES (1, %s)", [username])
+        self._cursor.execute("COMMIT")
+        
+        #Get ID of the new schedule to use for inserting tasks:
+        schedule_id = self._cursor.lastrowid
+        
+        #Now insert all tasks:
+        for day, tasks_list in day_tasks_dict.items():
+            for task in tasks_list:
+                self._cursor.execute("INSERT INTO Tasks (ScheduleId, Day, IsComplete, Description) VALUES (%s, %s, 0, %s)", (schedule_id, day, task))
+                self._cursor.execute("COMMIT")
        
     day_dict = {
         0: 'Sunday',

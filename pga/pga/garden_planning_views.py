@@ -1,9 +1,11 @@
 #python imports:
+import json
+
+#python imports:
 import datetime
 
 #Django imports:
 from django.shortcuts import render, redirect, render_to_response
-from django.core.serializers import json
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 
@@ -23,7 +25,7 @@ def garden(request, garden):
 
 @login_required(login_url='/login/')
 def savePlan(request):
-    if request.is_ajax() and request.POST:
+    if request.is_ajax() and request.method == "POST":
         bedName = request.POST.get('bedName')
         bedPlan = request.POST.get('bedPlan')
         bedCanvas = request.POST.get('bedCanvas')
@@ -69,7 +71,7 @@ def getBedCanvas(request):
 
 @login_required(login_url='/login/')
 def deletePlan(request):
-    if request.POST:
+    if request.method == "POST":
         planID = request.POST.get('planID')
         db = DataAccess()
         db.deleteBedPlan(planID)

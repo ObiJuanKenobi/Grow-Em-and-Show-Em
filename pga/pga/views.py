@@ -27,12 +27,6 @@ def login_view(request):
         return redirect('home')
     else:
         return render(request, 'login.html', view_utils.get_home_page_dict())
-        
-@login_required(login_url='/login/')
-def create_schedule(request):
-    dict = view_utils.get_home_page_dict()
-    dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']})
-    return render(request, 'create_schedule.html', view_utils.add_courses_to_dict(dict))
 
 # Maintenance lessons:
 @login_required(login_url='/login/')

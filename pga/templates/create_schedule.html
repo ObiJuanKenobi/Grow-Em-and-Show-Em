@@ -67,7 +67,48 @@ table th, table td {
         $(dayTasksId).append(newTaskDiv);
     }
     
+    function uploadSchedule() {
+        //First gather tasks for each day:
+        
+        var tasksByDay = {};
+        
+        $(".taskList").each(function(index) {
+            //Assuming starts at Monday, so add 1: (sunday is 0)
+            var day = index + 1;
+            var tasks = {};
+            $(this).find('li').each(function(liIndex) {
+                tasks[liIndex] = $(this).text();
+            });
+            tasksByDay[day] = JSON.stringify(tasks);
+        });
+        
+        //console.log(tasksByDay);
+        
+        $.ajax({
+            url: "/createNewSchedule",
+            data: tasksByDay,
+            contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+            type: "POST",
+            success: function (data) {
+                if(data.success){
+                    window.location = '/'; // Redirect to homepage to see new schedule
+                    //alert('done');
+                }
+                else {
+                    alert("Error occurred during schedule upload");
+                    console.log(data);
+                }
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+    
     $(function() {
+        setupCSRF();
+        
         var addTaskDialog = $("#addTaskDialog").dialog({
             autoOpen: false,
             height: 400,
@@ -89,9 +130,31 @@ table th, table td {
     
         $(".addTaskBtn").click(function() {
             day = $(this).attr('id');
-            console.log("Day to add task to: " + day);
             $("#taskDescription").val('');
             addTaskDialog.dialog('open');
+        });
+        
+        var uploadScheduleDialog = $("#uploadScheduleDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,	
+            buttons: {
+                Cancel: function() {
+                  uploadScheduleDialog.dialog( "close" );
+                },
+                "Confirm": function() {
+                    uploadSchedule();
+                    uploadScheduleDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+            
+            }
+        });
+    
+        $("#uploadScheduleBtn").click(function() {
+            uploadScheduleDialog.dialog('open');
         });
     });
 </script>
@@ -105,7 +168,7 @@ table th, table td {
             <tr>
                 <td>{{ day }}</td>
                 <td class='taskCell'>
-                    <ul id='{{day}}List'>
+                    <ul class='taskList' id='{{day}}List'>
                         
                     </ul>
                     <br>
@@ -115,13 +178,20 @@ table th, table td {
         {% endfor %}    
     </table>
     <br>
-    <a href='/createSchedule' class='btn btn-default'>Create</a>
+    <input id='uploadScheduleBtn' type='button' class='btn btn-default' value='Create'/>
+    <br><br>
 </div>
 
 <div id='addTaskDialog' title='Add a Task'>
     <div class='verticalAlignContainer'>
         <label>Enter task description: <textarea id='taskDescription' cols='40' rows='12'></textarea>
     </div>
+</div>
+
+<div id='uploadScheduleDialog' title='Confirm New Schedule'>
+    <p>
+        Are you sure you want to upload this schedule? It will overwrite the existing schedule.
+    </p>
 </div>
 
 {% include "footer.html" %}

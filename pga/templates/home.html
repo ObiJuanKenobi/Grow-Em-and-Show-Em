@@ -13,8 +13,27 @@
 {% block content %}
 
 <script type='text/javascript'>
+
+    var taskId;
+
+    function completeTask(){
+        $.ajax({
+            url: "/markTaskComplete/" + taskId,
+            type: "POST",
+            success: function (data) {
+                var completeTaskBtn = $("#" + taskId);
+                completeTaskBtn.hide();
+                completeTaskBtn.closest('tr').addClass('completedTask');
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
     
     $(function() {
+        setupCSRF();
         var completeConfirmDialog = $("#completeConfirmDialog").dialog({
             autoOpen: false,
             height: 200,
@@ -25,6 +44,7 @@
                   completeConfirmDialog.dialog( "close" );
                 },
                 "Confirm": function() {
+                    completeTask();
                     completeConfirmDialog.dialog( "close" );
                 }
             },
@@ -34,8 +54,7 @@
         });
     
         $(".markCompleteBtn").click(function() {
-            var id = $(this).attr('id');
-            console.log("Task id: " + id);
+            taskId = $(this).attr('id');
             completeConfirmDialog.dialog('open');
         });
     });

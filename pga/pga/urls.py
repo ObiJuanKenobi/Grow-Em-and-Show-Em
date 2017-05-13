@@ -22,6 +22,7 @@ from django.views.generic.base import TemplateView
 from . import views
 from . import home_view
 from . import records_view
+from . import schedule_views
 from . import garden_planning_views
 from . import view_utils
 from pga.admin_views import *
@@ -35,7 +36,10 @@ urlpatterns = [
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': view_utils.get_home_page_dict() }, name='logout', ),
-    url(r'^createNewSchedule', views.create_schedule, name='schedule'),
+    
+    #Schedule related urls:
+    url(r'^createNewSchedule', schedule_views.create_schedule, name='schedule'),
+    url(r'^markTaskComplete/(?P<task>[A-Za-z0-9\-\s]+)', schedule_views.mark_task_complete, name='completeTask'),
     
 
     #Admin urls:
