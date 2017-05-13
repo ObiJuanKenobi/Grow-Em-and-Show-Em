@@ -77,11 +77,15 @@
                             <table class='taskTable'>
                                 {% for task in tasks %}
                                     {% if task.complete %}
-                                        <tr class='scheduleItem completedTask'><td colspan='2'>{{ task.task }}</td></tr>
+                                        <tr class='scheduleItem completedTask'>
+                                            <td colspan='2'>&bull; {{ task.task }}</td>
+                                        </tr>
                                     {% else %}
                                         <tr class='scheduleItem' >
-                                            <td class='taskCell'>{{ task.task }} </td>
-                                            <td><input class='small-btn markCompleteBtn' type='button' value='Complete' id='{{task.id}}'></td>
+                                            <td class='taskCell'>&bull; {{ task.task }} </td>
+                                            <td>
+                                                <input class='small-btn markCompleteBtn' type='button' value='Complete' id='{{task.id}}'>
+                                            </td>
                                         </tr> 
                                     {% endif %}
                                 {% endfor %}

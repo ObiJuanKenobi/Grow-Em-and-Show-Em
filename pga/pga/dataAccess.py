@@ -317,6 +317,52 @@ class DataAccess:
         for row in results:
             crops.append(row[0])
         return crops
+        
+    def get_current_schedule(self):
+        #First find current schedule Id
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT ScheduleId FROM Schedules WHERE IsCurrent = 1;")
+        cur_schedule_id = self._cursor.fetchone()
+        
+        #Now find tasks with that schedule Id:
+        self._cursor.execute("SELECT Description, Day, IsComplete, TaskId FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [cur_schedule_id])
+        task_rows = self._cursor.fetchall()
+        
+        #Python is neat - inits a list of 7 elements, each element is empty list:
+        tasks_by_day = [[] for _ in range(7)]
+        
+        for task_row in task_rows:
+            task = {'task': task_row[0], 'complete': task_row[2], 'id': task_row[3]}
+            day_num = task_row[1]
+            tasks_by_day[day_num].append(task)
+            
+        #Easier to work with on Frontend if 
+        # I give it the day name instead of number,
+        # and each element is a tuple of day_str and 
+        # the tasks list for that day
+        #The array created above is already 
+        # sorted by day, since sunday is 0, sat is 6
+        to_return = []
+        for index, day_tasks_list in enumerate(tasks_by_day):
+            if len(day_tasks_list) > 0:
+                day_str = self.switch_day_num_to_string(index)
+                tuple_to_append = (day_str, day_tasks_list)
+                to_return.append( tuple_to_append )
+                
+        return to_return
+       
+    day_dict = {
+        0: 'Sunday',
+        1: 'Monday',
+        2: 'Tuesday',
+        3: 'Wednesday',
+        4: 'Thursday',
+        5: 'Friday',
+        6: 'Saturday'
+    }
+    
+    def switch_day_num_to_string(self, day_num):
+        return self.day_dict.get(day_num, 'Unknown Day')
             
 #Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
