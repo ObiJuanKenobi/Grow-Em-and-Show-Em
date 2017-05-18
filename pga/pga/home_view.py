@@ -1,4 +1,4 @@
-#python imports:
+# python imports:
 import datetime
 
 #Django imports:
@@ -7,6 +7,7 @@ from django.shortcuts import render, redirect, render_to_response
 #PGA imports:
 from pga.dataAccess import DataAccess
 from . import view_utils
+
 
 def home_page(request):
     authenticated = request.user.is_authenticated()
@@ -44,10 +45,15 @@ def home_page(request):
         schedule = db.get_current_schedule()
                     
         day_of_week = datetime.datetime.today().weekday()
+
+        # Python's weekday ints go from 0=Monday - 6=Sunday
+        day_of_week = day_of_week + 1
+        if day_of_week == 7:
+            day_of_week = 1
                 
         dict.update({'crops': crops})
         dict.update({'schedule': schedule})
-        dict.update({'current_day': 2})
+        dict.update({'current_day': day_of_week})
         dict = view_utils.add_courses_to_dict(dict)
         
         return render(request, 'home.html', dict)

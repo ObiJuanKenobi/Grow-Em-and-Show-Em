@@ -1,7 +1,5 @@
 #python imports:
 import json
-
-#python imports:
 import datetime
 
 #Django imports:
@@ -77,7 +75,7 @@ def deletePlan(request):
         db.deleteBedPlan(planID)
         response = {
             'status': 200,
-            'message': 'Successfully remove the selected plan'
+            'message': 'Successfully removed the selected plan'
         }
     else:
         response = {

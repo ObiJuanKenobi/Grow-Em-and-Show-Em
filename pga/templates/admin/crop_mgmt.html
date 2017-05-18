@@ -1,0 +1,142 @@
+{% include "admin/header.html" %}
+
+<style>
+td {
+    padding: 10px 5px;
+}
+</style>
+
+<script type='text/javascript'>
+
+    var addDialog;
+
+    function addCrop(){
+        var newCrop = $("#cropToAdd").val();
+
+        $.ajax({
+            url: "/pgaadmin/addCrop/" + newCrop,
+            type: "POST",
+            success: function (data) {
+                addCropRow(newCrop);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+    function addCropRow(newCrop) {
+        var newRow = $("<tr>");
+
+        var nameCell = $("<td>").text(newCrop);
+        newRow.append(nameCell);
+
+        var isCurrentCell = $("<td>").text("true");
+        newRow.append(isCurrentCell);
+
+        var toggleBtn = $("<button>").addClass('toggleBtn')
+                                   .val(newCrop)
+                                   .text("Toggle 'Is Current'");
+        var toggleCell = $("<td>").append(toggleBtn);
+        newRow.append(toggleCell);
+
+        $("#cropsTable").append(newRow);
+    }
+
+	$(function() {
+	    setupCSRF();
+        addDialog = $("#addDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                  addDialog.dialog( "close" );
+                },
+                "Add": function() {
+                    addCrop();
+                    addDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+
+            }
+        });
+
+        $("#addCrop").click(function() {
+            $("#cropToAdd").val('');
+            addDialog.dialog("open");
+        });
+
+        $(".toggleBtn").click(function() {
+            var crop = $(this).val();
+            var cur_status = $(this).parent().find(".status").val();
+
+            var new_status = 0;
+            var new_text = "false";
+            if(cur_status == 0){
+                new_status = 1;
+                new_text = "true";
+            }
+
+            $.ajax({
+                url: "/pgaadmin/toggleCrop/" + crop + "/" + String(new_status),
+                type: "POST",
+                success: function (data) {
+                    console.log("success");
+                    $("#" + crop + "Tr .textStatus").text(new_text);
+                    $("#" + crop + "Tr .status").val(new_status);
+                },
+                error: function (xhr, errmsg, err) {
+                    alert("Error: " + errmsg);
+                    console.log(errmsg);
+                }
+            });
+        });
+
+	});
+
+</script>
+
+
+<span class='adminPageTitle'>Crop Management</span>&nbsp; &nbsp;<a href='/pgaadmin/gardenMgmtMenu' class='backLink'>Back</a>
+
+<br>
+{% include "admin/upload_status.html" %}
+<br>
+
+<table id="cropsTable">
+    <tr><th>Crop</th><th>Is Current</th><th>Toggle</th></th></tr>
+    {% for c in crops %}
+	<tr id='{{ c.name }}Tr'>
+        <td><span>{{ c.name }}</span></td>
+        <td><span class="textStatus">
+            {% if c.is_current %}
+                true
+            {% else %}
+                false
+            {% endif %}
+            </span>
+        </td>
+		<td>
+            <input class='status' type="hidden" value="{{c.is_current}}">
+            <button class='toggleBtn' value='{{c.name}}'>Toggle 'Is Current'</button>
+        </td>
+	</tr>
+    {% endfor %}
+</table>
+
+<br><br>
+
+<button id='addCrop'>Add Crop</button><br>
+
+<div id="addDialog" title="Add a Crop">
+    <label>Enter the name of the crop you would like to add:
+        <input type="text" id="cropToAdd" >
+    </label>
+</div>
+
+{% include "admin/dialogs.html" %}
+{% include "admin/footer.html" %}
