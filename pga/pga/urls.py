@@ -31,18 +31,18 @@ from . import admin_quiz_mgmt
 
 urlpatterns = [
 
-    #Home page, schedule, & authentication-related urls:
+    # Home page, schedule, & authentication-related urls:
     url(r'^$', home_view.home_page, name='home'),
     url(r'^register/$', views.UserFormView.as_view(), name='register'),
     url(r'^login/$', views.login_view, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'logout.html', 'extra_context': view_utils.get_home_page_dict() }, name='logout', ),
     
-    #Schedule related urls:
+    # Schedule related urls:
     url(r'^createNewSchedule', schedule_views.create_schedule, name='schedule'),
     url(r'^markTaskComplete/(?P<task>[A-Za-z0-9\-\s]+)', schedule_views.mark_task_complete, name='completeTask'),
     
 
-    #Admin urls:
+    # Admin urls:
     url(r'^admin/', admin.site.urls),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/supplementaryMaterials', AdminSuppMatView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s]+)', AdminLessonView.as_view()),
@@ -55,29 +55,32 @@ urlpatterns = [
     url(r'^pgaadmin/changeColor/(?P<course>[A-Za-z0-9\-\s]+)/(?P<color>[A-Za-z0-9\-\s]+)', adminSetCourseColor),
     url(r'^pgaadmin/userProgress/(?P<user>[A-Za-z0-9\-\s]+)', adminUserProgress),
     url(r'^pgaadmin/userProgress', adminUserProgressOverview),
-    url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),#views.adminCourseMgmt),
+    url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),
+    url(r'^pgaadmin/cropMgmt', admin_crop_mgmt),
+    url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
+    url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
     url(r'^pgaadmin/courseInfo', adminCourseInfo),
     url(r'^pgaadmin/', adminHome),
 
-    #User-quiz urls:
-    #url(r'^takeQuiz/(?P<course>[A-Za-z0-9\-\s]+)', views.quiz_wrapper),
+    # User-quiz urls:
+    # url(r'^takeQuiz/(?P<course>[A-Za-z0-9\-\s]+)', views.quiz_wrapper),
     url(r'^quiz/(?P<course>[A-Za-z0-9\-\s]+)', user_quiz_views.quiz, name='quiz'),
     url(r'^gradeQuiz/(?P<course>[A-Za-z0-9\-\s]+)', user_quiz_views.grade_quiz, name='quiz'),
     url(r'^quizResults/(?P<course>[A-Za-z0-9\-\s]+)', user_quiz_views.quiz_results, name='quizResults'),
     
-    #General course urls:
+    # General course urls:
     url(r'^lesson/(?P<course>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s\_]+)/', views.lesson, name='courseNav'),
     url(r'^courseNav/(?P<course>[A-Za-z0-9\-\s]+)/', views.courseNav, name='courseNav'),
 
-    #Demo url - remove
+    # Demo url - remove
     url(r'^pests', views.pests, name='pests'),
 
-    #Record keeping urls:
+    # Record keeping urls:
     url(r'^table_form/$', records_view.createRecordTable_Form, name='table_form'),
     url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
     
-    #Garden planning urls:
+    # Garden planning urls:
     url(r'^gardensNav/', garden_planning_views.gardensNav, name='gardensNav'),
     url(r'^gardenNav/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.gardenNav, name='gardenNav'),
     url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.garden, name='garden'),

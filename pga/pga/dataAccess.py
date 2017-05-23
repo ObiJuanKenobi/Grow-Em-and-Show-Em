@@ -310,30 +310,50 @@ class DataAccess:
         
     def get_current_crops(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT crop FROM Current_Crops ORDER BY crop ASC;")
+        self._cursor.execute("SELECT crop FROM Current_Crops WHERE is_current = 1 ORDER BY crop ASC;")
         results = self._cursor.fetchall()
         crops = []
         for row in results:
             crops.append(row[0])
         return crops
-        
-    
+
+    def get_all_crops(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT crop, is_current FROM Current_Crops ORDER BY crop ASC;")
+        results = self._cursor.fetchall()
+        crops = []
+        for row in results:
+            crops.append({'name': row[0], 'is_current': row[1]})
+        return crops
+
+    def add_crop(self, new_crop):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "INSERT INTO Current_Crops (crop) VALUES (%s);", [new_crop])
+        self._cursor.execute("COMMIT")
+
+    def toggle_current_for_crop(self, crop, is_current):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "UPDATE Current_Crops SET is_current = %s WHERE crop = %s;", [is_current, crop])
+        self._cursor.execute("COMMIT")
+
     def mark_task_complete(self, task_id, username):
         self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Tasks SET IsComplete = 1, CompletedBy = %s, CompletedDate = now() WHERE TaskId = %s;", (username, task_id))
         self._cursor.execute("COMMIT")
         
     def get_current_schedule(self):
-        #First find current schedule Id
+        # First find current schedule Id
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT ScheduleId FROM Schedules WHERE IsCurrent = 1;")
         cur_schedule_id = self._cursor.fetchone()
         
-        #Now find tasks with that schedule Id:
+        # Now find tasks with that schedule Id:
         self._cursor.execute("SELECT Description, Day, IsComplete, TaskId FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [cur_schedule_id])
         task_rows = self._cursor.fetchall()
         
-        #Python is neat - inits a list of 7 elements, each element is empty list:
+        # Python is neat - inits a list of 7 elements, each element is empty list:
         tasks_by_day = [[] for _ in range(7)]
         
         for task_row in task_rows:
@@ -341,11 +361,11 @@ class DataAccess:
             day_num = task_row[1]
             tasks_by_day[day_num].append(task)
             
-        #Easier to work with on Frontend if 
+        # Easier to work with on Frontend if
         # I give it the day name instead of number,
         # and each element is a tuple of day_str and 
         # the tasks list for that day
-        #The array created above is already 
+        # The array created above is already
         # sorted by day, since sunday is 0, sat is 6
         to_return = []
         for index, day_tasks_list in enumerate(tasks_by_day):
@@ -355,24 +375,22 @@ class DataAccess:
                 to_return.append( tuple_to_append )
                 
         return to_return
-        
-        
+
     def create_schedule(self, username, day_tasks_dict):
         self._cursor = self._connection.cursor()
         
-        #First thing to do is set the current schedule to non-current 
+        # First thing to do is set the current schedule to non-current
         self._cursor.execute("UPDATE Schedules SET IsCurrent = 0 WHERE IsCurrent = 1")
         self._cursor.execute("COMMIT")
         
-        #Next create a new current schedule:
+        # Next create a new current schedule:
         self._cursor.execute("INSERT INTO Schedules (IsCurrent, CreatedBy) VALUES (1, %s)", [username])
         
-        #Get ID of the new schedule to use for inserting tasks:
+        # Get ID of the new schedule to use for inserting tasks:
         schedule_id = self._cursor.lastrowid
         
         self._cursor.execute("COMMIT") #for some reason returns 0 if commit call is before lastrowid...
-        
-        #Now insert all tasks:
+
         for day, tasks_list in day_tasks_dict.items():
             for task in tasks_list:
                 self._cursor.execute("INSERT INTO Tasks (ScheduleId, Day, IsComplete, Description) VALUES (%s, %s, 0, %s)", (schedule_id, day, task))
@@ -390,12 +408,14 @@ class DataAccess:
     
     def switch_day_num_to_string(self, day_num):
         return self.day_dict.get(day_num, 'Unknown Day')
-            
-#Class for passing quiz questions to the DB in a convenient object
+
+
+# Class for passing quiz questions to the DB in a convenient object
 class QuizQuestion:
     def __init__(self):
         self._Text = ""
         self._Answers = []
+
 
 # Class for passing quiz answers to the DB in a convenient object
 class QuizAnswer:

@@ -4,7 +4,7 @@ from pga.dataAccess import DataAccess
 from pga.coursemanager import *
 import json
 
-#Displays all units, allowing users to delete them, upload another,
+# Displays all units, allowing users to delete them, upload another,
 # go to a unit's lessons, or go to supplementary materials
 class CourseMgmtView(AbstractFileUploadView):
     
@@ -21,7 +21,7 @@ class CourseMgmtView(AbstractFileUploadView):
         status, message = processCourseZip(file)
         return FileHandlingResult(status, message)
         
-#Displays all lessons in a given unit, allowing users to delete them, upload more,
+# Displays all lessons in a given unit, allowing users to delete them, upload more,
 # or go to the unit quiz
 class AdminUnitView(AbstractFileUploadView):
     
@@ -36,20 +36,21 @@ class AdminUnitView(AbstractFileUploadView):
         if self.unit is not None:
             return True
             
-        #Invalid URL:
+        # Invalid URL:
         if self.unit is None:
             self.extra_params_errors += 'Valid unit not found'
         return False
     
     def get_page_specific_data(self):
-        #Ensures 'self.unit' is set before this code is reached
+        # Ensures 'self.unit' is set before this code is reached
         lessons = DataAccess().getCourseLessons(self.unit)
         return { 'lessons': lessons, 'unit': self.unit }
         
     def page_specific_handle_file(self, file):
         return FileHandlingResult(True, 'TODO - not implemented')
-        
-#Renders info for a given lesson. Gives option to download lesson 
+
+
+# Renders info for a given lesson. Gives option to download lesson
 # or upload a replacement
 class AdminLessonView(AbstractFileUploadView):
     
@@ -66,7 +67,7 @@ class AdminLessonView(AbstractFileUploadView):
         if self.unit is not None and self.lesson is not None:
             return True
             
-        #Invalid URL:
+        # Invalid URL:
         if self.unit is None:
             self.extra_params_errors += 'Valid unit not found'
         if self.lesson is None:
@@ -74,14 +75,14 @@ class AdminLessonView(AbstractFileUploadView):
         return False
     
     def get_page_specific_data(self):
-        #Ensures 'self.unit' & 'self.lesson' is set before this code is reached
+        # Ensures 'self.unit' & 'self.lesson' is set before this code is reached
         return { 'lesson': self.lesson, 'unit': self.unit }
         
     def page_specific_handle_file(self, file):
         return FileHandlingResult(True, 'TODO - not implemented')
         
         
-#Renders info for a given lesson. Gives option to download lesson 
+# Renders info for a given lesson. Gives option to download lesson
 # or upload a replacement
 class AdminSuppMatView(AbstractFileUploadView):
     
@@ -99,12 +100,12 @@ class AdminSuppMatView(AbstractFileUploadView):
         if self.unit is not None:
             return True
            
-        #Invalid URL:           
+        # Invalid URL:
         self.extra_params_errors += "couldn't find unit in url"
         return False
     
     def get_page_specific_data(self):
-        #Ensures 'self.unit' is set before reaching here
+        # Ensures 'self.unit' is set before reaching here
         resources = getMaterialPaths(self.unit)
         resources_list = []
         for resource in resources:
@@ -113,16 +114,33 @@ class AdminSuppMatView(AbstractFileUploadView):
             resource_name = resource[last_slash_index+1:]
             resources_list.append({'path': resource_path, 'name': resource_name})
         
-        return { 'unit': self.unit, 'resources': resources_list }
+        return {'unit': self.unit, 'resources': resources_list}
         
     def page_specific_handle_file(self, file):
         # type of material is given by 'self.resource_type'
         return FileHandlingResult(True, 'TODO - not implemented')
-        
+
+
 @staff_member_required
 def garden_mgmt_menu(request):
     return render(request, 'admin/gardenMgmtMenu.html')
-    
+
+
+@staff_member_required
+def admin_crop_mgmt(request):
+    crops = DataAccess().get_all_crops()
+    return render(request, 'admin/crop_mgmt.html', {'crops': crops})
+
+@staff_member_required
+def admin_add_crop(request, new_crop):
+    DataAccess().add_crop(new_crop)
+    return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+@staff_member_required
+def admin_toggle_current_crop(request, crop, is_current):
+    DataAccess().toggle_current_for_crop(crop, int(is_current))
+    return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
 @staff_member_required
 def adminHome(request):
     return render(request, 'admin/home.html')
@@ -132,7 +150,7 @@ def adminHome(request):
 def adminCourseInfo(request):
     return render(request, 'admin/course_info.html')
 
-
+@staff_member_required
 def adminUserProgress(request, user):
     db = DataAccess()
     completed = db.getCompletedCoursesForUser(user)
