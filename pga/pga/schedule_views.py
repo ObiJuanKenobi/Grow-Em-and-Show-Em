@@ -39,7 +39,7 @@ def create_schedule(request):
     else:
         #Just loading the create new schedule page:
         dict = view_utils.get_home_page_dict()
-        dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']})
+        dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']})
         return render(request, 'create_schedule.html', view_utils.add_courses_to_dict(dict))
     
 # Called when user presses 'Complete' on a task on the home page

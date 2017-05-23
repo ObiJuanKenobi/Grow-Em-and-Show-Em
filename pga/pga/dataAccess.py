@@ -369,10 +369,9 @@ class DataAccess:
         # sorted by day, since sunday is 0, sat is 6
         to_return = []
         for index, day_tasks_list in enumerate(tasks_by_day):
-            if len(day_tasks_list) > 0:
-                day_str = self.switch_day_num_to_string(index)
-                tuple_to_append = (day_str, day_tasks_list)
-                to_return.append( tuple_to_append )
+            day_str = self.switch_day_num_to_string(index)
+            tuple_to_append = (day_str, day_tasks_list)
+            to_return.append(tuple_to_append)
                 
         return to_return
 
@@ -397,13 +396,14 @@ class DataAccess:
                 self._cursor.execute("COMMIT")
        
     day_dict = {
-        0: 'Sunday',
-        1: 'Monday',
-        2: 'Tuesday',
-        3: 'Wednesday',
-        4: 'Thursday',
-        5: 'Friday',
-        6: 'Saturday'
+
+        0: 'Monday',
+        1: 'Tuesday',
+        2: 'Wednesday',
+        3: 'Thursday',
+        4: 'Friday',
+        5: 'Saturday',
+        6: 'Sunday',
     }
     
     def switch_day_num_to_string(self, day_num):

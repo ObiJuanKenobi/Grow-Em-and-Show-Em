@@ -17,7 +17,7 @@
                             <a href="/courseNav/{{course.Course_Name}}/">{{course.Course_Name}}</a>
                         </li>
                     {% endfor %}
-					<li>
+					<li style="background-color: black;">
 						{% if user.is_authenticated %}
 							<a href="/logout">Log out</a>
 						{% else %}

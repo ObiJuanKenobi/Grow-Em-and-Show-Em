@@ -6,18 +6,13 @@ import random
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.core.serializers import json
 
 
 from pga.dataAccess import DataAccess
 from pga.view_utils import add_courses_to_dict
 
+# TODO could store in DB and make editable
 num_questions = 10
-
-#TODO - shuffle questions
-#     - pick 10
-#     - shuffle answers (first is always correct)
-#     - check answers before returning (filter out the 'None' ones)
 
 @login_required(login_url='/login/')
 def quiz(request, course):
@@ -32,11 +27,11 @@ def quiz(request, course):
     #Shuffle the questions & answers (also remove 'None' from answers):
     random.shuffle(questions)
     
-    for id, question in questions:
-        answers = questions[id]['answers']
+    for idx, question in enumerate(questions):
+        answers = questions[idx]['answers']
         valid_answers = [a for a in answers if a['answer'] is not None]
         random.shuffle(valid_answers)
-        questions[id]['answer'] = valid_answers
+        questions[idx]['answers'] = valid_answers
     
     color = db.getCourseColor(course)
     return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course, 'color': color}))
@@ -88,7 +83,7 @@ def grade_quiz(request, course):
         elif num_correct == len(graded_questions): 
             passed = 1
             
-        #TODO - addQuizAttempt expects 10 questions always, is there a better approach?
+        # TODO - addQuizAttempt expects 10 questions always, is there a better approach?
         while len(users_attempt) < 10:
             users_attempt.append({'questionID': -1, 'answerID': -1})
         
@@ -124,9 +119,7 @@ class GradedQuestion:
         self.user_correct = user_correct
         
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
-
+        return json.dumps(self, sort_keys=True, indent=4, default=lambda o: o.__dict__)
 
 @login_required(login_url='/login/')
 def quiz_results(request, course):

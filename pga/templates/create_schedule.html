@@ -73,8 +73,9 @@ table th, table td {
         var tasksByDay = {};
         
         $(".taskList").each(function(index) {
-            //Assuming starts at Monday, so add 1: (sunday is 0)
-            var day = index + 1;
+
+           var day = index;
+
             var tasks = {};
             $(this).find('li').each(function(liIndex) {
                 tasks[liIndex] = $(this).text();
