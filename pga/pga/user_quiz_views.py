@@ -1,11 +1,18 @@
+#python imports:
+import json
+import random
+
+#Django imports:
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.serializers import json
-import json
+
 
 from pga.dataAccess import DataAccess
 from pga.view_utils import add_courses_to_dict
+
+num_questions = 10
 
 #TODO - shuffle questions
 #     - pick 10
@@ -16,6 +23,21 @@ from pga.view_utils import add_courses_to_dict
 def quiz(request, course):
     db = DataAccess()
     questions = db.getQuizQuestions(course)
+    
+    #get random 'num_questions' questions 
+    # (or all if there are <= num_questions):
+    if len(questions) > num_questions:
+        questions = random.sample(questions, num_questions)
+        
+    #Shuffle the questions & answers (also remove 'None' from answers):
+    random.shuffle(questions)
+    
+    for id, question in questions:
+        answers = questions[id]['answers']
+        valid_answers = [a for a in answers if a['answer'] is not None]
+        random.shuffle(valid_answers)
+        questions[id]['answer'] = valid_answers
+    
     color = db.getCourseColor(course)
     return render(request, 'quiz.html', add_courses_to_dict({'questions': questions, 'course': course, 'color': color}))
     
@@ -24,7 +46,7 @@ def grade_quiz(request, course):
 
     response = {}
     
-    if request.POST:
+    if request.method == "POST":
         
         db = DataAccess()
         all_questions = db.getQuizQuestions(course)

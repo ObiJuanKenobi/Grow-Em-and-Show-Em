@@ -42,6 +42,7 @@ def create_schedule(request):
         dict.update({'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday']})
         return render(request, 'create_schedule.html', view_utils.add_courses_to_dict(dict))
     
+# Called when user presses 'Complete' on a task on the home page
 @login_required(login_url='/login/')
 def mark_task_complete(request, task):
     username = request.user.username

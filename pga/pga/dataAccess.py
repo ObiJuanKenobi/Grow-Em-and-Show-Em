@@ -366,10 +366,11 @@ class DataAccess:
         
         #Next create a new current schedule:
         self._cursor.execute("INSERT INTO Schedules (IsCurrent, CreatedBy) VALUES (1, %s)", [username])
-        self._cursor.execute("COMMIT")
         
         #Get ID of the new schedule to use for inserting tasks:
         schedule_id = self._cursor.lastrowid
+        
+        self._cursor.execute("COMMIT") #for some reason returns 0 if commit call is before lastrowid...
         
         #Now insert all tasks:
         for day, tasks_list in day_tasks_dict.items():
