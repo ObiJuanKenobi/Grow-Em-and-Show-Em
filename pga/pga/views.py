@@ -1,7 +1,7 @@
-#python imports:
+# python imports:
 import json
 
-#Django imports:
+# Django imports:
 from django.core.serializers import json
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, render_to_response
@@ -13,8 +13,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic import View
 
-#pga imports:
-from .forms import UserForm, RecordTableForm
+# pga imports:
+from .forms import UserForm
 from pga.dataAccess import DataAccess
 from . import view_utils
 
@@ -28,11 +28,13 @@ def login_view(request):
     else:
         return render(request, 'login.html', view_utils.get_home_page_dict())
 
+
 # Maintenance lessons:
 @login_required(login_url='/login/')
 def pests(request):
     return render(request, 'pests.html', view_utils.add_courses_to_dict({}))
-    
+
+
 @login_required(login_url='/login/')
 def courseNav(request, course):
     db = DataAccess()
@@ -50,7 +52,8 @@ def courseNav(request, course):
         passed = True
         
     return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed}))
-    
+
+
 @login_required(login_url='/login/')
 def lesson(request, course, lesson):
     db = DataAccess()
@@ -63,6 +66,9 @@ def lesson(request, course, lesson):
     
     if "Garden Planning" in lesson:
         return redirect('/gardensNav/')
+
+    if "Record Keeping" in lesson:
+        return redirect('/recordsNav/')
     
     return render(request, 'lesson.html', view_utils.add_courses_to_dict({'course': course, 'lesson': lesson, 'color': color, 'lesson_file_path': lesson_file_path}))
     

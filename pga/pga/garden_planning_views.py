@@ -1,18 +1,18 @@
-#python imports:
+# python imports:
 import json
 import datetime
 
-#Django imports:
+# Django imports:
 from django.shortcuts import render, redirect, render_to_response
 from django.http import HttpResponse, Http404
 from django.contrib.auth.decorators import login_required
 
-#PGA imports:
+# PGA imports:
 from pga.dataAccess import DataAccess
 from . import view_utils
 
 
-#TODO - store this in DB?
+# TODO - store this in DB?
 gardens_color = '00AA00'
 
 
@@ -20,6 +20,7 @@ gardens_color = '00AA00'
 def garden(request, garden):
     return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden,
         'course': garden, 'color': gardens_color}))
+
 
 @login_required(login_url='/login/')
 def savePlan(request):
@@ -39,6 +40,7 @@ def savePlan(request):
             'message': 'Unable to save canvas as an image'
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
+
 
 @login_required(login_url='/login/')
 def showPlans(request):
@@ -60,12 +62,14 @@ def showPlans(request):
 
     return HttpResponse(json.dumps(response),content_type='application/json')
 
+
 @login_required(login_url='/login/')
 def getBedCanvas(request):
     planID = request.GET['planID']
     db = DataAccess()
     canvas = db.getBedCanvas(planID)
     return HttpResponse(canvas, content_type='application/json')
+
 
 @login_required(login_url='/login/')
 def deletePlan(request):
@@ -84,17 +88,20 @@ def deletePlan(request):
         }
     return HttpResponse(json.dumps(response), content_type='application/json')
 
-# This view should show a map of all prison gardens 
+
+
+# This view should show a map of all prison gardens
 # and list all gardens on the side
 @login_required(login_url='/login/')
 def gardensNav(request):
     course = 'Garden Planning'
     db = DataAccess()
     gardens = db.get_gardens()
-    #gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}, {'name': 'Other Garden3'}]
+    # gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}, {'name': 'Other Garden3'}]
         
     return render(request, 'gardensNav.html', view_utils.add_courses_to_dict({'gardens': gardens, 'course': course, 'color': gardens_color}))
-    
+
+
 # This view should the various options for a specific garden
 @login_required(login_url='/login/')
 def gardenNav(request, garden):

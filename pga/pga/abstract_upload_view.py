@@ -14,7 +14,7 @@ class AbstractFileUploadView(TemplateView):
 
     template_name = "abstract.html"
     
-    #IN subclasses, create a constructor that calls this super constructor 
+    # IN subclasses, create a constructor that calls this super constructor
     # with appropriate lists of file extensions & extra funcs
     # If extensions aren't known at initialization,
     #  they can always be set in the extract_extra_params function
@@ -27,13 +27,13 @@ class AbstractFileUploadView(TemplateView):
         self.upload_success = False
         self.extra_params_errors = ''
     
-    #Overrides normal HTTP 'GET' response
+    # Overrides normal HTTP 'GET' response
     # In GET requests, no uploading is taking place
     # just grab any data related to page and return that 
     def get(self, request, *args, **kwargs):
         self.uploading = False
         
-        #Ensure correct URL, get extra parameters 
+        # Ensure correct URL, get extra parameters
         if not self.extract_extra_params(*args, **kwargs):
             return render(request, self.template_name, 
                     {'extra_params_errors': self.extra_params_errors})
@@ -41,13 +41,13 @@ class AbstractFileUploadView(TemplateView):
         data_dict = self.get_data_dict()
         return render(request, self.template_name, data_dict)
         
-    #Overrides normal HTTP 'POST' response
+    # Overrides normal HTTP 'POST' response
     # In POST requests, an upload IS taking place
     # Validate file then pass to custom handler, defined in subclass 
     def post(self, request, *args, **kwargs):
         self.uploading = True
         
-        #Ensure correct URL, get extra parameters 
+        # Ensure correct URL, get extra parameters
         if not self.extract_extra_params(*args, **kwargs):
             return render(request, self.template_name, 
                     {'extra_params_errors': self.extra_params_errors})
@@ -67,7 +67,7 @@ class AbstractFileUploadView(TemplateView):
         data_dict = self.get_data_dict()
         return render(request, self.template_name, data_dict)
         
-    #Returns the dictionary fields that every upload-view will expect to have 
+    # Returns the dictionary fields that every upload-view will expect to have
     def get_data_dict(self):
         data_dict = { 'form': self.form,
                 'uploading': self.uploading,
@@ -76,28 +76,28 @@ class AbstractFileUploadView(TemplateView):
         data_dict.update(self.get_page_specific_data())
         return data_dict
             
-    #Override this to return a dictionary of custom fields 
+    # Override this to return a dictionary of custom fields
     # that the corresponding html template expects to receive
     def get_page_specific_data(self):
         raise NotImplementedError("Implement this method to return a dict of page-specific info")
         
-    #Override this to pass the file to the appropriate handler 
+    # Override this to pass the file to the appropriate handler
     # Expects FileHandlingResult object to be returned
     def page_specific_handle_file(self, file):
         raise NotImplementedError("Implement this method to handle the expected file upload and return a FileHandlingResult object")
         
-    #If a view should have extra incoming parameters, override this method 
+    # If a view should have extra incoming parameters, override this method
     # to extract them into the appropriate instance variables
     # If they aren't set, populate 'self.extra_params_errors' accordingly 
     # & return false
     def extract_extra_params(self, *args, **kwargs):
         return True
-        
-#Model for file handlers to return
+
+
+# Model for file handlers to return
 class FileHandlingResult:
-    #if File uploaded successfully, use True for is_success and 'Uploaded Successfully' for msg
-    #else use False and a specific error message
+    # if File uploaded successfully, use True for is_success and 'Uploaded Successfully' for msg
+    # else use False and a specific error message
     def __init__(self, is_success, handling_msg):
         self.is_success = is_success 
         self.handling_msg = handling_msg
-        

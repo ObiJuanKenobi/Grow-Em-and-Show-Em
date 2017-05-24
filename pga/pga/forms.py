@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django import forms
 
+from pga.dataAccess import DataAccess
+
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
@@ -11,11 +13,45 @@ class UserForm(forms.ModelForm):
         fields = ['username', 'email', 'first_name', 'last_name', 'password']
 
 
-class RecordTableForm(forms.Form):
-    plant = forms.CharField(label="Plant/Variety", max_length='25')
-    location = forms.CharField(label="Location", max_length='75')
-    quantity = forms.CharField(label="Quantity", max_length='75')
-    year = forms.CharField(label='Year', min_length='4', widget=forms.TextInput(attrs={'placeholder': 'Ex. 2017'}))
-    month = forms.CharField(label='Month', min_length='2', widget=forms.TextInput(attrs={'placeholder': 'Ex. 29'}))
-    day = forms.CharField(label='Day', min_length='2', widget=forms.TextInput(attrs={'placeholder': 'Ex. 04'}))
-    notes = forms.CharField(label='Notes', max_length='200', widget=forms.Textarea(attrs={'placeholder': 'Warning! This will be publically displayed'}))
+class RecordTableFormWithQuantity(forms.Form):
+    db = DataAccess()
+
+    crop_choices = db.get_current_crops()
+    crop_tuples = []
+    for crop_choice in crop_choices:
+        crop_tuples.append((crop_choice, crop_choice))
+    crop_choices_tuples = tuple(crop_tuples)
+
+    garden_choices = db.get_gardens()
+    garden_tuples = []
+    for garden_choice in garden_choices:
+        garden_tuples.append((garden_choice, garden_choice))
+    garden_choices_tuples = tuple(garden_tuples)
+
+    crop = forms.ChoiceField(widget=forms.Select, choices=crop_choices_tuples)
+    location = forms.ChoiceField(widget=forms.Select, choices=garden_choices_tuples)
+
+    quantity = forms.CharField(max_length='75')
+
+
+class RecordTableFormWithNotes(forms.Form):
+    db = DataAccess()
+
+    crop_choices = db.get_current_crops()
+    crop_choices.append('Other/Multiple')
+    crop_tuples = []
+    for crop_choice in crop_choices:
+        crop_tuples.append((crop_choice, crop_choice))
+    crop_choices_tuples = tuple(crop_tuples)
+
+    garden_choices = db.get_gardens()
+    garden_choices.append('Other/Multiple')
+    garden_tuples = []
+    for garden_choice in garden_choices:
+        garden_tuples.append((garden_choice, garden_choice))
+    garden_choices_tuples = tuple(garden_tuples)
+
+    crop = forms.ChoiceField(widget=forms.Select, choices=crop_choices_tuples)
+    location = forms.ChoiceField(widget=forms.Select, choices=garden_choices_tuples)
+
+    notes = forms.CharField(max_length='512', widget=forms.Textarea(attrs={'placeholder': 'Notes', 'style': 'height: 2em;'}))

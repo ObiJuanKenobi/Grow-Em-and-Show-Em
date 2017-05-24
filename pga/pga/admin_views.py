@@ -167,7 +167,7 @@ def adminUserProgressOverview(request):
     for user in progress:
         num_courses = len(progress[user])
         completed.append(num_courses)
-    #print(progress)
+    # print(progress)
     
     user_progress = zip(progress, completed)
     return render(request, 'admin/user_progress_overview.html', {'user_progress': user_progress})

@@ -1,0 +1,96 @@
+{% load static %}
+
+{% include "header.html" %}
+{% include "courseHeader.html" %}
+
+<link rel="stylesheet" href="{% static 'css/recordstable-home.css' %}">
+
+    <a href='/recordsNav' class='btn btn-default' style='margin-left: 40px;'>Back to Record Keeping</a>
+
+    <br>
+
+    {% if error %}
+        <ul style="color: red;">
+        {% for field, msgs in error.items %}
+            <li>{{ field }} -
+                {% for msg in msgs %}
+                    {{ msg }}
+                {% endfor %}
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <div id='recordsTables'>
+
+        {% for year_log in records %}
+
+            <h4>{{ year_log.year }}</h4>
+
+            <table class='recordTable'>
+                <tr>
+                    <th>Username</th>
+                    <th>Date</th>
+                    <th>Crop</th>
+                    <th>Location</th>
+                    {% if has_notes %}
+                        <th>Notes</th>
+                    {% else %}
+                        <th>Quantity</th>
+                    {% endif %}
+                </tr>
+
+                {% if forloop.counter == 1 %}
+                    <tr class='addEntryRow'>
+                        <form enctype='multipart/form-data' method='post' action=''>
+                            {% csrf_token %}
+
+                            <td><input type='submit' class="btn btn-default" value='Add Entry'></td>
+                        <td>{{ today }}</td>
+                        <td>
+                            <!--select>
+                                {% for crop in current_crops %}
+                                    <option>{{crop}}</option>
+                                {% endfor %}
+                            </select-->
+                            {{form.crop}}
+                        </td>
+                        <td>
+                            <!--select>
+                                {% for garden in gardens %}
+                                    <option>{{garden}}</option>
+                                {% endfor %}
+                            </select-->
+                            {{form.location}}
+                        </td>
+                        {% if has_notes %}
+                            <td><!--input class='notesInput' type='text' placeholder='notes'-->
+                                {{ form.notes }}
+                            </td>
+                        {% else %}
+                            <td>{{form.quantity}}</td>
+                            <!--td><input class='quantityInput' type='text' size='3'></td-->
+                        {% endif %}
+
+                        </form>
+                    </tr>
+                {% endif %}
+
+                {% for log in year_log.records %}
+                    <tr>
+                        <td>{{log.username}}</td>
+                        <td>{{log.date}}</td>
+                        <td>{{log.crop}}</td>
+                        <td>{{log.location}}</td>
+                        {% if has_notes %}
+                            <td>{{log.notes}}</td>
+                        {% else %}
+                            <td>{{log.quantity}}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <br>
+        {% endfor %}
+    </div>
+
+{% include "footer.html" %}

@@ -303,10 +303,118 @@ class DataAccess:
             logs.append({"username": user, "plant": plant, "location": location, "quantity": quantity, "logdate": logdate, "notes": notes})
         return logs
 
-    def addDailyLog(self, user, plant, location, quantity, date, notes):
+    def get_harvest_records(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
+        self._cursor.execute(
+            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Harvest_Records ORDER BY Date DESC")
+        results = self._cursor.fetchall()
+
+        year_records_dict = {}
+        for row in results:
+            rid = row[0]
+            user = row[1]
+            crop = row[2]
+            quantity = row[3]
+            location = row[4]
+            date = row[5]
+            year = row[6]
+
+            if year not in year_records_dict:
+                year_records_dict[year] = []
+
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity})
+
+        # Put data into good format for frontend templates:
+        records_list = []
+        for year, records in year_records_dict.items():
+            records_list.append({'year': year, 'records': records})
+
+        records_list_sorted = sorted(records_list, key=lambda k: k['year'], reverse=True)
+
+        return records_list_sorted
+
+    def insert_harvest_record(self, username, date, crop, location, quantity):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "INSERT INTO Harvest_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
         self._cursor.execute("COMMIT")
+
+    def get_planting_records(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Planting_Records ORDER BY Date DESC")
+        results = self._cursor.fetchall()
+
+        year_records_dict = {}
+        for row in results:
+            rid = row[0]
+            user = row[1]
+            crop = row[2]
+            quantity = row[3]
+            location = row[4]
+            date = row[5]
+            year = row[6]
+
+            if year not in year_records_dict:
+                year_records_dict[year] = []
+
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity})
+
+        # Put data into good format for frontend templates:
+        records_list = []
+        for year, records in year_records_dict.items():
+            records_list.append({'year': year, 'records': records})
+
+        records_list_sorted = sorted(records_list, key=lambda k: k['year'], reverse=True)
+
+        return records_list_sorted
+
+    def insert_planting_record(self, username, date, crop, location, quantity):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "INSERT INTO Planting_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
+        self._cursor.execute("COMMIT")
+
+    def get_garden_notes(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "SELECT RecordId, Username, Crop, Notes, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Garden_Notes ORDER BY Date DESC")
+        results = self._cursor.fetchall()
+
+        year_records_dict = {}
+        for row in results:
+            rid = row[0]
+            user = row[1]
+            crop = row[2]
+            notes = row[3]
+            location = row[4]
+            date = row[5]
+            year = row[6]
+
+            if year not in year_records_dict:
+                year_records_dict[year] = []
+
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'notes': notes})
+
+        # Put data into good format for frontend templates:
+        records_list = []
+        for year, records in year_records_dict.items():
+            records_list.append({'year': year, 'records': records})
+
+        records_list_sorted = sorted(records_list, key=lambda k: k['year'], reverse=True)
+
+        return records_list_sorted
+
+    def insert_garden_note(self, username, date, crop, location, note):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "INSERT INTO Garden_Notes (Username, Crop, Notes, Date, Location) VALUES (%s, %s, %s, %s, %s);", (username, crop, note, date, location))
+        self._cursor.execute("COMMIT")
+
+    # def addDailyLog(self, user, plant, location, quantity, date, notes):
+    #     self._cursor = self._connection.cursor()
+    #     self._cursor.execute("INSERT INTO Daily_Records (Username, Plant, Location, Quantity, Record_Date, Notes) VALUES (%s, %s, %s, %s, %s, %s)", (user, plant, location, quantity, date, notes))
+    #     self._cursor.execute("COMMIT")
         
     def get_current_crops(self):
         self._cursor = self._connection.cursor()

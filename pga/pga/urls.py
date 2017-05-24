@@ -77,8 +77,13 @@ urlpatterns = [
     url(r'^pests', views.pests, name='pests'),
 
     # Record keeping urls:
-    url(r'^table_form/$', records_view.createRecordTable_Form, name='table_form'),
-    url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
+    url(r'^recordsNav/', records_view.records_nav, name='recordsNav'),
+    url(r'^plantingRecords/', records_view.planting_records, name='recordsNav'),
+    url(r'^harvestRecords/', records_view.harvest_records, name='recordsNav'),
+    url(r'^gardenNotes/', records_view.garden_notes, name='recordsNav'),
+
+    #url(r'^table_form/$', records_view.createRecordTable_Form, name='table_form'),
+    #url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
     
     # Garden planning urls:
     url(r'^gardensNav/', garden_planning_views.gardensNav, name='gardensNav'),
