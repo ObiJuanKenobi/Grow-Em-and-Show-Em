@@ -10,7 +10,6 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.template import loader
 from django.template import *
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic import View
 
 # pga imports:

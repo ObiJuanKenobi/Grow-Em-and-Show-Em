@@ -1,4 +1,6 @@
 from django.http import HttpResponse, Http404
+from django.contrib.admin.views.decorators import staff_member_required
+
 from pga.abstract_upload_view import *
 from pga.dataAccess import DataAccess
 from pga.coursemanager import *
@@ -123,7 +125,15 @@ class AdminSuppMatView(AbstractFileUploadView):
 
 @staff_member_required
 def garden_mgmt_menu(request):
-    return render(request, 'admin/gardenMgmtMenu.html')
+    links = [{'name': 'View/Edit Current Crops', 'link': '/pgaadmin/cropMgmt'},
+             {'name': 'View/Edit Gardens & Plans', 'link': '/pgaadmin/gardenMgmt'},
+             {'name': 'View/Edit Records', 'link': '/pgaadmin/recordsMgmt'}]
+
+    back_link = '/pgaadmin'
+
+    title = 'Garden & Records Management'
+
+    return render(request, 'admin/menu.html', {'links': links, 'title': title, 'back_link': back_link})
 
 
 @staff_member_required
@@ -131,24 +141,35 @@ def admin_crop_mgmt(request):
     crops = DataAccess().get_all_crops()
     return render(request, 'admin/crop_mgmt.html', {'crops': crops})
 
+
 @staff_member_required
 def admin_add_crop(request, new_crop):
     DataAccess().add_crop(new_crop)
     return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
 
 @staff_member_required
 def admin_toggle_current_crop(request, crop, is_current):
     DataAccess().toggle_current_for_crop(crop, int(is_current))
     return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
 
+
 @staff_member_required
-def adminHome(request):
+def admin_home(request):
     return render(request, 'admin/home.html')
 
 
 @staff_member_required
-def adminCourseInfo(request):
-    return render(request, 'admin/course_info.html')
+def admin_course_info(request):
+    links = [{'name': 'User Progress', 'link': '/pgaadmin/userProgress'},
+             {'name': 'Quiz Statistics', 'link': '/pgaadmin/quizStatistics'}]
+
+    back_link = '/pgaadmin'
+
+    title = 'Course Information'
+
+    return render(request, 'admin/menu.html', {'links': links, 'title': title, 'back_link': back_link})
+
 
 @staff_member_required
 def adminUserProgress(request, user):
@@ -156,7 +177,8 @@ def adminUserProgress(request, user):
     completed = db.getCompletedCoursesForUser(user)
     
     return render(request, 'admin/user_progress.html', {'completed_courses': completed})
-    
+
+
 @staff_member_required
 def adminUserProgressOverview(request):
     db = DataAccess()
@@ -172,10 +194,12 @@ def adminUserProgressOverview(request):
     user_progress = zip(progress, completed)
     return render(request, 'admin/user_progress_overview.html', {'user_progress': user_progress})
 
+
 @staff_member_required
 def adminQuizStatistics(request, unit):
     # TODO get quiz stats...
     return render(request, 'admin/quiz_statistics.html', {'unit': unit})
+
 
 @staff_member_required
 def adminQuizStatisticsOverview(request):
@@ -190,6 +214,20 @@ def adminQuizStatisticsOverview(request):
 def adminSetCourseColor(request, course, color):
     DataAccess().setCourseColor(course, color)
     return HttpResponse(json.dumps({ 'status': 200, 'message': 'Success' }), content_type='application/json')
+
+
+@staff_member_required
+def records_mgmt_menu(request):
+    links = [{'name': 'Planting Records', 'link': '/pgaadmin/plantingRecords'},
+             {'name': 'Harvest Records', 'link': '/pgaadmin/harvestRecords'},
+             {'name': 'Garden Notes', 'link': '/pgaadmin/gardenNotes'}]
+
+    back_link = '/pgaadmin/gardenMgmtMenu'
+
+    title = 'Records Management'
+
+    return render(request, 'admin/menu.html', {'links': links, 'title': title, 'back_link': back_link})
+
 
 class AdminQuizView(AbstractFileUploadView):
         

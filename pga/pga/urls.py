@@ -60,8 +60,9 @@ urlpatterns = [
     url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
     url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
-    url(r'^pgaadmin/courseInfo', adminCourseInfo),
-    url(r'^pgaadmin/', adminHome),
+    url(r'^pgaadmin/recordsMgmt', records_mgmt_menu),
+    url(r'^pgaadmin/courseInfo', admin_course_info),
+    url(r'^pgaadmin/', admin_home),
 
     # User-quiz urls:
     # url(r'^takeQuiz/(?P<course>[A-Za-z0-9\-\s]+)', views.quiz_wrapper),

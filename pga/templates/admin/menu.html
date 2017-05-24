@@ -1,0 +1,14 @@
+{% include "admin/header.html" %}
+
+<span class='adminPageTitle'>{{ title }}</span>&nbsp; &nbsp;<a href='{{ back_link }}' class='backLink'>Back</a>
+
+
+<div class="container">
+  <div class="button-wrapper">
+      {% for link in links %}
+        <a href="{{link.link}}"><button>{{link.name}}</button></a>
+      {% endfor %}
+  </div>
+</div>
+
+{% include "admin/footer.html" %}
