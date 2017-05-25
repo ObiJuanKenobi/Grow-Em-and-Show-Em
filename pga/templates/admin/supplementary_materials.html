@@ -9,9 +9,27 @@
     var fileUploadId;
     
     var confirmDeleteCallback = function() {
-        //TODO send delete request
-        $("#" + resourceToDelete + "Li").remove();
+        var html_id = resourceToDelete.replace(".", "");
+        $("#" + html_id + "Li").remove();
         confirmDeleteDialog.dialog("close");
+
+        /*
+        $.ajax({
+            url: "/pgaadmin/quiz/deleteQuestion",
+            type: "POST",
+            data: {
+                questionId: id
+            },
+            success: function (data) {
+                //alert("Success!");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+        */
     }
 
 	$(function() {
@@ -33,7 +51,7 @@
             uploadDialog.dialog("open");
         });
         
-        confirmDeleteDialog = createConfirmDeleteDialog();
+        confirmDeleteDialog = createConfirmDeleteDialog(confirmDeleteCallback);
 	});
 
 </script>
@@ -44,7 +62,10 @@
         
         <ul id='resources'>
             {% for r in resources %}
-                <li id='{{ c.Course_Name }}Li'><a href='{{r.path}}'>{{r.name}}</a>&nbsp;<button class='edit-input removeBtn'>Remove</button></li>
+                <li id='{{ r.html_id }}Li'>
+                    <a href='{{r.path}}'>{{r.name}}</a>&nbsp;
+                    <button class='edit-input removeBtn' value="{{r.name}}">Remove</button>
+                </li>
             {% endfor %}
         </ul>
         

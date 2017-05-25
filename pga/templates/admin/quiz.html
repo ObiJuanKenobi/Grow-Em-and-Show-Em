@@ -1,3 +1,4 @@
+{% load static %}
 {% include "admin/header.html" %}
 
 <style>
@@ -5,139 +6,17 @@
 		color: green;
 	}
 	
-	.questionTextEdit, .answerEdit, .correctOption {
+	.questionTextEdit, .answerEdit, .correctOption, .deleteBtn {
 		display:none;
+	}
+
+	.addQuestionAnswer {
+	    margin-top: 5px;
+	    margin-bottom: 5px;
 	}
 </style>
 
-<script type='text/javascript'>
-
-    
-    function saveChangedQuestions(){
-        //Save was pressed, find text that changed and update DB
-        $("#questionsDiv div").each(function() {
-            var id = $(this).attr('id');
-            id = id.replace("question", ""); // Turns 'question19' into '19'
-            var originalText = $(this).find(".questionText").text().trim();
-            var editedText = String($(this).find(".questionTextEdit").val()).trim();
-            
-            if(originalText !== editedText){
-                alert("New question: " + editedText + ", " + originalText + ", " + id);
-                
-                updateQuestion(id, editedText);
-            }
-            
-            $(this).find("ol li").each(function() {
-                var answerId = $(this).attr('id');
-                answerId = answerId.replace("answer", "");
-                var originalAnswer = $(this).find(".answer").text().trim();
-                var editedAnswer = String($(this).find(".answerEdit").val()).trim();
-                var name = 'correct' + id;
-                var isCorrect = $(this).find("input[name=" + name + "]").is(":checked");
-                var wasCorrect = $(this).find("span").hasClass("correct");
-                
-                if(originalAnswer !== editedAnswer){
-                    alert("New answer: " + editedAnswer + " , id: " + answerId + ", isCorrect: " + isCorrect);
-                    updateAnswer(answerId, editedAnswer, isCorrect);
-                }
-                else if( isCorrect !== wasCorrect){
-                    alert("Answer didn't change, but correctness did");
-                    updateAnswer(answerId, editedAnswer, isCorrect);
-                }
-                
-                
-            });
-        });
-    }
-    
-    function updateQuestion(id, editedText){
-        $.ajax({
-            url: "/pgaadmin/quiz/editQuestion",
-            type: "POST",
-            data: {
-                questionid: id,
-                newquestion: editedText
-            },
-            success: function (data) {
-                alert("Success!");
-                console.log(data);
-            },
-            error: function (xhr, errmsg, err) {
-                alert("Error: " + errmsg);
-                console.log(errmsg);
-            }
-        });
-    }
-    
-    function updateAnswer(answerId, newAnswer, isCorrect){
-        $.ajax({
-            url: "/pgaadmin/quiz/editAnswer",
-            type: "POST",
-            data: {
-                answerid: answerId,
-                newanswer: newAnswer,
-                iscorrect: isCorrect
-            },
-            success: function (data) {
-                alert("Success!");
-                console.log(data);
-            },
-            error: function (xhr, errmsg, err) {
-                alert("Error: " + errmsg);
-                console.log(errmsg);
-            }
-        });
-    }
-
-	var editing = false;
-	var uploadDialog;
-    var fileUploadId;
-	
-	var uploadNewQuizFile = function() {
-		var file = document.getElementById(fileUploadId).files[0];
-		//alert(file.name);
-		
-		var uploadType = $('input[name=uploadType]:checked').val();
-		//alert(uploadType);
-        
-        $("#uploadForm").submit();
-		
-		uploadDialog.dialog("close");
-	}
-	
-	$(function() {
-    
-        setupCSRF();
-        fileUploadId = $("#fileUploadId").val();		
-	
-		uploadDialog = createUploadDialog(fileUploadId);
-			
-		$("#uploadListBtn").click(function(){
-			uploadDialog.dialog("open");
-		});
-		
-		$("#editBtn").click(function() {
-		
-			$(".questionText").toggle();
-			$(".questionTextEdit").toggle();
-			$(".answerEdit").toggle();
-			$(".answer").toggle();
-			$(".correctOption").toggle();
-			
-			editing = !editing;
-			
-			if(editing){
-				$("#editBtn").text('Save');
-			}
-			else {
-				$("#editBtn").text('Edit');
-				
-				saveChangedQuestions();
-			}
-		});
-		
-	});
-</script>
+<script type='text/javascript' src="{% static 'js/adminQuiz.js' %}"></script>
 
 <span class='adminPageTitle'>{{ unit }} Quiz</span>&nbsp; &nbsp;<a class='backLink' href='/pgaadmin/unit/{{unit}}'>Back</a><br><br>
 
@@ -153,7 +32,9 @@
 		
 		<div class='questionDiv' id='question{{ q.id }}'>
 		<b>Question {{ forloop.counter }} </b> <span class='questionText'>{{ q.question }}</span>
-			<input type='text' class='questionTextEdit' value='{{ q.question }}'><br>
+			<input type='text' class='questionTextEdit' value='{{ q.question }}' size="90">
+			<input type="button" class="btn btn-default deleteBtn" value="Delete Question" id="delete{{ q.id }}">
+			<br>
 		
 		<ol type='a' class='q{{q.id}}'>
 		{% for a in q.answers %}
@@ -161,11 +42,11 @@
 			<li id='answer{{a.id}}'>
 			{% if a.correct %}
 					<span class='option{{ forloop.counter }} answer correct'>{{a.answer}}</span>
-					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'> 
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}' size="90">
 					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}' checked>Correct Answer</label>
 			{% else %}
                     <span class='option{{ forloop.counter }} answer'>{{a.answer}}</span>
-					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}'>  
+					<input class='option{{ forloop.counter }} answerEdit' type='text' value='{{a.answer}}' size="90">
 					<label class='correctOption'><input type='radio' class='correctOption' name='correct{{q.id}}' value='{{a.answer}}'>Correct Answer</label>
 			{% endif %}
             </li>
@@ -178,5 +59,25 @@
 	</div>
 	
 </div>
+
+<input type="hidden" value="{{unit}}" id="currentUnit">
+
+<div id="addQuestionDialog" title="Add Question">
+    <label>Question: <input type="text" id="addQuestionTitle" size="50"></label>
+    <br>
+    <br>
+    <div id="addQuestionAnswers">
+        <label>Answer 1: <input type="text" class="addQuestionAnswer" size="50"><br></label>
+        <label>Answer 2: <input type="text" class="addQuestionAnswer" size="50"><br></label>
+    </div>
+    <br>
+    <input type="button" value="Add Another Answer" id="addAnswerBtn">
+    <br><br>
+    <label>Correct Answer: <select id="correctAnswerSelect">
+        <option value="1">1</option>
+        <option value="2">2</option>
+    </select></label>
+</div>
+
 {% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}

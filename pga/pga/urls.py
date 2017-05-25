@@ -48,19 +48,31 @@ urlpatterns = [
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/supplementaryMaterials', AdminSuppMatView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)/(?P<lesson>[A-Za-z0-9\-\s]+)', AdminLessonView.as_view()),
     url(r'^pgaadmin/unit/(?P<unit>[A-Za-z0-9\-\s]+)', AdminUnitView.as_view()),
+
+    url(r'^pgaadmin/deleteLesson/(?P<lesson>[A-Za-z0-9\-\s]+)', delete_lesson),
+    url(r'^pgaadmin/deleteUnit/(?P<unit>[A-Za-z0-9\-\s]+)', delete_unit),
+
     url(r'^pgaadmin/quiz/editQuestion', admin_quiz_mgmt.edit_quiz_question),
+    url(r'^pgaadmin/quiz/deleteQuestion', admin_quiz_mgmt.delete_quiz_question),
+    url(r'^pgaadmin/quiz/addQuestion', admin_quiz_mgmt.add_quiz_question),
     url(r'^pgaadmin/quiz/editAnswer', admin_quiz_mgmt.edit_quiz_answer),
     url(r'^pgaadmin/quiz/(?P<unit>[A-Za-z0-9\-\s]+)', AdminQuizView.as_view()),
+
     url(r'^pgaadmin/quizStatistics/(?P<unit>[A-Za-z0-9\-\s]+)', adminQuizStatistics),
     url(r'^pgaadmin/quizStatistics', adminQuizStatisticsOverview),
+
+    url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),
     url(r'^pgaadmin/changeColor/(?P<course>[A-Za-z0-9\-\s]+)/(?P<color>[A-Za-z0-9\-\s]+)', adminSetCourseColor),
+
     url(r'^pgaadmin/userProgress/(?P<user>[A-Za-z0-9\-\s]+)', adminUserProgress),
     url(r'^pgaadmin/userProgress', adminUserProgressOverview),
-    url(r'^pgaadmin/courseMgmt', CourseMgmtView.as_view()),
+
     url(r'^pgaadmin/cropMgmt', admin_crop_mgmt),
     url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
     url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
+
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
+
     url(r'^pgaadmin/recordsMgmt', records_mgmt_menu),
     url(r'^pgaadmin/plantingRecords', admin_records_views.admin_planting_records),
     url(r'^pgaadmin/deletePlantingRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_planting_record),
@@ -68,6 +80,7 @@ urlpatterns = [
     url(r'^pgaadmin/deleteHarvestRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_harvest_record),
     url(r'^pgaadmin/gardenNotes', admin_records_views.admin_garden_notes),
     url(r'^pgaadmin/deleteGardenNote/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_garden_note),
+
     url(r'^pgaadmin/courseInfo', admin_course_info),
     url(r'^pgaadmin/', admin_home),
 

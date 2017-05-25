@@ -87,7 +87,6 @@ class DataAccess:
         return lesson[0]
 
     def deleteLesson(self, lessonname):
-        #This will get rid of the lesson from the table, but don't have supplemental content set up so not sure how to handle just yet
         self._cursor = self._connection.cursor()
         self._cursor.execute("DELETE FROM Lessons WHERE Lesson_Name = %s", [lessonname])
         self._cursor.execute("COMMIT")
@@ -159,13 +158,15 @@ class DataAccess:
         self._cursor.execute("DELETE FROM Quiz_Questions WHERE Course_Name = %s;", [coursename])
         self._cursor.execute("COMMIT")
 
-    def addQuiz(self, coursename, questions):
+    # Adds a list of QuizQuestion objects to the given course
+    # Can use a list of a single element to add a single question
+    def add_quiz(self, course_name, questions):
         self._cursor = self._connection.cursor()
         for question in questions:
-            self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, coursename))
-            questionID = self._cursor.lastrowid
+            self._cursor.execute("INSERT into Quiz_Questions (Question_Text, Course_Name) values (%s, %s)", (question._Text, course_name))
+            question_id = self._cursor.lastrowid
             for answer in question._Answers:
-                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, Is_Correct) values (%s, %s, %s)", (questionID, answer._Text, answer._IsCorrect))
+                self._cursor.execute("INSERT into Quiz_Answers (QuestionID, Answer_Text, Is_Correct) values (%s, %s, %s)", (question_id, answer._Text, answer._IsCorrect))
 
         self._cursor.execute("COMMIT")
 
@@ -196,14 +197,25 @@ class DataAccess:
             questionsArr.append(questions[id])
         return questionsArr;
 
-    def editQuestionTitle(self, questionID, questionText):
+    def edit_question_title(self, questionID, questionText):
         self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Quiz_Questions SET Question_Text = %s WHERE QuestionID = %s", (questionText, questionID))
         self._cursor.execute("COMMIT")
 
-    def editAnswer(self, answerID, answerText, isCorrect):
-        self._cursor = self._conneciton.cursor()
+    def edit_quiz_answer(self, answerID, answerText, isCorrect):
+        self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Quiz_Answers SET Answer_Text = %s, Is_Correct = %s WHERE AnswerID = %s", (answerText, isCorrect, answerID))
+        self._cursor.execute("COMMIT")
+
+    def delete_quiz_question(self, question_id):
+        # Need to first delete answers associated with this question:
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Quiz_Answers WHERE QuestionID = %s", [question_id])
+        self._cursor.execute("COMMIT")
+
+        # Then delete the question itself:
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM Quiz_Questions WHERE QuestionID = %s", [question_id])
         self._cursor.execute("COMMIT")
 
     def addQuizAttempt(self, coursename, username, passed, questions):
@@ -211,7 +223,7 @@ class DataAccess:
         self._cursor.execute("INSERT into Quiz_Attempts (Course_Name, Username, Passed, Question1_ID, Answer1_ID, Question2_ID, Answer2_ID, Question3_ID, Answer3_ID, Question4_ID, Answer4_ID, Question5_ID, Answer5_ID, Question6_ID, Answer6_ID, Question7_ID, Answer7_ID, Question8_ID, Answer8_ID, Question9_ID, Answer9_ID, Question10_ID, Answer10_ID) values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", (coursename, username, passed, questions[0]["questionID"], questions[0]["answerID"], questions[1]["questionID"], questions[1]["answerID"], questions[2]["questionID"], questions[2]["answerID"], questions[3]["questionID"], questions[3]["answerID"], questions[4]["questionID"], questions[4]["answerID"], questions[5]["questionID"], questions[5]["answerID"], questions[6]["questionID"], questions[6]["answerID"], questions[7]["questionID"], questions[7]["answerID"], questions[8]["questionID"], questions[8]["answerID"], questions[9]["questionID"], questions[9]["answerID"]))
         self._cursor.execute("COMMIT")
 
-    #Currently, this will get every chapter completed by every user.
+    # Currently, this will get every chapter completed by every user.
     def getAllUserProgress(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT QA.ID, QA.Username as user, QA.Course_Name as course, C.Course_Order as chapter, QA.Passed FROM Quiz_Attempts QA, Courses C WHERE C.Course_Name = QA.Course_Name AND QA.ID in (SELECT MAX(ID) FROM Quiz_Attempts where Username = QA.Username and Course_Name = QA.Course_Name) ORDER BY QA.Username, C.Course_Order;")

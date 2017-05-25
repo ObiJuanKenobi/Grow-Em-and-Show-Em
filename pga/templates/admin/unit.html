@@ -9,13 +9,26 @@
     var fileUploadId;
     
     function confirmDeleteLesson(){
-        //TODO send delete request
         $("#" + lessonToDelete + "Li").remove();
         confirmDeleteDialog.dialog("close");
+
+        $.ajax({
+            url: "/pgaadmin/deleteLesson/" + lessonToDelete,
+            type: "POST",
+            success: function (data) {
+                //alert("Success!");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
     }
 
 	$(function() {
-	
+	    setupCSRF();
+
 		initEditButton();
 		
 		$(".removeBtn").click(function() {

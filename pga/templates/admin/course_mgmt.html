@@ -22,9 +22,21 @@
     var fileUploadId;
     
     function confirmDeleteUnit() {
-        //TODO delete on server
         $("#" + courseToDelete + "Li").remove();
         confirmDeleteDialog.dialog("close");
+
+        $.ajax({
+            url: "/pgaadmin/deleteUnit/" + courseToDelete,
+            type: "POST",
+            success: function (data) {
+                //alert("Success!");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
     }
     
     var uploadUnit = function() {

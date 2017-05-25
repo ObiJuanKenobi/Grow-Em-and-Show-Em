@@ -2,7 +2,7 @@
     HTML for a generic upload file dialog box
     init func in adminUtils.js
 -->
-<div id='uploadDialog'>
+<div id='uploadDialog' title="Upload">
     <!--
         empty action sends form to current URL 
         To set to custom action:
@@ -19,6 +19,8 @@
         -->
         <input type='hidden' value='{{ form.file.auto_id }}' id='fileUploadId'>
     </form>
+    <br>
+    <span id="uploadHelpText"></span>
 </div>
 
 <!-- 
@@ -26,6 +28,6 @@
     Before opening dialog, set the span text appropriately
     init func in adminUtils.js
 -->
-<div id='confirmDeleteDialog' >
+<div id='confirmDeleteDialog' title="Delete">
     <span id='confirmDeleteText'></span>
 </div>

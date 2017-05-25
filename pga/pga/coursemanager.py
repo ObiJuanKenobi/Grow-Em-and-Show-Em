@@ -193,7 +193,7 @@ def processQuiz(course_name, course_dir):
 
         db = DataAccess()
         db.deleteQuiz(course_name)
-        db.addQuiz(course_name, questions)
+        db.add_quiz(course_name, questions)
 
 """
 Split a course directory into its order and name.

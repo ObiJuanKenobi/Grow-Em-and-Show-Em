@@ -6,6 +6,7 @@ from pga.dataAccess import DataAccess
 from pga.coursemanager import *
 import json
 
+
 # Displays all units, allowing users to delete them, upload another,
 # go to a unit's lessons, or go to supplementary materials
 class CourseMgmtView(AbstractFileUploadView):
@@ -13,7 +14,7 @@ class CourseMgmtView(AbstractFileUploadView):
     template_name = 'admin/course_mgmt.html'
     
     def __init__(self):
-        super(CourseMgmtView, self).__init__( ['.zip'], [])
+        super(CourseMgmtView, self).__init__(['.zip'], [])
     
     def get_page_specific_data(self):
         courses = DataAccess().getCourses()
@@ -22,7 +23,27 @@ class CourseMgmtView(AbstractFileUploadView):
     def page_specific_handle_file(self, file):
         status, message = processCourseZip(file)
         return FileHandlingResult(status, message)
-        
+
+
+@staff_member_required
+def delete_unit(request, unit):
+    if request.method == 'POST':
+
+        db = DataAccess()
+        # Need to delete all lessons, sup mats, quiz data, then unit itself
+
+        response = {
+            'status': 200,
+            'message': 'Successfully deleted lesson'
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Invalid request'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+
 # Displays all lessons in a given unit, allowing users to delete them, upload more,
 # or go to the unit quiz
 class AdminUnitView(AbstractFileUploadView):
@@ -31,7 +52,7 @@ class AdminUnitView(AbstractFileUploadView):
     unit = None
     
     def __init__(self):
-        super(AdminUnitView, self).__init__( ['.zip'], [])
+        super(AdminUnitView, self).__init__(['.zip'], [])
         
     def extract_extra_params(self, *args, **kwargs):
         self.unit = kwargs.pop('unit', None)
@@ -50,6 +71,25 @@ class AdminUnitView(AbstractFileUploadView):
         
     def page_specific_handle_file(self, file):
         return FileHandlingResult(True, 'TODO - not implemented')
+
+
+@staff_member_required
+def delete_lesson(request, lesson):
+    if request.method == 'POST':
+
+        db = DataAccess()
+        db.deleteLesson(lesson)
+
+        response = {
+            'status': 200,
+            'message': 'Successfully deleted lesson'
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Invalid request'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
 
 
 # Renders info for a given lesson. Gives option to download lesson
@@ -112,9 +152,10 @@ class AdminSuppMatView(AbstractFileUploadView):
         resources_list = []
         for resource in resources:
             resource_path = resource.replace(".", "", 1)
-            last_slash_index = resource.rfind('\\')
+            last_slash_index = resource.rfind('/')
             resource_name = resource[last_slash_index+1:]
-            resources_list.append({'path': resource_path, 'name': resource_name})
+            resource_html_id = resource_name.replace(".", "")
+            resources_list.append({'path': resource_path, 'name': resource_name, 'html_id': resource_html_id})
         
         return {'unit': self.unit, 'resources': resources_list}
         
