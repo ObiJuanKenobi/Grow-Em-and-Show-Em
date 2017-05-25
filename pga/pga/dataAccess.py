@@ -339,6 +339,12 @@ class DataAccess:
             "INSERT INTO Harvest_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
         self._cursor.execute("COMMIT")
 
+    def delete_harvest_record(self, record_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "DELETE FROM Harvest_Records WHERE RecordId = %s", [record_id])
+        self._cursor.execute("COMMIT")
+
     def get_planting_records(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
@@ -375,6 +381,12 @@ class DataAccess:
             "INSERT INTO Planting_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
         self._cursor.execute("COMMIT")
 
+    def delete_planting_record(self, record_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "DELETE FROM Planting_Records WHERE RecordId = %s", [record_id])
+        self._cursor.execute("COMMIT")
+
     def get_garden_notes(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
@@ -409,6 +421,12 @@ class DataAccess:
         self._cursor = self._connection.cursor()
         self._cursor.execute(
             "INSERT INTO Garden_Notes (Username, Crop, Notes, Date, Location) VALUES (%s, %s, %s, %s, %s);", (username, crop, note, date, location))
+        self._cursor.execute("COMMIT")
+
+    def delete_garden_note(self, record_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "DELETE FROM Garden_Notes WHERE RecordId = %s", [record_id])
         self._cursor.execute("COMMIT")
 
     # def addDailyLog(self, user, plant, location, quantity, date, notes):

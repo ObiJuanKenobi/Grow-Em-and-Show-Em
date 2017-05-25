@@ -28,6 +28,7 @@ from . import view_utils
 from pga.admin_views import *
 from . import user_quiz_views
 from . import admin_quiz_mgmt
+from . import admin_records_views
 
 urlpatterns = [
 
@@ -61,6 +62,12 @@ urlpatterns = [
     url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
     url(r'^pgaadmin/recordsMgmt', records_mgmt_menu),
+    url(r'^pgaadmin/plantingRecords', admin_records_views.admin_planting_records),
+    url(r'^pgaadmin/deletePlantingRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_planting_record),
+    url(r'^pgaadmin/harvestRecords', admin_records_views.admin_harvest_records),
+    url(r'^pgaadmin/deleteHarvestRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_harvest_record),
+    url(r'^pgaadmin/gardenNotes', admin_records_views.admin_garden_notes),
+    url(r'^pgaadmin/deleteGardenNote/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_garden_note),
     url(r'^pgaadmin/courseInfo', admin_course_info),
     url(r'^pgaadmin/', admin_home),
 

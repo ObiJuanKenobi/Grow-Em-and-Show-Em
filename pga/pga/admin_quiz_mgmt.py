@@ -4,7 +4,7 @@ from pga.dataAccess import DataAccess
 import json
 
 def edit_quiz_question(request):
-    if request.POST:
+    if request.method == 'POST':
     
         questionid = request.POST.get('questionid')
         newquestion = request.POST.get('newquestion')
@@ -25,7 +25,7 @@ def edit_quiz_question(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
     
 def edit_quiz_answer(request):
-    if request.POST:
+    if request.method == 'POST':
     
         answerid = request.POST.get('answerid')
         newanswer = request.POST.get('newanswer')
