@@ -69,6 +69,7 @@ urlpatterns = [
 
     url(r'^pgaadmin/cropMgmt', admin_crop_mgmt),
     url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
+    url(r'^pgaadmin/addSubtype', admin_add_subtype),
     url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
 
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
@@ -107,13 +108,17 @@ urlpatterns = [
     #url(r'^table_home/$', records_view.recordTable_Home, name='table_home'),
     
     # Garden planning urls:
-    url(r'^gardensNav/', garden_planning_views.gardensNav, name='gardensNav'),
-    url(r'^gardenNav/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.gardenNav, name='gardenNav'),
-    url(r'^garden/(?P<garden>[A-Za-z0-9\-\s]+)', garden_planning_views.garden, name='garden'),
-    url(r'^savePlan/$', garden_planning_views.savePlan, name='savePlan'),
-    url(r'^showPlans/$', garden_planning_views.showPlans, name='showPlans'),
-    url(r'^deletePlan/$', garden_planning_views.deletePlan, name='deletePlan'),
-    url(r'^getBedCanvas/$', garden_planning_views.getBedCanvas, name='getBedCanvas')
+    url(r'^gardensNav/', garden_planning_views.gardens_nav, name='gardensNav'),
+    url(r'^gardenNav/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_planning_views.garden_nav, name='gardenNav'),
+    url(r'^garden/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_planning_views.garden, name='garden'),
+    url(r'^currentGarden/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_planning_views.current_garden, name='currentGarden'),
+    url(r'^savePlan/$', garden_planning_views.save_plan, name='savePlan'),
+    url(r'^updatePlan/$', garden_planning_views.update_plan, name='updatePlan'),
+    url(r'^showPlans/$', garden_planning_views.show_plans, name='showPlans'),
+    url(r'^pastPlans/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_planning_views.past_plans, name='pastPlans'),
+    url(r'^deletePlan/$', garden_planning_views.delete_plan, name='deletePlan'),
+    url(r'^markCurrent/$', garden_planning_views.mark_current, name='markCurrent'),
+    url(r'^getBedCanvas/$', garden_planning_views.get_bed_canvas, name='getBedCanvas')
 ]
 
 urlpatterns += staticfiles_urlpatterns()

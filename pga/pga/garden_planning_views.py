@@ -17,22 +17,50 @@ gardens_color = '00AA00'
 
 
 @login_required(login_url='/login/')
-def garden(request, garden):
-    return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden,
-        'course': garden, 'color': gardens_color}))
+def garden(request, garden_name):
+    return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
+        'course': garden_name, 'color': gardens_color}))
 
 
 @login_required(login_url='/login/')
-def savePlan(request):
+def current_garden(request, garden_name):
+    db = DataAccess()
+    # canvas = db.get_current_bed_canvas(garden_name)
+    data = db.get_current_bed_plan_data(garden_name)
+
+    has_data = True
+    if data is None:
+        has_data = False
+
+    return render(request, 'current_garden.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
+        'course': garden_name, 'color': gardens_color, 'data': data, 'has_data': has_data}))
+
+
+@login_required(login_url='/login/')
+def past_plans(request, garden_name):
+    db = DataAccess()
+
+    past_plan_ids = db.get_past_bed_plans(garden_name)
+
+    return render(request, 'past_gardens.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
+        'course': garden_name, 'color': gardens_color, 'past_plans': past_plan_ids}))
+
+
+@login_required(login_url='/login/')
+def save_plan(request):
     if request.is_ajax() and request.method == "POST":
-        bedName = request.POST.get('bedName')
-        bedPlan = request.POST.get('bedPlan')
-        bedCanvas = request.POST.get('bedCanvas')
+        bed_name = request.POST.get('bedName')
+        bed_plan = request.POST.get('bedPlan')
+        bed_canvas = request.POST.get('bedCanvas')
+        username = request.user.username
+
         db = DataAccess()
-        db.saveBedPlan(bedName, bedPlan, bedCanvas)
+        plan_id = db.save_bed_plan(bed_name, bed_plan, bed_canvas, username)
         response = {
             'status': 200,
-            'message': 'Successfully saved changes on canvas'
+            'message': 'Successfully saved changes on canvas',
+            'username': username,
+            'plan_id': plan_id
         }
     else:
         response = {
@@ -43,10 +71,52 @@ def savePlan(request):
 
 
 @login_required(login_url='/login/')
-def showPlans(request):
-    bedName = request.GET['bedName']
+def update_plan(request):
+    if request.is_ajax() and request.method == "POST":
+        plan_id = request.POST.get('plan_id')
+        canvas_data = request.POST.get('canvas')
+        username = request.user.username
+
+        db = DataAccess()
+        db.update_bed_plan(plan_id, canvas_data, username)
+        response = {
+            'status': 200,
+            'message': 'Successfully saved changes on canvas',
+            'username': username,
+            'plan_id': plan_id
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Unable to save canvas as an image'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+
+@login_required(login_url='/login/')
+def mark_current(request):
+    if request.method == "POST":
+        plan_id = request.POST.get('plan_id')
+        bed_name = request.POST.get('bed_name')
+        DataAccess().mark_bed_plan_as_current(bed_name, plan_id, request.user.username)
+        response = {
+            'status': 200,
+            'message': 'Successfully marked as current'
+        }
+    else:
+        response = {
+            'status': 404,
+            'message': 'Invalid request'
+        }
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+
+
+@login_required(login_url='/login/')
+def show_plans(request):
+    bed_name = request.GET['bedName']
     db = DataAccess()
-    plans = db.getBedPlans(bedName)
+    plans = db.get_bed_plans(bed_name)
     response = {
         'status': 200,
         'context': []
@@ -64,19 +134,21 @@ def showPlans(request):
 
 
 @login_required(login_url='/login/')
-def getBedCanvas(request):
-    planID = request.GET['planID']
+def get_bed_canvas(request):
+    plan_id = request.GET['planID']
     db = DataAccess()
-    canvas = db.getBedCanvas(planID)
-    return HttpResponse(canvas, content_type='application/json')
+    canvas = db.get_bed_canvas(plan_id)
+    data = db.get_bed_plan_data(plan_id)
+    return HttpResponse(json.dumps({'canvas': canvas, 'data': data}), content_type='application/json')
 
 
 @login_required(login_url='/login/')
-def deletePlan(request):
+def delete_plan(request):
     if request.method == "POST":
-        planID = request.POST.get('planID')
+        plan_id = request.POST.get('planID')
+        username = request.user.username
         db = DataAccess()
-        db.deleteBedPlan(planID)
+        db.delete_bed_plan(plan_id, username)
         response = {
             'status': 200,
             'message': 'Successfully removed the selected plan'
@@ -89,22 +161,21 @@ def deletePlan(request):
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
-
 # This view should show a map of all prison gardens
 # and list all gardens on the side
 @login_required(login_url='/login/')
-def gardensNav(request):
+def gardens_nav(request):
     course = 'Garden Planning'
     db = DataAccess()
     gardens = db.get_gardens()
-    # gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}, {'name': 'Other Garden3'}]
+    # gardens = [{'name': 'Athena'}, {'name': 'Venus'}, {'name': 'Other Garden'}, {'name': 'Other Garden2'}]
         
     return render(request, 'gardensNav.html', view_utils.add_courses_to_dict({'gardens': gardens, 'course': course, 'color': gardens_color}))
 
 
 # This view should the various options for a specific garden
 @login_required(login_url='/login/')
-def gardenNav(request, garden):
-    course = garden
+def garden_nav(request, garden_name):
+    course = garden_name
         
     return render(request, 'gardenNav.html', view_utils.add_courses_to_dict({'course': course, 'color': gardens_color}))

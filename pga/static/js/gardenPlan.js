@@ -8,6 +8,12 @@ var imgCache = [],
     gardenInstance,
     gridSize = 50;
 
+
+var gardenName;
+var existingPlanName = "";
+var isExistingPlan = false;
+var existingPlanId = -1;
+
 /**
  * Setup csrftoken for ajax queries.
  */
@@ -89,7 +95,7 @@ function draw() {
     }
 
     if (canvas.isDrawingMode)
-        $('#drawBtn').text("Cancel");
+        $('#drawBtn').text("Stop Drawing");
     else
         $('#drawBtn').text("Draw");
 }
@@ -111,7 +117,41 @@ function savePlan() {
             bedCanvas: bedCanvas
         },
         success: function (data) {
-            alert("Save successfully.");
+            alert("Saved successfully.");
+
+            var username = data['username'];
+            existingPlanId = data['plan_id'];
+
+            var curDate = new Date().toLocaleString();
+
+            isExistingPlan = true;
+            existingPlanName = bedPlan;
+            toggleButtons();
+
+            $("#createDetails").text(existingPlanName + ", created by " + username + " at " + curDate);
+            $("#lastUpdate").text("Last update at " + curDate + " by " + username);
+        },
+        error: function (xhr, errmsg, err) {
+            console.log("Error: " + errmsg);
+        }
+    });
+}
+
+function updateExistingPlan() {
+    var bedCanvas = JSON.stringify(canvas);
+
+    $.ajax({
+        url: "/updatePlan/",
+        type: "POST",
+        data: {
+            plan_id: existingPlanId,
+            canvas: bedCanvas
+        },
+        success: function (data) {
+            alert("Updated successfully.");
+            var username = data['username'];
+            var curDate = new Date().toLocaleString();
+            $("#lastUpdate").text("Last update at " + curDate + " by " + username);
         },
         error: function (xhr, errmsg, err) {
             console.log("Error: " + errmsg);
@@ -152,13 +192,12 @@ function setSelectedPlan(el) {
  * Display all bed plans for the current garden
  */
 function showPlans() {
-    var gardenTitle = $('#gardenTitle').html(),
-        bedName = gardenTitle.substr(0, gardenTitle.indexOf('\'s'));
+
     $.ajax({
         url: "/showPlans",
         type: "GET",
         data: {
-            bedName: bedName
+            bedName: gardenName
         },
         success: function (resp) {
             var plans = resp.context;
@@ -189,12 +228,55 @@ function loadPlan() {
             planID: selectedPlanID
         },
         success: function (resp) {
-            canvas.loadFromJSON(resp, canvas.renderAll.bind(canvas));
+            var canvasData = resp['canvas'];
+            var planData = resp['data'];
+
+            var planName = planData['plan_name'];
+            existingPlanName = planName;
+            var username = planData['created_by'];
+            var createDateStr = planData['created_date'];
+            var createDate = new Date(createDateStr);
+
+            var updateDateStr = planData['updated_date'];
+            var updateDate = new Date(updateDateStr);
+            var updatedBy = planData['updated_by']
+
+            isExistingPlan = true;
+            existingPlanId = selectedPlanID
+            toggleButtons();
+
+            $("#createDetails").text(planName + ", created by " + username + " at " + createDate.toLocaleString());
+            $("#lastUpdate").text("Last update at " + updateDate.toLocaleString() + " by " + updatedBy);
+            canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
+            drawGrid();
         },
         error: function (xhr, errmsg, err) {
             alert("Error: " + errmsg);
+            console.log(err);
         }
     });
+}
+
+function markAsCurrent(){
+    $.ajax({
+        url: "/markCurrent/",
+        type: "POST",
+        data: {
+            plan_id: existingPlanId,
+            bed_name: gardenName
+        },
+        success: function (data) {
+            alert("This plan is now the 'As Planted' plan for this garden. Go back and select 'Current Plan' to view it. It is no longer editable.")
+        },
+        error: function (xhr, errmsg, err) {
+            console.log("Error: " + errmsg);
+        }
+    });
+}
+
+function toggleButtons() {
+    $("#updatePlan").toggle(isExistingPlan);
+    $("#makeCurrentBtn").toggle(isExistingPlan);
 }
 
 /**
@@ -319,11 +401,19 @@ function timeStamp() {
 function resetCanvas() {
     canvas.clear();
     drawGrid();
+    isExistingPlan = false;
+    existingPlanName = "";
+    existingPlanId = -1;
+    toggleButtons();
+    $("#createDetails").text("New plan");
+    $("#lastUpdate").text("");
 }
 
 $(document).ready(function () {
     var resetBtn = document.getElementById("resetBtn"),
         savePlan = document.getElementById("savePlan");
+
+    gardenName = $("#gardenName").val();
 
     gardenInstance = new fabric.Image.fromURL("/static/img/gardenPlan.jpg", function (img) {
         img.scaleToWidth(canvas.getWidth());
@@ -347,6 +437,12 @@ $(document).ready(function () {
     initGardenItems();
 
     $(".ui-loader").hide();
+
+    $("#updatePlan").click(updateExistingPlan);
+    $("#confirmMarkCurrentBtn").click(markAsCurrent);
+
+    $("#updatePlan").toggle();
+    $("#makeCurrentBtn").toggle();
 });
 
 

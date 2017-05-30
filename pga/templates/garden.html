@@ -11,19 +11,30 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
 <meta name="viewport" content="width=device-width,user-scalable=no">
+<a href="/gardenNav/{{ gardenName }}" id="backBtn" class="btn btn-default">Back</a><br>
 <h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
 
+<div id="planInfo">
+    <span id="createDetails">New plan</span><br>
+    <span id="lastUpdate"></span>
+</div>
+<br>
 <div class="container-fluid gardenLayout">
     <div class="row toolbar">
         <button id="drawBtn" class="btn btn-info" onclick="draw()">Draw</button>
-        <button id="savePlan" class="btn btn-info" data-toggle="modal" data-target="#savePlanModal">Save</button>
-        <button id="loadPlans" class="btn btn-info" onclick="showPlans()" data-toggle="modal"
-                data-target="#loadPlanModal">Load
-        </button>
+
         <button id="clrBtn" class="btn btn-info" onclick="eraseObj()">Erase</button>
         {#        <button id="undoBtn" class="btn" onclick="removeLastObj()">Undo</button>#}
         {#        <button id="redoBtn" class="btn" onclick="restoreLastObj()">Redo</button>#}
-        <button id="resetBtn" class="btn btn-info" onclick="resetCanvas()">Reset</button>
+        <button id="resetBtn" class="btn btn-info" onclick="resetCanvas()">Reset Canvas</button>
+    </div>
+    <div class="row toolbar">
+        <button id="loadPlans" class="btn btn-info" onclick="showPlans()" data-toggle="modal"
+                data-target="#loadPlanModal">Load Plan
+        </button>
+        <button id="savePlan" class="btn btn-info" data-toggle="modal" data-target="#savePlanModal">Save New Plan</button>
+        <button id="updatePlan" class="btn btn-info" data-toggle="modal">Update Existing Plan</button>
+        <button id="makeCurrentBtn" class="btn btn-info" data-toggle="modal" data-target="#confirmMarkCurrentModal">Mark This Plan 'As Planted'</button>
     </div>
     <div class="row">
         <div class="itemsLayout" id="itemsBoard">
@@ -89,5 +100,30 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="confirmMarkCurrentModal" tabindex="-1" role="dialog" aria-labelledby="loadPlanModalTitle"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loadPlanModalTitle">Bed Plans</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Setting this plan to 'as planted' will remove the current garden layout. This plan was also no longer be editable. Are you sure you wish to set this plan to 'as planted'?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmMarkCurrentBtn" data-dismiss="modal">
+                    Confirm
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" id="gardenName" value="{{ gardenName }}" />
 
 {% include "footer.html" %}

@@ -7,12 +7,11 @@ class DataAccess:
     _connection = None
     _cursor = None
 
-    #Establish DB connection on instantiation of a new DataAccess object
+    # Establish DB connection on instantiation of a new DataAccess object
     def __init__(self):
         self._connection = MySQLdb.Connection(host = "sddb.ece.iastate.edu", port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
 
-
-    #Close the connection when this object is deleted or falls out of scope
+    # Close the connection when this object is deleted or falls out of scope
     def __del__(self):
         # self._cursor = self._connection.cursor()
         # self._cursor.execute("COMMIT")
@@ -280,24 +279,104 @@ class DataAccess:
         server.sendmail(fromaddr, toaddr, msg.as_string())
         server.close()
 
-    def saveBedPlan(self, bedName, bedPlan, canvasData):
+    def save_bed_plan(self, bed_name, bed_plan, canvas_data, username):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan, Bed_Canvas) values (%s, %s, %s)", (bedName, bedPlan, canvasData))
+        self._cursor.execute("INSERT into Bed_Plans (Bed_Name, Bed_Plan, Bed_Canvas, Created_By, Updated_At, Updated_By) values (%s, %s, %s, %s, now(), %s)", (bed_name, bed_plan, canvas_data, username, username))
+        plan_id = self._cursor.lastrowid
+        self._cursor.execute("COMMIT")
+        return plan_id
+
+    def update_bed_plan(self, plan_id, canvas_data, username):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "UPDATE Bed_Plans SET Bed_Canvas = %s, Updated_At = now(), Updated_By = %s WHERE PlanID = %s",
+            (canvas_data, username, plan_id))
         self._cursor.execute("COMMIT")
 
-    def getBedPlans(self, bedName):
+    def get_bed_plans(self, bed_name):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT PlanID, Bed_Plan, Updated_At, Created_At FROM Bed_Plans WHERE Bed_Name = %s", [bedName])
+        self._cursor.execute("SELECT PlanID, Bed_Plan, Updated_At, Created_At FROM Bed_Plans WHERE Bed_Name = %s AND Is_Deleted = 0 AND Is_Current = 0 AND Was_Current = 0", [bed_name])
         return self._cursor.fetchall()
 
-    def getBedCanvas(self, planID):
+    def get_past_bed_plans(self, garden_name):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT Bed_Canvas FROM Bed_Plans WHERE PlanID = %s",[planID])
+        self._cursor.execute(
+            "SELECT PlanID, Year(Marked_As_Current_At), Marked_As_Current_At as year FROM Bed_Plans WHERE Bed_Name = %s AND Was_Current = 1 Order By Marked_As_Current_At DESC",
+            [garden_name])
+        results =  self._cursor.fetchall()
+
+        year_dict = {}
+        for row in results:
+            plan_id = row[0]
+            year = row[1]
+            date = row[2]
+
+            if year not in year_dict:
+                year_dict[year] = []
+
+            year_dict[year].append({'id': plan_id, 'date': date})
+
+        return year_dict
+
+    def get_bed_canvas(self, plan_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Bed_Canvas FROM Bed_Plans WHERE PlanID = %s", [plan_id])
         return self._cursor.fetchone()
 
-    def deleteBedPlan(self, planID):
+    def get_current_bed_canvas(self, garden_name):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("DELETE FROM Bed_Plans WHERE PlanID = %s", [planID])
+        self._cursor.execute("SELECT Bed_Canvas FROM Bed_Plans WHERE Bed_Name = %s AND Is_Current = 1", [garden_name])
+        return self._cursor.fetchone()
+
+    def get_bed_plan_data(self, plan_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Bed_Plan, Created_By, Created_At, Updated_By, Updated_At, PlanID FROM Bed_Plans WHERE PlanID = %s", [plan_id])
+        results = self._cursor.fetchall()
+
+        if len(results) == 0:
+            return None
+
+        row = results[0]
+        data = {'plan_name': row[0],
+            'created_by': row[1],
+            'created_date': str(row[2]),
+            'updated_by': row[3],
+            'updated_date': str(row[4]),
+            'plan_id': row[5]}
+
+        return data
+
+    def get_current_bed_plan_data(self, garden_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Bed_Plan, Marked_As_Current_By, Marked_As_Current_At, PlanID FROM Bed_Plans WHERE Bed_Name = %s AND Is_Current = 1", [garden_name])
+        results = self._cursor.fetchall()
+
+        if len(results) == 0:
+            return None
+
+        row = results[0]
+        data = {'plan_name': row[0],
+            'created_by': row[1],
+            'date': str(row[2]),
+            'plan_id': row[3]}
+
+        return data
+
+    def mark_bed_plan_as_current(self, garden_name, plan_id, username):
+        self._cursor = self._connection.cursor()
+
+        # Have to update a current one as "Was_Current"
+        self._cursor.execute(
+            "UPDATE Bed_Plans SET Is_Current = 0, Was_Current = 1 WHERE Is_Current = 1 AND Bed_Name = %s",
+            [garden_name])
+
+
+        self._cursor.execute("UPDATE Bed_Plans SET Is_Current = 1, Marked_As_Current_By = %s, Marked_As_Current_At = now() WHERE PlanID = %s", (username, plan_id))
+        self._cursor.execute("COMMIT")
+
+    def delete_bed_plan(self, plan_id, username):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE Bed_Plans SET Is_Deleted = 1, Deleted_By = %s, Deleted_At = now() WHERE PlanID = %s", (username, plan_id))
         self._cursor.execute("COMMIT")
 
     def getDailyLogs(self):
@@ -318,7 +397,7 @@ class DataAccess:
     def get_harvest_records(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Harvest_Records ORDER BY Date DESC")
+            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year, Crop_Subtype, Quantity_Units FROM Harvest_Records ORDER BY Date DESC")
         results = self._cursor.fetchall()
 
         year_records_dict = {}
@@ -330,11 +409,13 @@ class DataAccess:
             location = row[4]
             date = row[5]
             year = row[6]
+            subtype = row[7]
+            units = row[8]
 
             if year not in year_records_dict:
                 year_records_dict[year] = []
 
-            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity})
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity, 'subtype': subtype, 'units': units})
 
         # Put data into good format for frontend templates:
         records_list = []
@@ -345,10 +426,10 @@ class DataAccess:
 
         return records_list_sorted
 
-    def insert_harvest_record(self, username, date, crop, location, quantity):
+    def insert_harvest_record(self, username, date, crop, subtype, location, quantity, units):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "INSERT INTO Harvest_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
+            "INSERT INTO Harvest_Records (Username, Crop, Crop_Subtype, Quantity, Quantity_Units, Date, Location) VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, crop, subtype, quantity, units, date, location))
         self._cursor.execute("COMMIT")
 
     def delete_harvest_record(self, record_id):
@@ -360,7 +441,7 @@ class DataAccess:
     def get_planting_records(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Planting_Records ORDER BY Date DESC")
+            "SELECT RecordId, Username, Crop, Quantity, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year, Crop_Subtype, Quantity_Units FROM Planting_Records ORDER BY Date DESC")
         results = self._cursor.fetchall()
 
         year_records_dict = {}
@@ -372,11 +453,13 @@ class DataAccess:
             location = row[4]
             date = row[5]
             year = row[6]
+            subtype = row[7]
+            units = row[8]
 
             if year not in year_records_dict:
                 year_records_dict[year] = []
 
-            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity})
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'quantity': quantity, 'subtype': subtype, 'units': units})
 
         # Put data into good format for frontend templates:
         records_list = []
@@ -387,10 +470,10 @@ class DataAccess:
 
         return records_list_sorted
 
-    def insert_planting_record(self, username, date, crop, location, quantity):
+    def insert_planting_record(self, username, date, crop, crop_subtype, location, quantity, units):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "INSERT INTO Planting_Records (Username, Crop, Quantity, Date, Location) VALUES (%s, %s, %s, %s, %s)", (username, crop, quantity, date, location))
+            "INSERT INTO Planting_Records (Username, Crop, Crop_Subtype, Quantity, Quantity_Units, Date, Location) VALUES (%s, %s, %s, %s, %s, %s, %s)", (username, crop, crop_subtype, quantity, units, date, location))
         self._cursor.execute("COMMIT")
 
     def delete_planting_record(self, record_id):
@@ -452,7 +535,17 @@ class DataAccess:
         results = self._cursor.fetchall()
         crops = []
         for row in results:
-            crops.append(row[0])
+            crop_dict = {'name': row[0]}
+
+            self._cursor.execute("Select Subtype FROM Crop_Subtypes WHERE Crop = %s", [row[0]])
+            subtype_results = self._cursor.fetchall()
+            subtypes = []
+            for subtype_row in subtype_results:
+                subtypes.append(subtype_row[0])
+
+            crop_dict['subtypes'] = subtypes
+            crops.append(crop_dict)
+
         return crops
 
     def get_all_crops(self):
@@ -461,13 +554,29 @@ class DataAccess:
         results = self._cursor.fetchall()
         crops = []
         for row in results:
-            crops.append({'name': row[0], 'is_current': row[1]})
+            crop_info = {'name': row[0], 'is_current': row[1]}
+
+            self._cursor.execute("Select Subtype FROM Crop_Subtypes WHERE Crop = %s", [row[0]])
+            subtype_results = self._cursor.fetchall()
+            subtypes = []
+            for subtype_row in subtype_results:
+                subtypes.append(subtype_row[0])
+
+            crop_info['subtypes'] = subtypes
+            crops.append(crop_info)
+
         return crops
 
     def add_crop(self, new_crop):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
             "INSERT INTO Current_Crops (crop) VALUES (%s);", [new_crop])
+        self._cursor.execute("COMMIT")
+
+    def add_crop_subtype(self, crop, subtype):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "INSERT INTO Crop_Subtypes (Crop, Subtype) VALUES (%s, %s);", (crop, subtype))
         self._cursor.execute("COMMIT")
 
     def toggle_current_for_crop(self, crop, is_current):

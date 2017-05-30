@@ -1,0 +1,99 @@
+{% load static %}
+{% include "header.html" %}
+{% include "courseHeader.html" %}
+
+<script src="{% static 'js/libraries/fabric.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
+
+<script>
+    var canvas;
+    var gridSize = 50;
+
+    $(document).ready(function() {
+
+        var planId = $("#planId").val();
+
+        if(planId < 0){
+            return;
+        }
+
+        $.ajax({
+            url: "/getBedCanvas",
+            type: "GET",
+            data: {
+                planID: planId
+            },
+            success: function (resp) {
+                canvas = new fabric.StaticCanvas('gardenCanvas');
+                canvas.setHeight(window.innerHeight / 2);
+                canvas.setWidth($(".gardenLayout").width());
+                var canvasData = resp['canvas'];
+                canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
+                drawGrid();
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(err);
+            }
+        });
+    });
+
+    /**
+     * Draw the grid based on the given grid size.
+     */
+    function drawGrid() {
+        for (var x = 1; x < (canvas.getWidth() / gridSize); x++) {
+            canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getWidth()], {
+                stroke: "#000000",
+                strokeWidth: 1,
+                selectable: false,
+                strokeDashArray: [5, 5]
+            }));
+            canvas.add(new fabric.Line([0, gridSize * x, canvas.getWidth(), gridSize * x], {
+                stroke: "#000000",
+                strokeWidth: 1,
+                selectable: false,
+                strokeDashArray: [5, 5]
+            }));
+        }
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
+<meta name="viewport" content="width=device-width,user-scalable=no">
+<a href="/gardenNav/{{ gardenName }}" id="backBtn" class="btn btn-default">Back</a><br>
+<h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
+
+{% if has_data %}
+
+    <div id="planInfo">
+        Set to current by: {{ data.created_by }}, at {{ data.date }}.
+    </div>
+    <br>
+    <div class="container-fluid gardenLayout">
+        <div class="row" style="display: none;">
+            <div class="itemsLayout" id="itemsBoard">
+                <img src="{% static "img/brussels_sprouts.png" %}" class="gardenItems">
+                <img src="{% static "img/basil.png" %}" class="gardenItems">
+                <img src="{% static "img/bokchoy.png" %}" class="gardenItems">
+                <img src="{% static "img/broccoli.png" %}" class="gardenItems">
+                <img src="{% static "img/asian_eggplant.png" %}" class="gardenItems">
+            </div>
+        </div>
+        <div class="row">
+            <div class="bedContainer snapZone">
+                <canvas id="gardenCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="planId" value="{{ data.plan_id }}" />
+{% else %}
+    <input type="hidden" id="planId" value="-1" />
+    <h3>No plan has been marked as the current</h3>
+{% endif %}
+
+{% include "footer.html" %}

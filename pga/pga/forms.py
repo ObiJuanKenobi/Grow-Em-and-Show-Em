@@ -18,9 +18,17 @@ class RecordTableFormWithQuantity(forms.Form):
 
     crop_choices = db.get_current_crops()
     crop_tuples = []
+    crop_subtype_tuples = []
     for crop_choice in crop_choices:
-        crop_tuples.append((crop_choice, crop_choice))
+        crop_tuples.append((crop_choice['name'], crop_choice['name']))
+
+        for subtype in crop_choice['subtypes']:
+            crop_subtype_tuples.append((crop_choice['name'], subtype))
+
     crop_choices_tuples = tuple(crop_tuples)
+    crop_subtype_tuples_tuple = tuple(crop_subtype_tuples)
+
+    unit_choices = (('Ounces', 'Ounces'), ('Pounds', 'Pounds'), ('Plants', 'Plants'))
 
     garden_choices = db.get_gardens()
     garden_tuples = []
@@ -29,9 +37,13 @@ class RecordTableFormWithQuantity(forms.Form):
     garden_choices_tuples = tuple(garden_tuples)
 
     crop = forms.ChoiceField(widget=forms.Select, choices=crop_choices_tuples)
+    # subtypes = forms.ChoiceField(widget=forms.Select, choices=crop_subtype_tuples_tuple)
     location = forms.ChoiceField(widget=forms.Select, choices=garden_choices_tuples)
 
-    quantity = forms.CharField(max_length='75')
+    quantity = forms.FloatField(max_value=1000, min_value=1)
+
+    units = forms.ChoiceField(widget=forms.Select, choices=unit_choices)
+
 
 
 class RecordTableFormWithNotes(forms.Form):

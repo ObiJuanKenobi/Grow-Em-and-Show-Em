@@ -5,6 +5,75 @@
 
 <link rel="stylesheet" href="{% static 'css/recordstable-home.css' %}">
 
+<script>
+    function onCropChange() {
+        var selectedCrop = $(".crops-td select option:selected").val();
+        var selected = false;
+        $(".subtypes-td select option").each(function() {
+            //var cropVal = $(this).val();
+
+            //$(this).addClass(cropVal + "Subtype");
+
+            var shouldShow = $(this).hasClass(selectedCrop+ "Subtype");
+            $(this).toggle(shouldShow);
+
+            if(shouldShow && !selected){
+                $(this).prop('selected', true);
+                selected = true;
+            }
+        });
+    }
+
+    $(function(){
+        $(".filterSelect").change(function() {
+            var crop = $("#cropFilter option:selected").val();
+            var garden = $("#gardenFilter option:selected").val();
+
+            $(".record-row").each(function() {
+                var okToShow = true;
+
+                var cropRow = $(this).find(".cropValue").val();
+                if(cropRow !== crop && crop !== 'All'){
+                    okToShow = false;
+                }
+
+                var gardenRow = $(this).find(".gardenValue").val();
+                if(gardenRow !== garden && garden !== 'All'){
+                    okToShow = false;
+                }
+
+                $(this).toggle(okToShow);
+            });
+
+        });
+
+    /*
+        var selectedCrop = $(".crops-td select option:selected").val();
+        var selected = false;
+        $(".subtypes-td select option").each(function() {
+            var cropVal = $(this).val();
+
+            $(this).addClass(cropVal + "Subtype");
+
+            var subtype = $(this).text();
+            console.log(subtype);
+            $(this).val(subtype);
+
+            var shouldShow = selectedCrop === cropVal;
+            $(this).toggle(shouldShow);
+
+            if(shouldShow && !selected){
+                $(this).prop('selected', true);
+                selected = true;
+            }
+        });
+    */
+        //$(".crops-td select").change(onCropChange);
+        //onCropChange();
+
+    });
+</script>
+
     <a href='/recordsNav' class='btn btn-default' style='margin-left: 40px;'>Back to Record Keeping</a>
 
     <br>
@@ -20,6 +89,24 @@
         </ul>
     {% endif %}
 
+    <br>
+    <label>Filter -</label>
+    <label>By crop: <select id='cropFilter' class="filterSelect">
+        <option>All</option>
+        {% for crop in current_crops %}
+            <option>{{crop.name}}</option>
+        {% endfor %}
+    </select></label> &nbsp;
+
+    <label>By garden:
+        <select id='gardenFilter' class="filterSelect">
+            <option>All</option>
+            {% for garden in gardens %}
+                <option>{{garden}}</option>
+            {% endfor %}
+        </select>
+    </label>
+
     <div id='recordsTables'>
 
         {% for year_log in records %}
@@ -31,11 +118,13 @@
                     <th>Username</th>
                     <th>Date</th>
                     <th>Crop</th>
+                    <!--th>Crop (specific)</th-->
                     <th>Location</th>
                     {% if has_notes %}
                         <th>Notes</th>
                     {% else %}
                         <th>Quantity</th>
+                        <th>Units</th>
                     {% endif %}
                 </tr>
 
@@ -46,7 +135,7 @@
 
                             <td><input type='submit' class="btn btn-default" value='Add Entry'></td>
                         <td>{{ today }}</td>
-                        <td>
+                        <td class="crops-td">
                             <!--select>
                                 {% for crop in current_crops %}
                                     <option>{{crop}}</option>
@@ -54,6 +143,9 @@
                             </select-->
                             {{form.crop}}
                         </td>
+                        <!--td class="subtypes-td">
+                            {{form.subtypes}}
+                        </td-->
                         <td>
                             <!--select>
                                 {% for garden in gardens %}
@@ -69,6 +161,7 @@
                         {% else %}
                             <td>{{form.quantity}}</td>
                             <!--td><input class='quantityInput' type='text' size='3'></td-->
+                            <td>{{form.units}}</td>
                         {% endif %}
 
                         </form>
@@ -76,15 +169,19 @@
                 {% endif %}
 
                 {% for log in year_log.records %}
-                    <tr>
+                    <tr class="record-row">
+                        <input type="hidden" class="cropValue" value="{{log.crop}}">
+                        <input type="hidden" class="gardenValue" value="{{log.location}}">
                         <td>{{log.username}}</td>
                         <td>{{log.date}}</td>
                         <td>{{log.crop}}</td>
+                        <!--td>{{log.subtype}}</td-->
                         <td>{{log.location}}</td>
                         {% if has_notes %}
                             <td>{{log.notes}}</td>
                         {% else %}
                             <td>{{log.quantity}}</td>
+                            <td>{{log.units}}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}

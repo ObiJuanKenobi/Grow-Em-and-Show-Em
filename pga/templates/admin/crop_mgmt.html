@@ -3,12 +3,19 @@
 <style>
 td {
     padding: 10px 5px;
+    vertical-align: top;
+}
+
+table, tr, td {
+    border: 1px solid black;
 }
 </style>
 
 <script type='text/javascript'>
 
     var addDialog;
+    var addSubtypeDialog;
+    var cropForNewSubtype;
 
     function addCrop(){
         var newCrop = $("#cropToAdd").val();
@@ -44,6 +51,28 @@ td {
         $("#cropsTable").append(newRow);
     }
 
+    function addCropSubtype(){
+        var newSubtype = $("#subtypeToAdd").val();
+
+        $.ajax({
+            url: "/pgaadmin/addSubtype"
+            type: "POST",
+            data: {
+                "crop": cropForNewSubtype,
+                "subtype": newSubtype
+            },
+            success: function (data) {
+                var newLi = $("<li>").innerHtml(newSubtype);
+                var id = "#" + cropForNewSubtype + "List";
+                $(id).append(newLi);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
 	$(function() {
 	    setupCSRF();
         addDialog = $("#addDialog").dialog({
@@ -65,9 +94,34 @@ td {
             }
         });
 
+        addSubtypeDialog = $("#addDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                  addSubtypeDialog.dialog( "close" );
+                },
+                "Add": function() {
+                    addCropSubtype();
+                    addSubtypeDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+
+            }
+        });
+
         $("#addCrop").click(function() {
             $("#cropToAdd").val('');
             addDialog.dialog("open");
+        });
+
+        $("#addCropSubtype").click(function() {
+            cropForNewSubtype = $(this).val();
+            $("#subtypeToAdd").val('');
+            addSubtypeDialog.dialog("open");
         });
 
         $(".toggleBtn").click(function() {
@@ -108,7 +162,7 @@ td {
 <br>
 
 <table id="cropsTable">
-    <tr><th>Crop</th><th>Is Current</th><th>Toggle</th></th></tr>
+    <tr><th>Crop</th><th>Is Current</th><th>Subtypes</th><th>Toggle</th></th></tr>
     {% for c in crops %}
 	<tr id='{{ c.name }}Tr'>
         <td><span>{{ c.name }}</span></td>
@@ -119,6 +173,18 @@ td {
                 false
             {% endif %}
             </span>
+        </td>
+        <td>
+            <ul class="subtypeList" id="{{c.name}}List">
+                {% for subtype in c.subtypes %}
+                    <li>
+                        {{ subtype }} &nbsp;
+                        <button class="removeSubtypeBtn" id="{{c.name}}_{{ subtype }}RemoveBtn" value="{{subtype}}">Remove</button>
+                    </li>
+                {% endfor %}
+            </ul>
+            <br>
+            <button class="btn btn-default addSubtypeBtn" value="{{c.name}}">Add Subtype</button>
         </td>
 		<td>
             <input class='status' type="hidden" value="{{c.is_current}}">
@@ -135,6 +201,12 @@ td {
 <div id="addDialog" title="Add a Crop">
     <label>Enter the name of the crop you would like to add:
         <input type="text" id="cropToAdd" >
+    </label>
+</div>
+
+<div id="addSubtypeDialog" title="Add a Crop Subtype">
+    <label>Enter the name of the subtype you would like to add for this crop:
+        <input type="text" id="subtypeToAdd" >
     </label>
 </div>
 

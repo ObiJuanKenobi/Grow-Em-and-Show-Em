@@ -1,0 +1,141 @@
+body, div, dl, dt, dd, h1, h2, h3, h4, h5, h6, p, pre, code, blockquote {
+	margin:0;
+	padding:0;
+	border-width:0;
+}
+body {
+	-epub-hyphens:auto;
+}
+div.Basic-Graphics-Frame {
+	border-color:#000000;
+	border-width:1px;
+	border-style:solid;
+}
+p.Basic-Paragraph {
+	color:#000000;
+	font-family:"Minion Pro", serif;
+	font-size:12px;
+	font-style:normal;
+	font-variant:normal;
+	font-weight:normal;
+	line-height:1.2;
+	margin-bottom:0;
+	margin-left:0;
+	margin-right:0;
+	margin-top:0;
+	orphans:1;
+	page-break-after:auto;
+	page-break-before:auto;
+	text-align:left;
+	text-decoration:none;
+	text-indent:0;
+	text-transform:none;
+	widows:1;
+}
+span.CharOverride-1 {
+	color:#ffffff;
+	font-family:"Gill Sans", sans-serif;
+	font-size:60px;
+	font-style:normal;
+	font-weight:600;
+}
+span.CharOverride-2 {
+	font-family:"Gill Sans", sans-serif;
+	font-size:14px;
+	font-style:normal;
+	font-weight:normal;
+}
+span.CharOverride-3 {
+	font-family:"Gill Sans", sans-serif;
+	font-style:normal;
+	font-weight:300;
+}
+span.CharOverride-4 {
+	font-family:"Gill Sans", sans-serif;
+	font-size:14px;
+	font-style:normal;
+	font-weight:300;
+}
+span.CharOverride-5 {
+	font-family:"Gill Sans", sans-serif;
+	font-style:normal;
+	font-weight:normal;
+}
+span.CharOverride-6 {
+	font-family:"Gill Sans MT", sans-serif;
+	font-size:14px;
+	font-style:normal;
+	font-weight:normal;
+}
+#_idContainer000, #_idContainer003, #_idContainer006, #_idContainer009, #_idContainer012 {
+	display:inline-block;
+	height:58px;
+	position:relative;
+	width:792px;
+}
+#_idContainer002 {
+	display:inline-block;
+	height:500px;
+	width:541px;
+}
+#_idContainer005 {
+	display:inline-block;
+	height:447px;
+	width:720px;
+}
+#_idContainer008 {
+	display:inline-block;
+	height:501px;
+	width:720px;
+}
+#_idContainer011 {
+	display:inline-block;
+	height:518px;
+	width:697px;
+}
+#_idContainer014 {
+	display:inline-block;
+	height:511px;
+	width:720px;
+}
+#_idContainer015, #_idContainer020 {
+	display:inline-block;
+	height:58px;
+	position:relative;
+	width:1584px;
+}
+#_idContainer017 {
+	display:inline-block;
+	height:509px;
+	width:719px;
+}
+#_idContainer018 {
+	display:inline-block;
+	height:542px;
+	width:719px;
+}
+#_idContainer019 {
+	display:inline-block;
+	height:22px;
+	width:588px;
+}
+#_idContainer023 {
+	display:inline-block;
+	height:194px;
+	width:347px;
+}
+img._idGenObjectAttribute-1 {
+	height:100.00%;
+	min-width:100%;
+	width:100.00%;
+}
+div._idGenObjectStyleOverride-1 {
+	background-color:#d1454a;
+	border-width:0px;
+}
+div._idGenObjectStyleOverride-2 {
+	border-width:0px;
+}
+div._idGenObjectLayout-1 {
+	text-align:center;
+}

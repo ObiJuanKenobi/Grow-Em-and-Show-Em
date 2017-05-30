@@ -42,6 +42,8 @@ def courseNav(request, course):
     for lesson in lessons:
         link = DataAccess().getLesson(course, lesson['name'])
         lesson['link'] = link.replace(".", "", 1)
+
+    no_lessons = len(lessons) < 1
         
     has_quiz = db.doesCourseHaveQuiz(course)
     
@@ -50,7 +52,7 @@ def courseNav(request, course):
     if course in completed_courses:
         passed = True
         
-    return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed}))
+    return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed, 'no_lessons': no_lessons}))
 
 
 @login_required(login_url='/login/')

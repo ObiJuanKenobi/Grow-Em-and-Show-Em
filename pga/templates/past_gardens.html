@@ -1,0 +1,100 @@
+{% load static %}
+{% include "header.html" %}
+{% include "courseHeader.html" %}
+
+<script src="{% static 'js/libraries/fabric.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery-ui.min.js' %}"></script>
+<script src="{% static 'js/libraries/jquery.ui.touch-punch.js' %}"></script>
+
+<script>
+    //var canvas;
+    var gridSize = 50;
+
+    $(document).ready(function() {
+
+        $(".past-plan").each(function() {
+            var id = $(this).find(".planId").val();
+            console.log(id);
+            var canvas = $(this).find("canvas");
+            var canvasId = canvas.attr('id'); //$(canvas).attr('id');
+
+            $.ajax({
+                url: "/getBedCanvas",
+                type: "GET",
+                data: {
+                    planID: id
+                },
+                success: function (resp) {
+                    var canvas = new fabric.StaticCanvas(canvasId);
+                    canvas.setHeight(window.innerHeight / 2);
+                    canvas.setWidth($(".gardenLayout").width());
+                    var canvasData = resp['canvas'];
+                    canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
+                    drawGrid(canvas);
+                },
+                error: function (xhr, errmsg, err) {
+                    alert("Error: " + errmsg);
+                    console.log(err);
+                }
+            });
+        });
+
+    });
+
+    /**
+     * Draw the grid based on the given grid size.
+     */
+    function drawGrid(canvas) {
+        for (var x = 1; x < (canvas.getWidth() / gridSize); x++) {
+            canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getWidth()], {
+                stroke: "#000000",
+                strokeWidth: 1,
+                selectable: false,
+                strokeDashArray: [5, 5]
+            }));
+            canvas.add(new fabric.Line([0, gridSize * x, canvas.getWidth(), gridSize * x], {
+                stroke: "#000000",
+                strokeWidth: 1,
+                selectable: false,
+                strokeDashArray: [5, 5]
+            }));
+        }
+    }
+</script>
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
+<meta name="viewport" content="width=device-width,user-scalable=no">
+<a href="/gardenNav/{{ gardenName }}" id="backBtn" class="btn btn-default">Back</a><br>
+<h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
+
+<div class="container-fluid gardenLayout">
+    <div class="row" style="display: none;">
+        <div class="itemsLayout" id="itemsBoard">
+            <img src="{% static "img/brussels_sprouts.png" %}" class="gardenItems">
+            <img src="{% static "img/basil.png" %}" class="gardenItems">
+            <img src="{% static "img/bokchoy.png" %}" class="gardenItems">
+            <img src="{% static "img/broccoli.png" %}" class="gardenItems">
+            <img src="{% static "img/asian_eggplant.png" %}" class="gardenItems">
+        </div>
+    </div>
+    {% for year, ids_and_dates in past_plans.items %}
+        <h3 class="year">{{ year }}</h3><br><br>
+        {% for dict in ids_and_dates %}
+            <div class="row past-plan">
+                <input type="hidden" class="planId" value="{{ dict.id }}" />
+                <span>{{dict.date}}</span><br>
+                <div class="bedContainer snapZone">
+                    <canvas class="gardenCanvas" id="gardenCanvas{{forloop.counter}}"></canvas>
+                </div>
+            </div>
+            <br><br>
+        {% endfor %}
+    {% endfor %}
+</div>
+
+<input type="hidden" id="planId" value="{{ data.plan_id }}" />
+
+
+{% include "footer.html" %}

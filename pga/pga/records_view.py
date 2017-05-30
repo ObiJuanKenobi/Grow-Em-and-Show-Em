@@ -30,11 +30,13 @@ def harvest_records(request):
         form = RecordTableFormWithQuantity(request.POST)
         if form.is_valid() and request.user.is_authenticated():
             crop = form.cleaned_data['crop']
+            subtype = 'NA' # form.cleaned_data['subtypes']
             location = form.cleaned_data['location']
             quantity = form.cleaned_data['quantity']
+            units = form.cleaned_data['units']
             username = request.user.get_username()
             date = datetime.datetime.today().strftime("%Y-%m-%d")
-            db.insert_harvest_record(username, date, crop, location, quantity)
+            db.insert_harvest_record(username, date, crop, subtype, location, quantity, units)
             view_dict['success'] = 'Record inserted successfully!'
         else:
             view_dict['error'] = form.errors
@@ -57,11 +59,13 @@ def planting_records(request):
         form = RecordTableFormWithQuantity(request.POST)
         if form.is_valid() and request.user.is_authenticated():
             crop = form.cleaned_data['crop']
+            crop_subtype = 'NA' # form.cleaned_data['subtypes']
             location = form.cleaned_data['location']
             quantity = form.cleaned_data['quantity']
+            units = form.cleaned_data['units']
             username = request.user.get_username()
             date = datetime.datetime.today().strftime("%Y-%m-%d")
-            db.insert_planting_record(username, date, crop, location, quantity)
+            db.insert_planting_record(username, date, crop, crop_subtype, location, quantity, units)
             view_dict['success'] = 'Record inserted successfully!'
         else:
             view_dict['error'] = form.errors
@@ -104,11 +108,11 @@ def garden_notes(request):
 def get_default_records_dict():
     db = DataAccess()
     color = db.getCourseColor('Records')
-    # current_crops = db.get_current_crops()
-    # gardens = db.get_gardens()
+    current_crops = db.get_current_crops()
+    gardens = db.get_gardens()
     today = datetime.datetime.today().strftime("%m/%d/%Y")
-    # 'current_crops': current_crops, 'gardens': gardens,
-    return {'today': today, 'color': color}
+
+    return {'today': today, 'color': color, 'current_crops': current_crops, 'gardens': gardens,}
 
 
 # @login_required(login_url='/login/')
