@@ -202,6 +202,18 @@ def admin_add_subtype(request):
 
 
 @staff_member_required
+def admin_remove_subtype(request):
+    if request.method == 'POST':
+        crop = request.POST.get('crop')
+        subtype = request.POST.get('subtype')
+        DataAccess().remove_crop_subtype(crop, subtype)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}), content_type='application/json')
+
+
+@staff_member_required
 def admin_toggle_current_crop(request, crop, is_current):
     DataAccess().toggle_current_for_crop(crop, int(is_current))
     return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')

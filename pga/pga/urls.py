@@ -70,6 +70,7 @@ urlpatterns = [
     url(r'^pgaadmin/cropMgmt', admin_crop_mgmt),
     url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
     url(r'^pgaadmin/addSubtype', admin_add_subtype),
+    url(r'^pgaadmin/removeSubtype', admin_remove_subtype),
     url(r'^pgaadmin/toggleCrop/(?P<crop>[A-Za-z0-9\-\s]+)/(?P<is_current>[A-Za-z0-9\-\s]+)', admin_toggle_current_crop),
 
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),

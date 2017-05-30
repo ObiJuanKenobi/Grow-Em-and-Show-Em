@@ -55,16 +55,57 @@ table, tr, td {
         var newSubtype = $("#subtypeToAdd").val();
 
         $.ajax({
-            url: "/pgaadmin/addSubtype"
+            url: "/pgaadmin/addSubtype",
             type: "POST",
             data: {
                 "crop": cropForNewSubtype,
                 "subtype": newSubtype
             },
             success: function (data) {
-                var newLi = $("<li>").innerHtml(newSubtype);
+                var newLi = $("<li>");
+                var newSpan = $("<span>").text(newSubtype + " ");
+                newLi.append(newSpan);
+
+                var newRemoveBtn = $("<button>").val(newSubtype);
+                newRemoveBtn.addClass('removeSubtypeBtn');
+                var id = cropForNewSubtype + "_" + newSubtype;
+                newRemoveBtn.attr('id', id + "_RemoveBtn");
+                newRemoveBtn.text("Remove");
+                newRemoveBtn.on('click', removeSubtype);
+
+                newLi.attr('id', id + "_Li");
+                newLi.append(newRemoveBtn);
+
                 var id = "#" + cropForNewSubtype + "List";
                 $(id).append(newLi);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+    function removeSubtype(){
+        var id = $(this).attr('id');
+        var parts = id.split('_');
+
+        var crop = parts[0];
+        var subtype = $(this).val(); //parts[1];
+
+        console.log(crop);
+        console.log(subtype);
+
+        $.ajax({
+            url: "/pgaadmin/removeSubtype",
+            type: "POST",
+            data: {
+                "crop": crop,
+                "subtype": subtype
+            },
+            success: function (data) {
+                var liId = "#" + crop + "_" + subtype + "_Li";
+                $(liId).remove();
             },
             error: function (xhr, errmsg, err) {
                 alert("Error: " + errmsg);
@@ -94,7 +135,7 @@ table, tr, td {
             }
         });
 
-        addSubtypeDialog = $("#addDialog").dialog({
+        addSubtypeDialog = $("#addSubtypeDialog").dialog({
             autoOpen: false,
             height: 200,
             width: 400,
@@ -118,11 +159,13 @@ table, tr, td {
             addDialog.dialog("open");
         });
 
-        $("#addCropSubtype").click(function() {
+        $(".addSubtypeBtn").click(function() {
             cropForNewSubtype = $(this).val();
             $("#subtypeToAdd").val('');
             addSubtypeDialog.dialog("open");
         });
+
+        $(".removeSubtypeBtn").click(removeSubtype);
 
         $(".toggleBtn").click(function() {
             var crop = $(this).val();
@@ -177,9 +220,9 @@ table, tr, td {
         <td>
             <ul class="subtypeList" id="{{c.name}}List">
                 {% for subtype in c.subtypes %}
-                    <li>
+                    <li id="{{c.name}}_{{ subtype }}_Li">
                         {{ subtype }} &nbsp;
-                        <button class="removeSubtypeBtn" id="{{c.name}}_{{ subtype }}RemoveBtn" value="{{subtype}}">Remove</button>
+                        <button class="removeSubtypeBtn" id="{{c.name}}_{{ subtype }}_RemoveBtn" value="{{subtype}}">Remove</button>
                     </li>
                 {% endfor %}
             </ul>
@@ -209,5 +252,7 @@ table, tr, td {
         <input type="text" id="subtypeToAdd" >
     </label>
 </div>
+
+<br>
 
 {% include "admin/footer.html" %}

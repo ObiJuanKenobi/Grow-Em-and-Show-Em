@@ -579,6 +579,12 @@ class DataAccess:
             "INSERT INTO Crop_Subtypes (Crop, Subtype) VALUES (%s, %s);", (crop, subtype))
         self._cursor.execute("COMMIT")
 
+    def remove_crop_subtype(self, crop, subtype):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "DELETE FROM Crop_Subtypes WHERE Crop = %s AND Subtype = %s;", (crop, subtype))
+        self._cursor.execute("COMMIT")
+
     def toggle_current_for_crop(self, crop, is_current):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
