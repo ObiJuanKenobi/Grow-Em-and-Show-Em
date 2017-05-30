@@ -168,13 +168,21 @@ class AdminSuppMatView(AbstractFileUploadView):
 def garden_mgmt_menu(request):
     links = [{'name': 'View/Edit Current Crops', 'link': '/pgaadmin/cropMgmt'},
              {'name': 'View/Edit Gardens & Plans', 'link': '/pgaadmin/gardenMgmt'},
-             {'name': 'View/Edit Records', 'link': '/pgaadmin/recordsMgmt'}]
+             {'name': 'View/Edit Records', 'link': '/pgaadmin/recordsMgmt'},
+             {'name': 'View/Edit Schedules', 'link': '/pgaadmin/scheduleMgmt'}]
 
     back_link = '/pgaadmin'
 
     title = 'Garden & Records Management'
 
     return render(request, 'admin/menu.html', {'links': links, 'title': title, 'back_link': back_link})
+
+
+@staff_member_required
+def admin_schedule_mgmt(request):
+    schedules_list = []
+    data_dict = {'schedules': schedules_list}
+    return render(request, 'admin/schedule_mgmt.html', data_dict)
 
 
 @staff_member_required

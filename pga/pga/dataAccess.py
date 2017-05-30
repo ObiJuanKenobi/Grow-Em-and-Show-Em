@@ -601,9 +601,11 @@ class DataAccess:
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT ScheduleId FROM Schedules WHERE IsCurrent = 1;")
         cur_schedule_id = self._cursor.fetchone()
-        
+        return self.get_tasks_for_schedule_id(cur_schedule_id)
+
+    def get_tasks_for_schedule_id(self, schedule_id):
         # Now find tasks with that schedule Id:
-        self._cursor.execute("SELECT Description, Day, IsComplete, TaskId FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [cur_schedule_id])
+        self._cursor.execute("SELECT Description, Day, IsComplete, TaskId FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [schedule_id])
         task_rows = self._cursor.fetchall()
         
         # Python is neat - inits a list of 7 elements, each element is empty list:
@@ -627,6 +629,22 @@ class DataAccess:
             to_return.append(tuple_to_append)
                 
         return to_return
+
+    def get_all_schedules(self):
+        # First find all schedule Id's
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT ScheduleId, CreatedBy, DateCreated, IsCurrent FROM Schedules;")
+        schedule_rows = self._cursor.fetchall()
+
+        schedules = []
+        for schedule_row in schedule_rows:
+            id = schedule_row[0]
+            created_by = schedule_row[1]
+            date_created = schedule_row[2]
+            is_current = schedule_row[3]
+            schedule = self.get_tasks_for_schedule_id(id)
+
+            schedules.append()
 
     def create_schedule(self, username, day_tasks_dict):
         self._cursor = self._connection.cursor()
