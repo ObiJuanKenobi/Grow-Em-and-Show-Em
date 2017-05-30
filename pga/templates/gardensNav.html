@@ -5,18 +5,15 @@
 {% include "courseHeader.html" %}
 
     <div style='float: right; width: 40%; margin-right: 5%;'>
+        <ul>
         {% for garden in gardens %}
-            <div class="col-md-4">
-                <!-- <a id='button{{ forloop.counter }}' href='{{l.link}}'> -->
-                <a id='button{{ forloop.counter }}' href='/gardenNav/{{garden}}'>
-                    <div class="subMenuIcons" style="border-color:#{{ color }}">
-                        <span class="subMenuText">
-                            {{ garden }}
-                        </span>
-                    </div>
+            <li style="margin-top: 8px">
+                <a id='button{{ forloop.counter }}' class='btn btn-default' href='/gardenNav/{{garden}}'>
+                    {{ garden }}
                 </a>
-            </div>
+            </li>
         {% endfor %}
+        </ul>
     </div>
     
     <div id='gardensImage' style='float: left; width: 50%'>
