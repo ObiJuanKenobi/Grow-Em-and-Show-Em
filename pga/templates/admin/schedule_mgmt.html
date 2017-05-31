@@ -1,0 +1,152 @@
+{% include "admin/header.html" %}
+
+<style>
+#scheduleTable td, #scheduleTable th {
+    text-align: left;
+}
+
+.borderedTable {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-spacing: 30px 0;
+}
+
+.taskTable {
+    width: 100%;
+}
+
+#current-day {
+    background-color: #FAFAD2;
+}
+
+.borderedTableCell {
+  padding: 10px 10px;
+  border: 1px solid black;
+}
+
+.completedTask {
+    text-decoration: line-through;
+}
+</style>
+
+<script>
+
+    var confirmDeleteDialog;
+    var scheduleIdToDelete;
+
+    function deleteSchedule() {
+        $.ajax({
+            url: "/pgaadmin/deleteSchedule",
+            type: "POST",
+            data: {
+                "schedule_id": scheduleIdToDelete
+            },
+            success: function (data) {
+                $("#schedule" + scheduleIdToDelete).remove();
+                alert("Schedule deleted");
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+    $(function() {
+        setupCSRF();
+
+        confirmDeleteDialog = $("#confirmDeleteDialog").dialog({
+            autoOpen: false,
+            height: 200,
+            width: 400,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                  confirmDeleteDialog.dialog( "close" );
+                },
+                "Delete": function() {
+                    deleteSchedule();
+                    confirmDeleteDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+
+            }
+        });
+
+        $(".deleteScheduleBtn").click(function () {
+            scheduleIdToDelete = $(this).val();
+            confirmDeleteDialog.dialog("open");
+        });
+
+        $(".makeScheduleCurrentBtn").click(function() {
+            var scheduleId = $(this).val();
+            $.ajax({
+                url: "/pgaadmin/makeCurrentSchedule",
+                type: "POST",
+                data: {
+                    "schedule_id": scheduleId
+                },
+                success: function (data) {
+                    alert("This schedule is now the current (refresh page to update)");
+                },
+                error: function (xhr, errmsg, err) {
+                    alert("Error: " + errmsg);
+                    console.log(err);
+                }
+            });
+        });
+    });
+</script>
+
+<title>Schedule Management</title>
+<span class='adminPageTitle'>Schedule Management</span>&nbsp; &nbsp;<a href='/pgaadmin/gardenMgmtMenu' class='backLink'>Back</a>
+
+<br><br>
+
+{% for schedule_dict in schedules %}
+<div id="schedule{{schedule_dict.id}}">
+    <span class="scheduleHeader">{{ schedule_dict.date_created }}</span>
+    <br>
+    <span>Created By: {{schedule_dict.created_by}}</span>
+    {% if schedule_dict.is_current %}
+        <br>
+        <b>Current Schedule</b>
+    {% else %}
+        <button class="makeScheduleCurrentBtn" value="{{schedule_dict.id}}">Make Current Schedule</button>
+        <button class="deleteScheduleBtn" value="{{schedule_dict.id}}">Delete Schedule</button>
+    {% endif %}
+
+    <br><br>
+    <table id='scheduleTable' class='borderedTable'>
+        <tr><th class='borderedTableCell'>Day</th><th class='borderedTableCell'>Tasks</th></tr>
+        {% for day, tasks in schedule_dict.schedule %}
+                <td class='borderedTableCell'>{{ day }}</td>
+                <td class='borderedTableCell'>
+                    <table class='taskTable'>
+                        {% for task in tasks %}
+                            {% if task.complete %}
+                                <tr class='scheduleItem'>
+                                    <td class="taskCell">
+                                        <span class="completedTask">&bull; {{ task.task }}</span> (completed by {{task.completed_by}} at {{task.completed_date}})
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr class='scheduleItem' >
+                                    <td class='taskCell'>&bull; {{ task.task }} </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<br><br>
+
+{% endfor %}
+
+<div id="confirmDeleteDialog" title="Confirm Delete Schedule">
+    <p>Are you sure you wish to delete this schedule?</p>
+</div>

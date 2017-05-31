@@ -82,8 +82,7 @@ DATABASES = {
         'NAME': 'may1713_PrisonGardenApp',
         'USER': 'may1713',
         'PASSWORD': 'gawrA75Nac!&',
-        # 'HOST': 'sddb.ece.iastate.edu',
-        'HOST': 'localhost',
+        'HOST': 'sddb.ece.iastate.edu',
         'PORT': '3306'
     }
 }

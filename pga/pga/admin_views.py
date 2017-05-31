@@ -180,9 +180,32 @@ def garden_mgmt_menu(request):
 
 @staff_member_required
 def admin_schedule_mgmt(request):
-    schedules_list = []
+    schedules_list = DataAccess().get_all_schedules()
+    print "NumSchedules: " + str(len(schedules_list))
     data_dict = {'schedules': schedules_list}
     return render(request, 'admin/schedule_mgmt.html', data_dict)
+
+
+@staff_member_required
+def admin_delete_schedule(request):
+    if request.method == 'POST':
+        schedule_id = request.POST.get('schedule_id')
+        DataAccess().delete_schedule(schedule_id)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}), content_type='application/json')
+
+
+@staff_member_required
+def admin_make_current_schedule(request):
+    if request.method == 'POST':
+        schedule_id = request.POST.get('schedule_id')
+        DataAccess().make_current_schedule(schedule_id)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}), content_type='application/json')
 
 
 @staff_member_required

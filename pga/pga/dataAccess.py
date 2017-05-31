@@ -10,7 +10,7 @@ class DataAccess:
     # Establish DB connection on instantiation of a new DataAccess object
     def __init__(self):
         # "sddb.ece.iastate.edu"
-        self._connection = MySQLdb.Connection(host='localhost', port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
+        self._connection = MySQLdb.Connection(host="sddb.ece.iastate.edu", port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
 
     # Close the connection when this object is deleted or falls out of scope
     def __del__(self):
@@ -606,14 +606,15 @@ class DataAccess:
 
     def get_tasks_for_schedule_id(self, schedule_id):
         # Now find tasks with that schedule Id:
-        self._cursor.execute("SELECT Description, Day, IsComplete, TaskId FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [schedule_id])
+        self._cursor.execute("SELECT Description, Day, IsComplete, TaskId, CompletedBy, CompletedDate FROM Tasks WHERE ScheduleId = %s ORDER BY Day;", [schedule_id])
         task_rows = self._cursor.fetchall()
         
         # Python is neat - inits a list of 7 elements, each element is empty list:
         tasks_by_day = [[] for _ in range(7)]
         
         for task_row in task_rows:
-            task = {'task': task_row[0], 'complete': task_row[2], 'id': task_row[3]}
+            task = {'task': task_row[0], 'complete': task_row[2], 'id': task_row[3], 'completed_by': task_row[4],
+                    'completed_date': task_row[5]}
             day_num = task_row[1]
             tasks_by_day[day_num].append(task)
             
@@ -634,18 +635,21 @@ class DataAccess:
     def get_all_schedules(self):
         # First find all schedule Id's
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT ScheduleId, CreatedBy, DateCreated, IsCurrent FROM Schedules;")
+        self._cursor.execute("SELECT ScheduleId, CreatedBy, DateCreated, IsCurrent FROM Schedules ORDER BY DateCreated DESC;")
         schedule_rows = self._cursor.fetchall()
 
         schedules = []
         for schedule_row in schedule_rows:
-            id = schedule_row[0]
+            schedule_id = schedule_row[0]
             created_by = schedule_row[1]
             date_created = schedule_row[2]
             is_current = schedule_row[3]
-            schedule = self.get_tasks_for_schedule_id(id)
+            schedule = self.get_tasks_for_schedule_id(schedule_id)
 
-            schedules.append()
+            schedules.append({'id': schedule_id, 'created_by': created_by, 'date_created': date_created,
+                              'is_current': is_current, 'schedule': schedule})
+
+        return schedules
 
     def create_schedule(self, username, day_tasks_dict):
         self._cursor = self._connection.cursor()
@@ -680,6 +684,28 @@ class DataAccess:
     
     def switch_day_num_to_string(self, day_num):
         return self.day_dict.get(day_num, 'Unknown Day')
+
+    def delete_schedule(self, schedule_id):
+        self._cursor = self._connection.cursor()
+
+        # First delete tasks associated with this schedule:
+        self._cursor.execute("DELETE FROM Tasks WHERE ScheduleId = %s", [schedule_id])
+
+        # Then delete schedule entry:
+        self._cursor.execute("DELETE FROM Schedules WHERE ScheduleId = %s", [schedule_id])
+
+        self._cursor.execute("COMMIT")
+
+    def make_current_schedule(self, schedule_id):
+        self._cursor = self._connection.cursor()
+
+        # First thing to do is set the current schedule to non-current
+        self._cursor.execute("UPDATE Schedules SET IsCurrent = 0 WHERE IsCurrent = 1")
+        self._cursor.execute("COMMIT")
+
+        # Now just make this one current:
+        self._cursor.execute("UPDATE Schedules SET IsCurrent = 1 WHERE ScheduleId = %s", [schedule_id])
+        self._cursor.execute("COMMIT")
 
 
 # Class for passing quiz questions to the DB in a convenient object

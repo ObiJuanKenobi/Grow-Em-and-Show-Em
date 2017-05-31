@@ -68,6 +68,8 @@ urlpatterns = [
     url(r'^pgaadmin/userProgress', adminUserProgressOverview),
 
     url(r'^pgaadmin/scheduleMgmt', admin_schedule_mgmt),
+    url(r'^pgaadmin/deleteSchedule', admin_delete_schedule),
+    url(r'^pgaadmin/makeCurrentSchedule', admin_make_current_schedule),
 
     url(r'^pgaadmin/cropMgmt', admin_crop_mgmt),
     url(r'^pgaadmin/addCrop/(?P<new_crop>[A-Za-z0-9\-\s]+)', admin_add_crop),
