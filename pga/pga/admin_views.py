@@ -167,7 +167,7 @@ class AdminSuppMatView(AbstractFileUploadView):
 @staff_member_required
 def garden_mgmt_menu(request):
     links = [{'name': 'View/Edit Current Crops', 'link': '/pgaadmin/cropMgmt'},
-             {'name': 'View/Edit Gardens & Plans', 'link': '/pgaadmin/gardenMgmt'},
+             {'name': 'View/Edit Gardens & Plans', 'link': '/pgaadmin/gardensMgmt'},
              {'name': 'View/Edit Records', 'link': '/pgaadmin/recordsMgmt'},
              {'name': 'View/Edit Schedules', 'link': '/pgaadmin/scheduleMgmt'}]
 
@@ -206,6 +206,65 @@ def admin_make_current_schedule(request):
 
     else:
         return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}), content_type='application/json')
+
+
+class GardensMgmtView(AbstractFileUploadView):
+    template_name = 'admin/gardens_mgmt.html'
+
+    def __init__(self):
+        super(GardensMgmtView, self).__init__(['.jpg'], [])
+
+    def get_page_specific_data(self):
+        gardens = DataAccess().get_gardens_and_details()
+        return {'gardens': gardens}
+
+    def page_specific_handle_file(self, file):
+        # status, message = processCourseZip(file)
+        return FileHandlingResult(True, 'TODO - not implemented')
+
+
+@staff_member_required
+def add_garden(request):
+    if request.method == 'POST':
+        garden = request.POST.get('garden')
+        width = int(request.POST.get('width'))
+        height = int(request.POST.get('height'))
+        DataAccess().add_garden(garden, width, height)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}), content_type='application/json')
+
+
+@staff_member_required
+def edit_garden(request):
+    if request.method == 'POST':
+        garden = request.POST.get('garden')
+        width = int(request.POST.get('width'))
+        height = int(request.POST.get('height'))
+        DataAccess().edit_garden(garden, width, height)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}),
+                            content_type='application/json')
+
+
+@staff_member_required
+def delete_garden(request):
+    if request.method == 'POST':
+        garden = request.POST.get('garden')
+        DataAccess().delete_garden(garden)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}),
+                            content_type='application/json')
+
+@staff_member_required
+def garden_plans(request, garden_name):
+    plans = DataAccess().get_all_bed_plans(garden_name)
+    return render(request, 'admin/garden_plans_mgmt.html', {'garden': garden_name, 'plans': plans})
 
 
 @staff_member_required

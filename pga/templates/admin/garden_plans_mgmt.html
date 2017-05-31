@@ -1,6 +1,5 @@
 {% load static %}
-{% include "header.html" %}
-{% include "courseHeader.html" %}
+{% include "admin/header.html" %}
 
 <script src="{% static 'js/libraries/fabric.min.js' %}"></script>
 <script src="{% static 'js/libraries/jquery-2.2.4.min.js' %}"></script>
@@ -13,7 +12,7 @@
 
     $(document).ready(function() {
 
-        $(".past-plan").each(function() {
+        $(".plan-to-load").each(function() {
             var id = $(this).find(".planId").val();
             console.log(id);
             var canvas = $(this).find("canvas");
@@ -66,8 +65,9 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/garden.css' %}"/>
 <meta name="viewport" content="width=device-width,user-scalable=no">
-<a href="/gardenNav/{{ gardenName }}" id="backBtn" class="btn btn-default">Back</a><br>
-<h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
+<a href="/pgaadmin/gardensMgmt" id="backBtn" class="btn btn-default">Back</a><br>
+<title>Garden Plans Management</title>
+<h2 id="gardenTitle">{{ garden }}'s Plans</h2>
 
 <div class="container-fluid gardenLayout">
     <div class="row" style="display: none;">
@@ -82,20 +82,55 @@
             <img src="{% static 'img/radish.png' %}" class="gardenItems">
         </div>
     </div>
-    {% for year, ids_and_dates in past_plans.items %}
-        <h3 class="year">{{ year }}</h3><br><br>
+
+    <h3>Current 'As Planted' Plan</h3>
+    <div class="row plan-to-load">
+        <input type="hidden" class="planId" value="{{ plans.current.plan_id }}" />
+        <span>Marked as 'Current' by {{plans.current.created_by}} at {{plans.current.date}}</span><br>
+        <div class="bedContainer snapZone">
+            <canvas class="gardenCanvas" id="gardenCanvasCurrent"></canvas>
+        </div>
+    </div>
+    <br><br>
+
+    <h3>Past 'As Planted' Plans</h3>
+    {% for year, ids_and_dates in plans.past.items %}
+        <h4 class="year">{{ year }}</h4><br><br>
         {% for dict in ids_and_dates %}
-            <div class="row past-plan">
+            <div class="row plan-to-load">
                 <input type="hidden" class="planId" value="{{ dict.id }}" />
                 <span>{{dict.date}}</span><br>
                 <div class="bedContainer snapZone">
-                    <canvas class="gardenCanvas" id="gardenCanvas{{forloop.counter}}"></canvas>
+                    <canvas class="gardenCanvas" id="gardenCanvas{{ dict.id }}"></canvas>
                 </div>
             </div>
             <br><br>
         {% endfor %}
     {% endfor %}
+
+    <h3>Existing Plans</h3>
+    {% for plan in plans.existing %}
+        <span>{{plan.plan_name}} - created by: {{plan.created_by}} at {{plan.created_date}}</span><br>
+        <span>Last update by: {{plan.updated_by}} at {{plan.updated_date}}</span><br>
+        <div class="row plan-to-load">
+            <input type="hidden" class="planId" value="{{ plan.plan_id }}" />
+            <div class="bedContainer snapZone">
+                <canvas class="gardenCanvas" id="gardenCanvas{{ plan.plan_id }}"></canvas>
+            </div>
+        </div>
+        <br><br>
+    {% endfor %}
+
+    <h3>Plans Deleted by Users</h3>
+    {% for plan in plans.deleted %}
+        <span>{{plan.plan_name}} - created by: {{plan.created_by}} at {{plan.created_date}}</span><br>
+        <span>Deleted by: {{plan.deleted_by}} at {{plan.deleted_date}}</span><br>
+        <div class="row plan-to-load">
+            <input type="hidden" class="planId" value="{{ plan.plan_id }}" />
+            <div class="bedContainer snapZone">
+                <canvas class="gardenCanvas" id="gardenCanvas{{ plan.plan_id }}"></canvas>
+            </div>
+        </div>
+        <br><br>
+    {% endfor %}
 </div>
-
-
-{% include "footer.html" %}

@@ -1,0 +1,209 @@
+{% load static %}
+{% include "admin/header.html" %}
+
+<style>
+
+</style>
+
+<script type='text/javascript'>
+
+    var gardenToDelete = '';
+    var confirmDeleteDialog;
+
+    var addGardenDialog;
+
+    var gardenToBeEdited = '';
+    var editDimensionsDialog;
+
+    var uploadDialog;
+    var fileUploadId;
+
+    function confirmDeleteGarden() {
+        confirmDeleteDialog.dialog("close");
+
+        $.ajax({
+            url: "/pgaadmin/deleteGarden",
+            data: {
+                "garden": gardenToDelete
+            },
+            type: "POST",
+            success: function (data) {
+                $("#" + gardenToDelete + "Li").remove();
+                alert("Garden deleted");
+                console.log(data);
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+    function addGarden() {
+        var gardenName = $("#newGardenName").val();
+        var width = $("#newGardenWidth").val();
+        var height = $("#newGardenHeight").val();
+
+        $.ajax({
+            url: "/pgaadmin/addGarden",
+            data: {
+                "garden": gardenName,
+                "width": width,
+                "height": height
+            },
+            type: "POST",
+            success: function (data) {
+                alert("Garden added, refresh to update page");
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+    function editDimensions() {
+        var width = $("#editGardenWidth").val();
+        var height = $("#editGardenHeight").val();
+
+        $.ajax({
+            url: "/pgaadmin/editGarden",
+            data: {
+                "garden": gardenToBeEdited,
+                "width": width,
+                "height": height
+            },
+            type: "POST",
+            success: function (data) {
+                alert("Garden edited, refresh to update page");
+            },
+            error: function (xhr, errmsg, err) {
+                alert("Error: " + errmsg);
+                console.log(errmsg);
+            }
+        });
+    }
+
+	$(function() {
+
+        setupCSRF();
+
+        fileUploadId = $("#fileUploadId").val();
+        uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js
+
+        $("#uploadNewOverviewBtn").click(function() {
+            uploadDialog.dialog("open");
+        });
+
+        addGardenDialog = $("#addGardenDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 600,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                  addGardenDialog.dialog( "close" );
+                },
+                "Add": function() {
+                    addGarden();
+                    addGardenDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+
+            }
+        });
+
+        editDimensionsDialog = $("#editDimensionsDialog").dialog({
+            autoOpen: false,
+            height: 400,
+            width: 600,
+            modal: true,
+            buttons: {
+                Cancel: function() {
+                  editDimensionsDialog.dialog( "close" );
+                },
+                "Edit": function() {
+                    editDimensions();
+                    editDimensionsDialog.dialog( "close" );
+                }
+            },
+            close: function() {
+
+            }
+        });
+
+        $("#addGarden").click(function() {
+            $("#newGardenName").val('');
+            $("#newGardenWidth").val('');
+            $("#newGardenHeight").val('');
+            addGardenDialog.dialog('open');
+        });
+
+        $(".editDimensionsBtn").click(function() {
+            gardenToBeEdited = $(this).val();
+            $("#editGardenText").text("Editing " + gardenToBeEdited);
+            $("#editGardenWidth").val('');
+            $("#editGardenHeight").val('');
+            editDimensionsDialog.dialog("open");
+        });
+
+		$(".deleteBtn").click(function() {
+			gardenToDelete = $(this).val();
+            $("#confirmDeleteText").text("Are you sure you want to delete " + gardenToDelete + "? All associated data will be deleted.");
+			confirmDeleteDialog.dialog('open');
+		});
+
+        confirmDeleteDialog = createConfirmDeleteDialog(confirmDeleteGarden);
+
+	});
+
+</script>
+
+<title>Gardens Management</title>
+<span class='adminPageTitle'>Gardens Management</span>&nbsp; &nbsp;<a href='/pgaadmin/gardenMgmtMenu' class='backLink'>Back</a>
+
+<br>
+
+{% include "admin/upload_status.html" %}
+
+<div id='gardensDiv'>
+	<h3>Gardens</h3>
+    <button id="addGarden">Add Garden</button><br>
+	<ul>
+		{% for garden in gardens %}
+			<li id='{{ garden.name }}Li'>
+                <a class='btn btn-default' href="/pgaadmin/gardenPlans/{{garden.name}}">
+                    <span>{{garden.name}} ({{garden.width}} x {{garden.height}})</span>
+                </a>
+                &nbsp;
+                <button class='editDimensionsBtn' value="{{garden.name}}">Edit Dimensions</button>
+                &nbsp;
+                <button class='deleteBtn' value="{{garden.name}}">Delete Garden</button>
+                <input type="hidden" class="gardenWidth" value="{{garden.width}}">
+                <input type="hidden" class="gardenHeight" value="{{garden.height}}">
+			</li>
+		{% endfor %}
+	</ul>
+</div>
+
+<br><br>
+<h3>Gardens Overview Image:</h3>
+<button id="uploadNewOverviewBtn">Upload New Overview Image</button><br><br>
+<img src="{% static 'img/gardensOverview.jpg' %}" />
+
+<div id="addGardenDialog" title="Add a Garden">
+    <label>Enter the name of the new garden: <input type="text" id="newGardenName"></label><br><br>
+    <label>Enter the width of this garden in feet: <input type="text" id="newGardenWidth"></label><br><br>
+    <label>Enter the height of this garden in feet: <input type="text" id="newGardenHeight"></label><br><br>
+</div>
+
+<div id="editDimensionsDialog" title="Edit Garden Dimensions">
+    <p id="editGardenText"></p>
+    <label>Enter the width of this garden in feet: <input type="text" id="editGardenWidth"></label><br><br>
+    <label>Enter the height of this garden in feet: <input type="text" id="editGardenHeight"></label><br><br>
+</div>
+
+{% include "admin/dialogs.html" %}
+
+{% include "admin/footer.html" %}

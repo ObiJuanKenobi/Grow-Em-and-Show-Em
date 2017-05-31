@@ -128,6 +128,38 @@ class DataAccess:
         for row in results:
             gardens.append(row[0])
         return gardens
+
+    def get_gardens_and_details(self):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("Select garden_name, garden_width, garden_height from gardens ORDER BY garden_name ASC;")
+        gardens = []
+        results = self._cursor.fetchall()
+        for row in results:
+            gardens.append({'name': row[0], 'width': row[1], 'height': row[2]})
+        return gardens
+
+    def add_garden(self, garden_name, width, height):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("INSERT INTO gardens (garden_name, garden_width, garden_height) VALUES (%s, %s, %s);",
+                             (garden_name, width, height))
+        self._cursor.execute("COMMIT")
+
+    def edit_garden(self, garden_name, width, height):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("UPDATE gardens SET garden_width = %s, garden_height = %s WHERE garden_name = %s;",
+                             (width, height, garden_name))
+        self._cursor.execute("COMMIT")
+
+    def delete_garden(self, garden_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("DELETE FROM gardens WHERE garden_name = %s;",
+                             [garden_name])
+
+        # Also delete plans associated with this garden:
+        self._cursor.execute("DELETE FROM Bed_Plans WHERE Bed_Name = %s;",
+                             [garden_name])
+
+        self._cursor.execute("COMMIT")
         
     def doesCourseHaveQuiz(self, course_name):
         self._cursor = self._connection.cursor()
@@ -304,7 +336,7 @@ class DataAccess:
         self._cursor.execute(
             "SELECT PlanID, Year(Marked_As_Current_At), Marked_As_Current_At as year FROM Bed_Plans WHERE Bed_Name = %s AND Was_Current = 1 Order By Marked_As_Current_At DESC",
             [garden_name])
-        results =  self._cursor.fetchall()
+        results = self._cursor.fetchall()
 
         year_dict = {}
         for row in results:
@@ -318,6 +350,25 @@ class DataAccess:
             year_dict[year].append({'id': plan_id, 'date': date})
 
         return year_dict
+
+    # Gathers all plan data for a given garden, for use on admin side
+    def get_all_bed_plans(self, garden_name):
+        self._cursor = self._connection.cursor()
+
+        # Get current:
+        current = self.get_current_bed_plan_data(garden_name)
+
+        # Get existing plans:
+        existing = self.get_existing_bed_plans_for_garden(garden_name)
+
+        # Get past plans
+        past = self.get_past_bed_plans(garden_name)
+
+        # Get user-deleted plans:
+        deleted = self.get_deleted_bed_plans_for_garden(garden_name)
+
+        return {'current': current, 'existing': existing, 'past': past, 'deleted': deleted}
+
 
     def get_bed_canvas(self, plan_id):
         self._cursor = self._connection.cursor()
@@ -362,6 +413,51 @@ class DataAccess:
             'plan_id': row[3]}
 
         return data
+
+    # Gets existing plans - not the current, not past currents, and not deleted ones:
+    def get_existing_bed_plans_for_garden(self, garden_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Bed_Plan, Created_By, Created_At, Updated_By, Updated_At, PlanID FROM Bed_Plans WHERE Bed_Name = %s AND Is_Current = 0 AND Was_Current = 0 AND Is_Deleted = 0", [garden_name])
+        results = self._cursor.fetchall()
+
+        if len(results) == 0:
+            return None
+
+        all_data = []
+        for row in results:
+
+            data = {'plan_name': row[0],
+                'created_by': row[1],
+                'created_date': str(row[2]),
+                'updated_by': row[3],
+                'updated_date': str(row[4]),
+                'plan_id': row[5]}
+            all_data.append(data)
+
+        return all_data
+
+    # Gets existing plans - not the current, not past currents, and not deleted ones:
+    def get_deleted_bed_plans_for_garden(self, garden_name):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "SELECT Bed_Plan, Created_By, Created_At, Deleted_By, Deleted_At, PlanID FROM Bed_Plans WHERE Bed_Name = %s AND Is_Current = 0 AND Was_Current = 0 AND Is_Deleted = 1",
+            [garden_name])
+        results = self._cursor.fetchall()
+
+        if len(results) == 0:
+            return None
+
+        all_data = []
+        for row in results:
+            data = {'plan_name': row[0],
+                    'created_by': row[1],
+                    'created_date': str(row[2]),
+                    'deleted_by': row[3],
+                    'deleted_date': str(row[4]),
+                    'plan_id': row[5]}
+            all_data.append(data)
+
+        return all_data
 
     def mark_bed_plan_as_current(self, garden_name, plan_id, username):
         self._cursor = self._connection.cursor()
