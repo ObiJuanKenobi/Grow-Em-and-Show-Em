@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+from pga.env import *
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -29,7 +30,7 @@ SECRET_KEY = 'f5-7h2x948$i(fs!nflq8f2ews&&g%8gpr10tqx5cj_ifep(!2'
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.15', '173.28.184.84', '192.168.0.23', '209.56.154.98',
-                 '209.56.155.182', '165.206.124.73']
+                 '209.56.155.182', '165.206.124.73', '165.206.124.73']
 
 
 # Application definition
@@ -83,7 +84,7 @@ DATABASES = {
         'NAME': 'may1713_PrisonGardenApp',
         'USER': 'may1713',
         'PASSWORD': 'gawrA75Nac!&',
-        'HOST': 'localhost', # sddb.ece.iastate.edu',
+        'HOST': get_database_host(),
         'PORT': '3306'
     }
 }

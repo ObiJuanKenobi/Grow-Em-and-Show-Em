@@ -2,6 +2,7 @@ import MySQLdb
 import smtplib
 from email.mime.text import MIMEText
 from decimal import Decimal
+from pga.env import *
 
 class DataAccess:
     _connection = None
@@ -9,8 +10,8 @@ class DataAccess:
 
     # Establish DB connection on instantiation of a new DataAccess object
     def __init__(self):
-        # "sddb.ece.iastate.edu"
-        self._connection = MySQLdb.Connection(host='localhost', port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
+        db_host = get_database_host()
+        self._connection = MySQLdb.Connection(host=db_host, port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
 
     # Close the connection when this object is deleted or falls out of scope
     def __del__(self):
