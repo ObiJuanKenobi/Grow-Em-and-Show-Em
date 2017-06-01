@@ -10,7 +10,7 @@ class DataAccess:
     # Establish DB connection on instantiation of a new DataAccess object
     def __init__(self):
         # "sddb.ece.iastate.edu"
-        self._connection = MySQLdb.Connection(host="sddb.ece.iastate.edu", port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
+        self._connection = MySQLdb.Connection(host='localhost', port = 3306, user = "may1713", passwd="gawrA75Nac!&", db="may1713_PrisonGardenApp")
 
     # Close the connection when this object is deleted or falls out of scope
     def __del__(self):
