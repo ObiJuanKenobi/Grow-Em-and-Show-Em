@@ -52,7 +52,7 @@ def courseNav(request, course):
     if course in completed_courses:
         passed = True
         
-    return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course.replace('-', ' '), 'color': color, 'has_quiz': has_quiz, 'passed': passed, 'no_lessons': no_lessons}))
+    return render(request, 'courseNav.html', view_utils.add_courses_to_dict({'lessons': lessons, 'course': course, 'color': color, 'has_quiz': has_quiz, 'passed': passed, 'no_lessons': no_lessons}))
 
 
 @login_required(login_url='/login/')
@@ -61,7 +61,7 @@ def lesson(request, course, lesson):
     color = db.getCourseColor(course)
     lesson_file_path = DataAccess().getLesson(course, lesson)
     
-    #records url does not have the preceding '.'
+    # records url does not have the preceding '.'
     if "static" in lesson_file_path:
         lesson_file_path = lesson_file_path.replace(".", "", 1)#lesson_file_path.replace("./static/", "", 1)
     

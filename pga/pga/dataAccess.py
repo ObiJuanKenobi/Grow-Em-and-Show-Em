@@ -81,10 +81,8 @@ class DataAccess:
     def getLesson(self, coursename, lessonname):
         self._cursor = self._connection.cursor()
         self._cursor.execute("SELECT Lesson_File_Path FROM Lessons WHERE Course_Name = %s AND Lesson_Name = %s", (coursename, lessonname))
-        lesson = ""
-        for(Lesson_File_Path) in self._cursor:
-            lesson = Lesson_File_Path
-        return lesson[0]
+        lesson_row = self._cursor.fetchone()
+        return lesson_row[0]
 
     def deleteLesson(self, lessonname):
         self._cursor = self._connection.cursor()
@@ -160,6 +158,44 @@ class DataAccess:
                              [garden_name])
 
         self._cursor.execute("COMMIT")
+
+    def get_crops_overview(self):
+        crops_dict = {}
+
+        self._cursor = self._connection.cursor()
+        self._cursor.execute("SELECT Crop, Crop_Subtype, sum(Quantity), Quantity_Units FROM Planting_Records GROUP BY Crop, Crop_Subtype, Quantity_Units;")
+        planting_results = self._cursor.fetchall()
+
+        for planting_row in planting_results:
+            crop = planting_row[0]
+            subtype = planting_row[1]
+            units = planting_row[3]
+            num = planting_row[2]
+
+            key = crop + " - " + subtype
+
+            if key not in crops_dict:
+                crops_dict[key] = {'planted': [], 'harvested': []}
+            crops_dict[key]['planted'].append({'units': units, 'num': num})
+
+        self._cursor.execute(
+            "SELECT Crop, Crop_Subtype, sum(Quantity), Quantity_Units FROM Harvest_Records GROUP BY Crop, Crop_Subtype, Quantity_Units;")
+        harvest_results = self._cursor.fetchall()
+
+        for harvest_row in harvest_results:
+            crop = harvest_row[0]
+            subtype = harvest_row[1]
+            units = harvest_row[3]
+            num = harvest_row[2]
+
+            key = crop + " - " + subtype
+
+            if key not in crops_dict:
+                crops_dict[key] = {'planted': [], 'harvested': []}
+            crops_dict[key]['harvested'].append({'units': units, 'num': num})
+
+        return crops_dict
+
         
     def doesCourseHaveQuiz(self, course_name):
         self._cursor = self._connection.cursor()
@@ -334,7 +370,7 @@ class DataAccess:
     def get_past_bed_plans(self, garden_name):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "SELECT PlanID, Year(Marked_As_Current_At), Marked_As_Current_At as year FROM Bed_Plans WHERE Bed_Name = %s AND Was_Current = 1 Order By Marked_As_Current_At DESC",
+            "SELECT PlanID, Year(Marked_As_Current_At), Marked_As_Current_At as year, Marked_As_Current_By FROM Bed_Plans WHERE Bed_Name = %s AND Was_Current = 1 Order By Marked_As_Current_At DESC",
             [garden_name])
         results = self._cursor.fetchall()
 
@@ -343,11 +379,12 @@ class DataAccess:
             plan_id = row[0]
             year = row[1]
             date = row[2]
+            marked_current_by = row[3]
 
             if year not in year_dict:
                 year_dict[year] = []
 
-            year_dict[year].append({'id': plan_id, 'date': date})
+            year_dict[year].append({'id': plan_id, 'date': date, 'marked_current_by': marked_current_by})
 
         return year_dict
 
@@ -471,9 +508,17 @@ class DataAccess:
         self._cursor.execute("UPDATE Bed_Plans SET Is_Current = 1, Marked_As_Current_By = %s, Marked_As_Current_At = now() WHERE PlanID = %s", (username, plan_id))
         self._cursor.execute("COMMIT")
 
+    # Called from user-side, doesn't actually delete, just hides plan from users
     def delete_bed_plan(self, plan_id, username):
         self._cursor = self._connection.cursor()
         self._cursor.execute("UPDATE Bed_Plans SET Is_Deleted = 1, Deleted_By = %s, Deleted_At = now() WHERE PlanID = %s", (username, plan_id))
+        self._cursor.execute("COMMIT")
+
+    # Called when admin deletes a plan, actually deletes
+    def admin_delete_bed_plan(self, plan_id):
+        self._cursor = self._connection.cursor()
+        self._cursor.execute(
+            "DELETE FROM Bed_Plans WHERE PlanID = %s;", [plan_id])
         self._cursor.execute("COMMIT")
 
     def getDailyLogs(self):
@@ -582,7 +627,7 @@ class DataAccess:
     def get_garden_notes(self):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "SELECT RecordId, Username, Crop, Notes, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year FROM Garden_Notes ORDER BY Date DESC")
+            "SELECT RecordId, Username, Crop, Notes, Location, DATE_FORMAT(Date, '%m/%d/%Y') AS RecDate, YEAR(Date) as year, Crop_Subtype FROM Garden_Notes ORDER BY Date DESC")
         results = self._cursor.fetchall()
 
         year_records_dict = {}
@@ -594,11 +639,13 @@ class DataAccess:
             location = row[4]
             date = row[5]
             year = row[6]
+            subtype = row[7]
 
             if year not in year_records_dict:
                 year_records_dict[year] = []
 
-            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'location': location, 'notes': notes})
+            year_records_dict[year].append({'id': rid, 'username': user, 'date': date, 'crop': crop, 'subtype': subtype,
+                                            'location': location, 'notes': notes})
 
         # Put data into good format for frontend templates:
         records_list = []
@@ -609,10 +656,10 @@ class DataAccess:
 
         return records_list_sorted
 
-    def insert_garden_note(self, username, date, crop, location, note):
+    def insert_garden_note(self, username, date, crop, crop_subtype, location, note):
         self._cursor = self._connection.cursor()
         self._cursor.execute(
-            "INSERT INTO Garden_Notes (Username, Crop, Notes, Date, Location) VALUES (%s, %s, %s, %s, %s);", (username, crop, note, date, location))
+            "INSERT INTO Garden_Notes (Username, Crop, Crop_Subtype, Notes, Date, Location) VALUES (%s, %s, %s, %s, %s, %s);", (username, crop, crop_subtype, note, date, location))
         self._cursor.execute("COMMIT")
 
     def delete_garden_note(self, record_id):
@@ -620,6 +667,7 @@ class DataAccess:
         self._cursor.execute(
             "DELETE FROM Garden_Notes WHERE RecordId = %s", [record_id])
         self._cursor.execute("COMMIT")
+        print("DELETED GARDEN NOTE")
 
     # def addDailyLog(self, user, plant, location, quantity, date, notes):
     #     self._cursor = self._connection.cursor()

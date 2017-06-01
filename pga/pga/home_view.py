@@ -36,11 +36,13 @@ def home_page(request):
         dict = view_utils.get_home_page_dict()
         # TODO Get crops, #harvested, and #planted from DB
         # list of tuples (crop_name, planted_int, harvested_int)
-        crops = [{'crop': 'corn', 'planted': 22, 'harvested': 10}, 
-                {'crop': 'soybeans', 'planted': 122, 'harvested': 110},
-                {'crop': 'eggplant', 'planted': 99, 'harvested': 75},
-                {'crop': 'bananas', 'planted': 357, 'harvested': 150},
-                {'crop': 'tomatoes', 'planted': 2012, 'harvested': 20}]
+        #
+        #  crops = [{'crop': 'corn', 'planted': 22, 'harvested': 10},
+        #         {'crop': 'soybeans', 'planted': 122, 'harvested': 110},
+        #         {'crop': 'eggplant', 'planted': 99, 'harvested': 75},
+        #         {'crop': 'bananas', 'planted': 357, 'harvested': 150},
+        #         {'crop': 'tomatoes', 'planted': 2012, 'harvested': 20}]
+        crops = db.get_crops_overview()
                 
         schedule = db.get_current_schedule()
                     

@@ -22,12 +22,13 @@
             url: deleteUrl + "/" + recordIdToDelete,
             type: "POST",
             success: function (data) {
+                alert("Record Deleted");
                 console.log(data);
                 $("#row" + recordIdToDelete).remove();
             },
             error: function (xhr, errmsg, err) {
                 alert("Error: " + errmsg);
-                console.log(errmsg);
+                console.log(err);
             }
         });
     }
@@ -65,11 +66,13 @@
                     <th>Username</th>
                     <th>Date</th>
                     <th>Crop</th>
+                    <th>Crop-Specific</th>
                     <th>Location</th>
                     {% if has_notes %}
                         <th>Notes</th>
                     {% else %}
                         <th>Quantity</th>
+                        <th>Units</th>
                     {% endif %}
                     <th></th>
                 </tr>
@@ -79,11 +82,13 @@
                         <td>{{log.username}}</td>
                         <td>{{log.date}}</td>
                         <td>{{log.crop}}</td>
+                        <td>{{log.subtype}}</td>
                         <td>{{log.location}}</td>
                         {% if has_notes %}
                             <td>{{log.notes}}</td>
                         {% else %}
                             <td>{{log.quantity}}</td>
+                            <td>{{log.units}}</td>
                         {% endif %}
                         <td><button class="delete-btn" value="{{log.id}}">Delete Record</button></td>
                     </tr>

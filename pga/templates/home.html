@@ -79,6 +79,33 @@
                 {% endfor %}
             </table>
         </div-->
+
+        <div id='gardenOverview' style='float: right;'>
+            <h4>Garden Overview:</h4>
+            <br>
+            <table id='cropsTable' class='borderedTable'>
+                <tr><th class='borderedTableCell'>Crop</th><th class='borderedTableCell'># Planted</th><th class='borderedTableCell'># Harvested</th></tr>
+                {% for crop, dict in crops.items %}
+                    <tr>
+                        <td class='borderedTableCell'>{{ crop }}</td>
+                        <td class='borderedTableCell'>
+                            <ul>
+                            {% for planted_unit in dict.planted %}
+                                <li>{{ planted_unit.num }} &nbsp; {{ planted_unit.units }}</li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                        <td class='borderedTableCell'>
+                            <ul>
+                            {% for harvested_unit in dict.harvested %}
+                                <li>{{ harvested_unit.num }} &nbsp; {{ harvested_unit.units }}</li>
+                            {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
         
         <div id='gardenSchedule'>
             <h4>Garden Schedule:</h4>

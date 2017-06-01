@@ -4,8 +4,9 @@
 
 {% include "courseHeader.html" %}
 
-    <div style='float: right; width: 40%; margin-right: 5%;'>
-        <ul>
+<div id='gardensImage' style='float: left;'>
+        <img style='float: left;' width='65%' src='{% static "img/gardensOverview.jpg" %}' alt='All Gardens'/>
+    <ul style="float: left; margin-left: 10px;">
         {% for garden in gardens %}
             <li style="margin-top: 8px">
                 <a id='button{{ forloop.counter }}' class='btn btn-default' href='/gardenNav/{{garden}}'>
@@ -15,9 +16,11 @@
         {% endfor %}
         </ul>
     </div>
+
+    <!--<div style='float: right; width: 50%; margin-right: 5%;'>-->
+        <!---->
+    <!--</div>-->
     
-    <div id='gardensImage' style='float: left; width: 50%'>
-        <img src='{% static "img/gardensOverview.jpg" %}' alt='All Gardens'/>
-    </div>
+
 	
 {% include "footer.html" %}

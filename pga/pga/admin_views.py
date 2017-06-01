@@ -268,6 +268,18 @@ def garden_plans(request, garden_name):
 
 
 @staff_member_required
+def delete_garden_plan(request):
+    if request.method == 'POST':
+        plan_id = request.POST.get('plan_id')
+        DataAccess().admin_delete_bed_plan(plan_id)
+        return HttpResponse(json.dumps({'status': 200, 'message': 'Success'}), content_type='application/json')
+
+    else:
+        return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}),
+                            content_type='application/json')
+
+
+@staff_member_required
 def admin_crop_mgmt(request):
     crops = DataAccess().get_all_crops()
     return render(request, 'admin/crop_mgmt.html', {'crops': crops})

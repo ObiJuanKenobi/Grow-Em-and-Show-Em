@@ -1,9 +1,13 @@
+#cropsTable {
+    width: 40%
+}
+
 #cropsTable th, #cropsTable td {
     text-align: center;
 }
 
 #scheduleTable {
-    width: 60%;
+    width: 50%;
 }
 
 #scheduleTable td, #scheduleTable th {

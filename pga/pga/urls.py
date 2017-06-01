@@ -79,12 +79,6 @@ urlpatterns = [
 
     url(r'^pgaadmin/gardenMgmtMenu', garden_mgmt_menu),
 
-    url(r'^pgaadmin/gardensMgmt', GardensMgmtView.as_view()),
-    url(r'^pgaadmin/deleteGarden', delete_garden),
-    url(r'^pgaadmin/addGarden', add_garden),
-    url(r'^pgaadmin/editGarden', edit_garden),
-    url(r'^pgaadmin/gardenPlans/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_plans),
-
     url(r'^pgaadmin/recordsMgmt', records_mgmt_menu),
     url(r'^pgaadmin/plantingRecords', admin_records_views.admin_planting_records),
     url(r'^pgaadmin/deletePlantingRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_planting_record),
@@ -92,6 +86,13 @@ urlpatterns = [
     url(r'^pgaadmin/deleteHarvestRecord/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_harvest_record),
     url(r'^pgaadmin/gardenNotes', admin_records_views.admin_garden_notes),
     url(r'^pgaadmin/deleteGardenNote/(?P<record_id>[A-Za-z0-9\-\s]+)', admin_records_views.delete_garden_note),
+
+    url(r'^pgaadmin/gardensMgmt', GardensMgmtView.as_view()),
+    url(r'^pgaadmin/deleteGarden', delete_garden),
+    url(r'^pgaadmin/addGarden', add_garden),
+    url(r'^pgaadmin/editGarden', edit_garden),
+    url(r'^pgaadmin/gardenPlans/(?P<garden_name>[A-Za-z0-9\-\s]+)', garden_plans),
+    url(r'^pgaadmin/deletePlan', delete_garden_plan),
 
     url(r'^pgaadmin/courseInfo', admin_course_info),
     url(r'^pgaadmin/', admin_home),

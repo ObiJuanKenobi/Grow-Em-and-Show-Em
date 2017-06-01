@@ -1,5 +1,6 @@
 # python imports:
 import datetime
+from pytz import timezone
 
 # Django imports:
 from django.shortcuts import render, redirect, render_to_response
@@ -30,7 +31,7 @@ def harvest_records(request):
         form = RecordTableFormWithQuantity(request.POST)
         if form.is_valid() and request.user.is_authenticated():
             crop = form.cleaned_data['crop']
-            subtype = 'NA' # form.cleaned_data['subtypes']
+            subtype = form.cleaned_data['subtypes']
             location = form.cleaned_data['location']
             quantity = form.cleaned_data['quantity']
             units = form.cleaned_data['units']
@@ -59,7 +60,7 @@ def planting_records(request):
         form = RecordTableFormWithQuantity(request.POST)
         if form.is_valid() and request.user.is_authenticated():
             crop = form.cleaned_data['crop']
-            crop_subtype = 'NA' # form.cleaned_data['subtypes']
+            crop_subtype = form.cleaned_data['subtypes']
             location = form.cleaned_data['location']
             quantity = form.cleaned_data['quantity']
             units = form.cleaned_data['units']
@@ -88,11 +89,12 @@ def garden_notes(request):
         form = RecordTableFormWithNotes(request.POST)
         if form.is_valid() and request.user.is_authenticated():
             crop = form.cleaned_data['crop']
+            crop_subtype = form.cleaned_data['subtypes']
             location = form.cleaned_data['location']
             notes = form.cleaned_data['notes']
             username = request.user.get_username()
             date = datetime.datetime.today().strftime("%Y-%m-%d")
-            db.insert_garden_note(username, date, crop, location, notes)
+            db.insert_garden_note(username, date, crop, crop_subtype, location, notes)
             view_dict['success'] = 'Record inserted successfully!'
         else:
             view_dict['error'] = form.errors
@@ -110,7 +112,8 @@ def get_default_records_dict():
     color = db.getCourseColor('Records')
     current_crops = db.get_current_crops()
     gardens = db.get_gardens()
-    today = datetime.datetime.today().strftime("%m/%d/%Y")
+    tz = timezone('US/Central')
+    today = tz.localize(datetime.datetime.now()).strftime("%m/%d/%Y %I:%M %p")
 
     return {'today': today, 'color': color, 'current_crops': current_crops, 'gardens': gardens,}
 

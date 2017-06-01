@@ -36,7 +36,7 @@ def delete_planting_record(request, record_id):
 
         db = DataAccess()
 
-        db.delete_planting_record(record_id)
+        db.delete_planting_record(int(record_id))
 
         response = {
             'status': 200,
@@ -70,11 +70,13 @@ def delete_harvest_record(request, record_id):
 
 
 def delete_garden_note(request, record_id):
+    print("DELETE GARDEN--NOTE")
     if request.method == 'POST':
 
         db = DataAccess()
 
-        db.delete_garden_note(record_id)
+        db.delete_garden_note(int(record_id))
+        print("Here")
 
         response = {
             'status': 200,
