@@ -27,8 +27,9 @@
                 },
                 success: function (resp) {
                     var canvas = new fabric.StaticCanvas(canvasId);
-                    canvas.setHeight(window.innerHeight / 2);
-                    canvas.setWidth($(".gardenLayout").width());
+                    canvas.setHeight($("#" + canvasId).height());
+                    canvas.setWidth($("#" + canvasId).width());
+                    $(".row").width(window.innerWidth);
                     var canvasData = resp['canvas'];
                     canvas.loadFromJSON(JSON.parse(canvasData), canvas.renderAll.bind(canvas));
                     drawGrid(canvas);
@@ -47,12 +48,14 @@
      */
     function drawGrid(canvas) {
         for (var x = 1; x < (canvas.getWidth() / gridSize); x++) {
-            canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getWidth()], {
+            canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getHeight()], {
                 stroke: "#000000",
                 strokeWidth: 1,
                 selectable: false,
                 strokeDashArray: [5, 5]
             }));
+        }
+        for (var x = 1; x < (canvas.getHeight() / gridSize); x++) {
             canvas.add(new fabric.Line([0, gridSize * x, canvas.getWidth(), gridSize * x], {
                 stroke: "#000000",
                 strokeWidth: 1,
@@ -70,18 +73,6 @@
 <h2 id="gardenTitle">{{ gardenName }}'s Bed Plan</h2>
 
 <div class="container-fluid gardenLayout">
-    <div class="row" style="display: none;">
-        <div class="itemsLayout" id="itemsBoard">
-            <img src="{% static 'img/broccoli.png' %}" class="gardenItems">
-            <img src="{% static 'img/cabbage.png' %}" class="gardenItems">
-            <img src="{% static 'img/carrot.png' %}" class="gardenItems">
-            <img src="{% static 'img/cucumber.png' %}" class="gardenItems">
-            <img src="{% static 'img/garlic.png' %}" class="gardenItems">
-            <img src="{% static 'img/onion.png' %}" class="gardenItems">
-            <img src="{% static 'img/potato.png' %}" class="gardenItems">
-            <img src="{% static 'img/radish.png' %}" class="gardenItems">
-        </div>
-    </div>
     {% for year, ids_and_dates in past_plans.items %}
         <h3 class="year">{{ year }}</h3><br><br>
         {% for dict in ids_and_dates %}
@@ -89,7 +80,7 @@
                 <input type="hidden" class="planId" value="{{ dict.id }}" />
                 <span>{{dict.date}}</span><br>
                 <div class="bedContainer snapZone">
-                    <canvas class="gardenCanvas" id="gardenCanvas{{forloop.counter}}"></canvas>
+                    <canvas class="gardenCanvas" id="gardenCanvas{{forloop.counter}}" width="{{width}}" height="{{height}}"></canvas>
                 </div>
             </div>
             <br><br>

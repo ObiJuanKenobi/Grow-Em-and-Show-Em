@@ -14,12 +14,31 @@ from . import view_utils
 
 # TODO - store this in DB?
 gardens_color = '00AA00'
+grid_size = 50
 
+
+def get_garden_dimensions(garden_name):
+    garden_details = DataAccess().get_gardens_and_details()
+    for garden_dict in garden_details:
+        if garden_dict['name'] == garden_name:
+            return {'height':  garden_dict['height'] * grid_size,
+                'width': garden_dict['width'] * grid_size}
+    return {'height': 20 * grid_size,
+        'width': 20 * grid_size}
 
 @login_required(login_url='/login/')
 def garden(request, garden_name):
-    return render(request, 'garden.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
-        'course': garden_name, 'color': gardens_color}))
+
+    db = DataAccess()
+    current_crops = db.get_current_crops()
+    garden_details = get_garden_dimensions(garden_name)
+
+    garden_dict = {'gardenName': garden_name,
+                   'current_crops': current_crops,
+                   'height': garden_details['height'],
+                   'width': garden_details['width'],
+                    'course': garden_name, 'color': gardens_color}
+    return render(request, 'garden.html', view_utils.add_courses_to_dict(garden_dict))
 
 
 @login_required(login_url='/login/')
@@ -27,22 +46,28 @@ def current_garden(request, garden_name):
     db = DataAccess()
     # canvas = db.get_current_bed_canvas(garden_name)
     data = db.get_current_bed_plan_data(garden_name)
+    garden_dimensions = get_garden_dimensions(garden_name)
 
     has_data = True
     if data is None:
         has_data = False
 
     return render(request, 'current_garden.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
-        'course': garden_name, 'color': gardens_color, 'data': data, 'has_data': has_data}))
+        'course': garden_name, 'color': gardens_color,
+        'height': garden_dimensions['height'], 'width': garden_dimensions['width'],
+        'data': data, 'has_data': has_data}))
 
 
 @login_required(login_url='/login/')
 def past_plans(request, garden_name):
     db = DataAccess()
 
+    garden_dimensions = get_garden_dimensions(garden_name)
     past_plan_ids = db.get_past_bed_plans(garden_name)
 
     return render(request, 'past_gardens.html', view_utils.add_courses_to_dict({'gardenName': garden_name,
+                                                                                'height': garden_dimensions['height'],
+                                                                                'width': garden_dimensions['width'],
         'course': garden_name, 'color': gardens_color, 'past_plans': past_plan_ids}))
 
 

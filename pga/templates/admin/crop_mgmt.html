@@ -1,4 +1,5 @@
 {% include "admin/header.html" %}
+{% load static %}
 
 <style>
 td {
@@ -16,6 +17,10 @@ table, tr, td {
     var addDialog;
     var addSubtypeDialog;
     var cropForNewSubtype;
+
+    var uploadDialog;
+    var fileUploadId;
+    var cropAddingImageFor;
 
     function addCrop(){
         var newCrop = $("#cropToAdd").val();
@@ -154,6 +159,14 @@ table, tr, td {
             }
         });
 
+        fileUploadId = $("#fileUploadId").val();
+        uploadDialog = createUploadDialog(fileUploadId); //defined in adminUtils.js
+
+        $(".uploadImageBtn").click(function() {
+            cropAddingImageFor = $(this).val();
+            uploadDialog.dialog("open");
+        });
+
         $("#addCrop").click(function() {
             $("#cropToAdd").val('');
             addDialog.dialog("open");
@@ -205,7 +218,7 @@ table, tr, td {
 <br>
 
 <table id="cropsTable">
-    <tr><th>Crop</th><th>Is Current</th><th>Subtypes</th><th>Toggle</th></th></tr>
+    <tr><th>Crop</th><th>Is Current</th><th>Subtypes</th><th>Image</th><th>Toggle</th></th></tr>
     {% for c in crops %}
 	<tr id='{{ c.name }}Tr'>
         <td><span>{{ c.name }}</span></td>
@@ -228,6 +241,10 @@ table, tr, td {
             </ul>
             <br>
             <button class="btn btn-default addSubtypeBtn" value="{{c.name}}">Add Subtype</button>
+        </td>
+        <td class="crop-image-cell">
+            <img src="{% static c.image_path %}" alt="No Crop Image" width="50" height="50"/>
+            <button class="uploadImageBtn" value="{{c.name}}">Upload New</button>
         </td>
 		<td>
             <input class='status' type="hidden" value="{{c.is_current}}">
@@ -255,4 +272,5 @@ table, tr, td {
 
 <br>
 
+{% include "admin/dialogs.html" %}
 {% include "admin/footer.html" %}

@@ -13,6 +13,7 @@ from pga.upload_file_form import UploadFileForm
 class AbstractFileUploadView(TemplateView):
 
     template_name = "abstract.html"
+    extra_params_on_post_only = False
     
     # IN subclasses, create a constructor that calls this super constructor
     # with appropriate lists of file extensions & extra funcs
@@ -34,7 +35,7 @@ class AbstractFileUploadView(TemplateView):
         self.uploading = False
         
         # Ensure correct URL, get extra parameters
-        if not self.extract_extra_params(*args, **kwargs):
+        if not self.extra_params_on_post_only and not self.extract_extra_params(*args, **kwargs):
             return render(request, self.template_name, 
                     {'extra_params_errors': self.extra_params_errors})
                     

@@ -39,6 +39,8 @@ Given a directory, return the first file with given extension.
 """
 def getFirstPathWithExtension(base_path, extension):
     valid_files = [f for f in os.listdir(base_path) if f.endswith(extension)]
+    if len(valid_files) == 0:
+        return None
     return os.path.join(base_path, valid_files[0])
 
 """
@@ -108,7 +110,8 @@ def processCourseZip(in_mem_file):
 
         # Add lesson info to database
         lesson_path_html = getFirstPathWithExtension(lesson_path, '.html')
-        db.addLesson(course_name, lesson_name, lesson_path_html)
+        if lesson_path_html is not None:
+            db.addLesson(course_name, lesson_name, lesson_path_html)
 
         # Read file
         with open(lesson_path_html, 'r') as html_file:
@@ -138,6 +141,27 @@ def processCourseZip(in_mem_file):
     shutil.rmtree(ZIP_TMP_DIR)
 
     return True, 'Course uploaded successfully: ' + course_name
+
+
+def add_new_quiz(course_name, quiz_file):
+    course_dir = os.path.join(COURSE_DIR, course_name)
+    quiz_path = os.path.join(course_dir, 'quiz')
+
+    if os.path.exists(quiz_path):
+        quiz = getFirstPathWithExtension(quiz_path, '.xlsx')
+
+        # Delete an existing quiz:
+        if quiz is not None:
+            os.remove(quiz)
+
+    else:
+        os.makedirs(quiz_path)
+
+    f = open(os.path.join(quiz_path, "quiz.xlsx"), 'w')
+    f.write(quiz_file.read())
+
+    processQuiz(course_name, course_dir)
+
 
 """
 Process the contents of a given quiz spreadsheet by adding its

@@ -677,11 +677,11 @@ class DataAccess:
         
     def get_current_crops(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT crop FROM Current_Crops WHERE is_current = 1 ORDER BY crop ASC;")
+        self._cursor.execute("SELECT crop, image_path FROM Current_Crops WHERE is_current = 1 ORDER BY crop ASC;")
         results = self._cursor.fetchall()
         crops = []
         for row in results:
-            crop_dict = {'name': row[0]}
+            crop_dict = {'name': row[0], 'image_path': row[1]}
 
             self._cursor.execute("Select Subtype FROM Crop_Subtypes WHERE Crop = %s", [row[0]])
             subtype_results = self._cursor.fetchall()
@@ -696,11 +696,11 @@ class DataAccess:
 
     def get_all_crops(self):
         self._cursor = self._connection.cursor()
-        self._cursor.execute("SELECT crop, is_current FROM Current_Crops ORDER BY crop ASC;")
+        self._cursor.execute("SELECT crop, is_current, image_path FROM Current_Crops ORDER BY crop ASC;")
         results = self._cursor.fetchall()
         crops = []
         for row in results:
-            crop_info = {'name': row[0], 'is_current': row[1]}
+            crop_info = {'name': row[0], 'is_current': row[1], 'image_path': row[2]}
 
             self._cursor.execute("Select Subtype FROM Crop_Subtypes WHERE Crop = %s", [row[0]])
             subtype_results = self._cursor.fetchall()

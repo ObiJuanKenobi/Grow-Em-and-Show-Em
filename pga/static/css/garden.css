@@ -32,4 +32,11 @@
     color: white;
 }
 
+.bedContainer {
+    overflow: scroll;
+    width: 1000px;
+}
 
+.row {
+    overflow: scroll;
+}

@@ -310,16 +310,18 @@ function restoreLastObj() {
 }
 
 /**
- * Draw the griz based on the given grid size.
+ * Draw the grid based on the given grid size.
  */
 function drawGrid() {
     for (var x = 1; x < (canvas.getWidth() / gridSize); x++) {
-        canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getWidth()], {
+        canvas.add(new fabric.Line([gridSize * x, 0, gridSize * x, canvas.getHeight()], {
             stroke: "#000000",
             strokeWidth: 1,
             selectable: false,
             strokeDashArray: [5, 5]
         }));
+    }
+    for (var x = 1; x < (canvas.getHeight() / gridSize); x++) {
         canvas.add(new fabric.Line([0, gridSize * x, canvas.getWidth(), gridSize * x], {
             stroke: "#000000",
             strokeWidth: 1,
@@ -423,8 +425,10 @@ $(document).ready(function () {
         gardenInstance = img;
     });
     canvas = new fabric.Canvas('gardenCanvas');
-    canvas.setHeight(window.innerHeight / 2);
-    canvas.setWidth($(".toolbar").width());
+    canvas.setHeight($("#gardenCanvas").height());
+    canvas.setWidth($("#gardenCanvas").width());
+    $(".row").width(window.innerWidth);
+
     fixCanvasBound();
     drawGrid();
     setupCSRF();

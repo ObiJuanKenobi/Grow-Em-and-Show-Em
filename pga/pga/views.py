@@ -88,7 +88,7 @@ class UserFormView(View):
 
     def get(self, request):
         form = self.form_class(None)
-        dict = get_home_page_dict()
+        dict = view_utils.get_home_page_dict()
         dict['form'] = form
         return render(request, self.template_name, dict)
 

@@ -223,6 +223,32 @@ class GardensMgmtView(AbstractFileUploadView):
         return FileHandlingResult(True, 'TODO - not implemented')
 
 
+class CropMgmtView(AbstractFileUploadView):
+    template_name = 'admin/crop_mgmt.html'
+    crop = None
+
+    def __init__(self):
+        super(CropMgmtView, self).__init__(['.jpg', '.png', '.jpeg'], [])
+        self.extra_params_on_post_only = True
+
+    def get_page_specific_data(self):
+        crops = DataAccess().get_all_crops()
+        return {'crops': crops}
+
+    def extract_extra_params(self, *args, **kwargs):
+        self.crop = kwargs.pop('crop', None)
+        if self.crop is not None:
+            return True
+
+        # Invalid URL:
+        self.extra_params_errors += "couldn't find crop in url"
+        return False
+
+    def page_specific_handle_file(self, file):
+        # status, message = processCourseZip(file)
+        return FileHandlingResult(True, 'TODO - not implemented')
+
+
 @staff_member_required
 def add_garden(request):
     if request.method == 'POST':
@@ -277,12 +303,6 @@ def delete_garden_plan(request):
     else:
         return HttpResponse(json.dumps({'status': 404, 'message': 'POST requests only'}),
                             content_type='application/json')
-
-
-@staff_member_required
-def admin_crop_mgmt(request):
-    crops = DataAccess().get_all_crops()
-    return render(request, 'admin/crop_mgmt.html', {'crops': crops})
 
 
 @staff_member_required
@@ -409,15 +429,15 @@ class AdminQuizView(AbstractFileUploadView):
         if self.unit is not None:
             return True
             
-        #Invalid URL:
+        # Invalid URL:
         self.extra_params_errors = "Couldn't find unit for quiz"
         return False
     
     def get_page_specific_data(self):
-        #Ensures 'self.unit'
         questions = DataAccess().getQuizQuestions(self.unit);
         return {'unit': self.unit, 'questions': questions}
         
     def page_specific_handle_file(self, file):
         # type of material is given by 'self.resource_type'
-        return FileHandlingResult(True, 'TODO - not implemented')
+        add_new_quiz(self.unit, file)
+        return FileHandlingResult(True, 'Quiz uploaded')

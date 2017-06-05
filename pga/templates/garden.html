@@ -38,19 +38,24 @@
     </div>
     <div class="row">
         <div class="itemsLayout" id="itemsBoard">
-            <img src="{% static 'img/broccoli.png' %}" class="gardenItems">
+            {% for crop in current_crops %}
+                <img src="{% static crop.image_path %}" class="gardenItems">
+            {% endfor %}
+
+            <!--img src="{% static 'img/broccoli.png' %}" class="gardenItems">
             <img src="{% static 'img/cabbage.png' %}" class="gardenItems">
             <img src="{% static 'img/carrot.png' %}" class="gardenItems">
             <img src="{% static 'img/cucumber.png' %}" class="gardenItems">
             <img src="{% static 'img/garlic.png' %}" class="gardenItems">
             <img src="{% static 'img/onion.png' %}" class="gardenItems">
             <img src="{% static 'img/potato.png' %}" class="gardenItems">
-            <img src="{% static 'img/radish.png' %}" class="gardenItems">
+            <img src="{% static 'img/radish.png' %}" class="gardenItems"-->
+
         </div>
     </div>
     <div class="row">
         <div class="bedContainer snapZone">
-            <canvas id="gardenCanvas"></canvas>
+            <canvas id="gardenCanvas" width="{{width}}" height="{{height}}"></canvas>
         </div>
     </div>
 </div>

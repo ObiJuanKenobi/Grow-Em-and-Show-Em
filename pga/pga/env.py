@@ -1,5 +1,5 @@
-production = True
-# production = False
+# production = True
+production = False
 
 
 def get_database_host():
